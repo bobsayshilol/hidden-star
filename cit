@@ -1,0 +1,2 @@
+echo "Compiling: 64.c"
+gcc -o 64 64.c -O2 -lSDL2_image `sdl2-config --cflags --libs` -lm
