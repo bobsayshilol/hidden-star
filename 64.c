@@ -237,8 +237,8 @@ void show_fight(){
 						shipY--;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]-=(j+1);
-								starY[j]-=(j+1);
+								starX[j]+=6-j;
+								starY[j]+=6-j;
 							}
 						}else{
 							back=3;
@@ -248,7 +248,7 @@ void show_fight(){
 						shipY--;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starY[j]-=(j+1);
+								starY[j]+=6-j;
 							}
 						}else{
 							back=2;
@@ -259,8 +259,8 @@ void show_fight(){
 						shipY--;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]+=(j+1);
-								starY[j]-=(j+1);
+								starX[j]-=6-j;
+								starY[j]+=6-j;
 							}
 						}else{
 							back=1;
@@ -270,7 +270,7 @@ void show_fight(){
 						shipX--;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]-=(j+1);
+								starX[j]+=6-j;
 							}
 						}else{
 							back=6;
@@ -280,7 +280,7 @@ void show_fight(){
 						shipX++;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]+=(j+1);
+								starX[j]-=6-j;
 							}
 						}else{
 							back=4;
@@ -291,8 +291,8 @@ void show_fight(){
 						shipY++;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]-=(j+1);
-								starY[j]+=(j+1);
+								starX[j]+=6-j;
+								starY[j]-=6-j;
 							}
 						}else{
 							back=9;
@@ -302,7 +302,7 @@ void show_fight(){
 						shipY++;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starY[j]+=(j+1);
+								starY[j]-=6-j;
 							}
 						}else{
 							back=8;
@@ -313,8 +313,8 @@ void show_fight(){
 						shipY++;
 						if(back==s){
 							for(int j=0;j<6;j++){
-								starX[j]+=(j+1);
-								starY[j]+=(j+1);
+								starX[j]-=6-j;
+								starY[j]-=6-j;
 							}
 						}else{
 							back=7;
