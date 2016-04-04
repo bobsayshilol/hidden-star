@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <math.h>
 #include "SDL.h" 
@@ -16,17 +17,29 @@
 #define FLIPHV 3
 #define ROT270 4
 #define ROT90 5
+#define TWINK 6
 
-int scale=4;
+int scale=8;
 int resX=64;
 int resY=64;
 int player_move1=0;
 int player_move2=0;
+int shipX=16;
+int shipY=32;
+int starX[6];
+int starY[6];
+int action=0;
 
 SDL_Event event;
 SDL_Surface *screen;
 SDL_Window *window;
 SDL_Renderer *renderer;
+SDL_Texture *stars1;
+SDL_Texture *stars2;
+SDL_Texture *stars3;
+SDL_Texture *stars4;
+SDL_Texture *stars5;
+SDL_Texture *stars6;
 SDL_Texture *ship1;
 SDL_Texture *baddy1;
 SDL_Texture *timerbar;
@@ -49,7 +62,7 @@ SDL_Texture* Load_img(char *filename){
 }
 
 void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
-	int w, h;
+	int w, h, r;
 	SDL_RendererFlip flip;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect rect;
@@ -90,6 +103,15 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 		case ROT90:
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
+		case TWINK:
+			if((rand()%32)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 80) + 32);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
 	}	
 }
 
@@ -125,7 +147,7 @@ void draw_action_button(int direction, int x, int y, int mask){
 	}
 }
 
-void draw_action_buttons(int action){
+void draw_action_buttons(){
 	int offset=0;
 	int mask=MASK1;
 	if(action==2){
@@ -144,10 +166,34 @@ void draw_action_buttons(int action){
 }
 
 void draw_combat(int time_pos){
+	int bob1;
+	int bob2;
 	SDL_RenderClear(renderer);
+	for(int x=-256;x<=256;x+=256){
+		for(int y=-256;y<=256;y+=256){
+			blit(stars1, starX[0]+x, starY[0]+y, MASK0, NOFLIP);
+			blit(stars2, starX[1]+x, starY[1]+y, MASK0, TWINK);
+			blit(stars3, starX[2]+x, starY[2]+y, MASK0, TWINK);
+			blit(stars4, starX[3]+x, starY[3]+y, MASK0, TWINK);
+			blit(stars5, starX[4]+x, starY[4]+y, MASK0, TWINK);
+			blit(stars6, starX[5]+x, starY[5]+y, MASK0, TWINK);
+		}
+	}
+	if(time_pos <= -48){bob1=1;}
+	if(time_pos > -48 && time_pos <= -32){bob1=0;}
+	if(time_pos > -32 && time_pos <= -16){bob1=-1;}
+	if(time_pos > -16){bob1=0;}
+	if(time_pos <= -56){bob2=1;}
+	if(time_pos > -56 && time_pos <= -48){bob2=0;}
+	if(time_pos > -48 && time_pos <= -32){bob2=-1;}
+	if(time_pos > -32 && time_pos <= -24){bob2=0;}
+	if(time_pos > -24 && time_pos <= -16){bob2=1;}
+	if(time_pos > -16 && time_pos <= -8){bob2=1;}
+	if(time_pos > -8){bob2=0;}
+
 	blit(timerbar, time_pos, 0, MASK0, NOFLIP);
-	blit(ship1, 16, 32, MASK0, NOFLIP);
-	blit(baddy1, 37, 11, MASK0, NOFLIP);
+	blit(ship1, shipX, shipY+bob1, MASK0, NOFLIP);
+	blit(baddy1, 37, 11+bob2, MASK0, NOFLIP);
 	blit(combat_hud, 0, 55, MASK0, NOFLIP);
 	blit(combat_movetext, 4, 57, MASK0, NOFLIP);
 	blit(combat_firetext, 44, 57, MASK0, NOFLIP);
@@ -165,9 +211,128 @@ void draw_combat(int time_pos){
 			draw_action_button(player_move2, 34, 57, MASK1);
 		}
 	}
+	if(action==1){
+		blit(combat_moveselect, 0, 55, MASK0, NOFLIP);
+		draw_action_buttons();
+	}
+	if(action==2){
+		blit(combat_fireselect, 40, 55, MASK0, NOFLIP);
+		draw_action_buttons();
+	}
 }
 
 void show_fight(){
+	int s=0;
+	int back=0;
+	for(int h=0;h < 4; h++){ // 4 movements per round
+		if(h==0){s=player_move1;}
+		if(h==1){s=back;}
+		if(h==2){s=player_move2; back=0;}
+		if(h==3){s=back;}
+		if(s>0){
+			for(int i=0;i < 8; i++){ // 8 frames per movement
+				switch(s){
+					case 7:
+						shipX--;
+						shipY--;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]-=(j+1);
+								starY[j]-=(j+1);
+							}
+						}else{
+							back=3;
+						}
+						break;
+					case 8:
+						shipY--;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starY[j]-=(j+1);
+							}
+						}else{
+							back=2;
+						}
+						break;
+					case 9:
+						shipX++;
+						shipY--;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]+=(j+1);
+								starY[j]-=(j+1);
+							}
+						}else{
+							back=1;
+						}
+						break;
+					case 4:
+						shipX--;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]-=(j+1);
+							}
+						}else{
+							back=6;
+						}
+						break;
+					case 6:
+						shipX++;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]+=(j+1);
+							}
+						}else{
+							back=4;
+						}
+						break;
+					case 1:
+						shipX--;
+						shipY++;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]-=(j+1);
+								starY[j]+=(j+1);
+							}
+						}else{
+							back=9;
+						}
+						break;
+					case 2:
+						shipY++;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starY[j]+=(j+1);
+							}
+						}else{
+							back=8;
+						}
+						break;
+					case 3:
+						shipX++;
+						shipY++;
+						if(back==s){
+							for(int j=0;j<6;j++){
+								starX[j]+=(j+1);
+								starY[j]+=(j+1);
+							}
+						}else{
+							back=7;
+						}
+						break;
+				}
+				for(int j=0;j<6;j++){
+					if(starX[j] < -256){starX[j]=256;}
+					if(starX[j] > 256){starX[j]=-256;}
+					if(starY[j] < -256){starY[j]=256;}
+					if(starY[j] > 256){starY[j]=-256;}
+				}
+				draw_combat(0);
+				SDL_RenderPresent(renderer);
+				SDL_Delay(32);
+			}
+		}
+	}
 }
 
 
@@ -189,6 +354,14 @@ int setup(){
 	SDL_SetWindowTitle(window, "SixtyFour");
     atexit(SDL_Quit);
 
+	srand(time(NULL));
+
+	stars1 = Load_img("sprites/stars/stars1_256.png");
+	stars2 = Load_img("sprites/stars/stars2_256.png");
+	stars3 = Load_img("sprites/stars/stars3_256.png");
+	stars4 = Load_img("sprites/stars/stars4_256.png");
+	stars5 = Load_img("sprites/stars/stars5_256.png");
+	stars6 = Load_img("sprites/stars/stars6_256.png");
 	ship1 = Load_img("sprites/ship1.png");
 	baddy1 = Load_img("sprites/baddy1.png");
 	timerbar = Load_img("sprites/timerbar.png");
@@ -201,9 +374,12 @@ int setup(){
 	combat_card = Load_img("sprites/directional_card.png");
 	combat_mid = Load_img("sprites/directional_mid.png");
 
+	for(int i=0;i<6;i++){
+			starX[i]=-64;
+			starY[i]=-64;
+	}
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
 	draw_combat(0);
-	SDL_RenderPresent(renderer);
 }
 
 
@@ -216,10 +392,11 @@ int main(int argc, char *argv[]){
 int time_pos=0;
 int current_time;
 int last_time = SDL_GetTicks();
+int ani_time = SDL_GetTicks();
 int mouseX; int mouseY;
-int action=0;
 
 while(event.type != SDL_QUIT){
+	draw_combat(time_pos);
 	SDL_GetMouseState(&mouseX, &mouseY);
 	if(SDL_PollEvent(&event)<1){SDL_Delay(10);}else{
 		switch (event.type) {
@@ -229,18 +406,12 @@ while(event.type != SDL_QUIT){
 				if(player_move2==0 && mouseX < (25*scale) 
 								   && mouseY > (56*scale)){
 					//movebutt on
-					draw_combat(time_pos);
-						blit(combat_moveselect, 0, 55, MASK0, NOFLIP);
 						action=1;
-						draw_action_buttons(action);
 				}
 				if(player_move2==0 && mouseX > (42*scale) 
 								   && mouseY > (56*scale)){
 					//firebutt on
-					draw_combat(time_pos);
-						blit(combat_fireselect, 40, 55, MASK0, NOFLIP);
 						action=2;
-						draw_action_buttons(action);
 				}
 				if(mouseX > (12*scale) && mouseX < (35*scale) &&
 				   mouseY > (28*scale) && mouseY < (51*scale)){
@@ -260,19 +431,14 @@ while(event.type != SDL_QUIT){
 						if(direction>0 && player_move1>0 && player_move2==0){
 							player_move2=direction;
 							action=0;
-							draw_combat(time_pos);
 						}
 						if(direction>0 && player_move1==0){
 							player_move1=direction;
 							action=0;
-							draw_combat(time_pos);
 						}
-					}else if(action==0 && player_move2==0){
+					}else if(action!=1 && player_move2==0){
 						//movebutt on
-						draw_combat(time_pos);
-							blit(combat_moveselect, 0, 55, MASK0, NOFLIP);
 							action=1;
-							draw_action_buttons(action);
 					}
 				}
 				if(mouseX > (33*scale) && mouseX < (56*scale) &&
@@ -293,19 +459,14 @@ while(event.type != SDL_QUIT){
 						if(direction>0 && player_move1>0 && player_move2==0){
 							player_move2=direction+9;
 							action=0;
-							draw_combat(time_pos);
 						}
 						if(direction>0 && player_move1==0){
 							player_move1=direction+9;
 							action=0;
-							draw_combat(time_pos);
 						}
-					}else if(action==0 && player_move2==0){
+					}else if(action!=2 && player_move2==0){
 						//firebutt on
-						draw_combat(time_pos);
-							blit(combat_fireselect, 40, 55, MASK0, NOFLIP);
 							action=2;
-							draw_action_buttons(action);
 					}
 			}
 			
@@ -317,7 +478,7 @@ while(event.type != SDL_QUIT){
 	if((current_time-last_time) > 64){
 		last_time=current_time;
 		time_pos--;
-		if(time_pos<-63){
+		if(time_pos < -63){
 			time_pos=0;
 			show_fight();
 			action=0;
@@ -327,8 +488,11 @@ while(event.type != SDL_QUIT){
 		}
 		blit(timerbar, time_pos, 0, MASK0, NOFLIP);
 	}
-	SDL_RenderPresent(renderer);
-	
+	current_time=SDL_GetTicks();
+	if((current_time-ani_time) >= 60){
+		ani_time=current_time;
+		SDL_RenderPresent(renderer);
+	}
 }
 return 0;
 }
