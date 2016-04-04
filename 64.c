@@ -17,7 +17,12 @@
 #define FLIPHV 3
 #define ROT270 4
 #define ROT90 5
-#define TWINK 6
+#define TWINK1 6
+#define TWINK2 7
+#define TWINK3 8
+#define TWINK4 9
+#define TWINK5 10
+#define TWINK6 11
 
 int scale=8;
 int resX=64;
@@ -103,11 +108,47 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 		case ROT90:
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
-		case TWINK:
+		case TWINK1:
+			if((rand()%64)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 8) + 32);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK2:
 			if((rand()%32)==0){
 				r=((rand() % 256) + 128);
 			}else{
-				r=((rand() % 80) + 32);
+				r=((rand() % 16) + 48);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK3:
+			if((rand()%32)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 24) + 64);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK4:
+			if((rand()%48)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 32) + 80);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK5:
+			if((rand()%56)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 40) + 96);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
@@ -172,11 +213,11 @@ void draw_combat(int time_pos){
 	for(int x=-256;x<=256;x+=256){
 		for(int y=-256;y<=256;y+=256){
 			blit(stars1, starX[0]+x, starY[0]+y, MASK0, NOFLIP);
-			blit(stars2, starX[1]+x, starY[1]+y, MASK0, TWINK);
-			blit(stars3, starX[2]+x, starY[2]+y, MASK0, TWINK);
-			blit(stars4, starX[3]+x, starY[3]+y, MASK0, TWINK);
-			blit(stars5, starX[4]+x, starY[4]+y, MASK0, TWINK);
-			blit(stars6, starX[5]+x, starY[5]+y, MASK0, TWINK);
+			blit(stars2, starX[1]+x, starY[1]+y, MASK0, TWINK1);
+			blit(stars3, starX[2]+x, starY[2]+y, MASK0, TWINK2);
+			blit(stars4, starX[3]+x, starY[3]+y, MASK0, TWINK3);
+			blit(stars5, starX[4]+x, starY[4]+y, MASK0, TWINK4);
+			blit(stars6, starX[5]+x, starY[5]+y, MASK0, TWINK5);
 		}
 	}
 	if(time_pos <= -48){bob1=1;}
