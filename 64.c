@@ -16,13 +16,16 @@
 #define FLIPH 2
 #define FLIPHV 3
 #define ROT270 4
-#define ROT90 5
-#define TWINK1 6
-#define TWINK2 7
-#define TWINK3 8
-#define TWINK4 9
-#define TWINK5 10
-#define TWINK6 11
+#define ROT225 5
+#define ROT90 6
+#define ROT45 7
+#define TWINK1 10
+#define TWINK2 11
+#define TWINK3 12
+#define TWINK4 13
+#define TWINK5 14
+#define TWINK6 15
+#define ANIM1 20
 
 int scale=8;
 int resX=64;
@@ -31,9 +34,20 @@ int player_move1=0;
 int player_move2=0;
 int shipX=16;
 int shipY=32;
+int shot1X=26;
+int shot1Y=34;
+int combat_weapon=0;
 int starX[6];
 int starY[6];
 int action=0;
+int baddy1AI[8]={8,15,6,15,2,15,4,15};
+int AIshipX=37;
+int AIshipY=11;
+int AIshot1X=40;
+int AIshot1Y=20;
+int combat_weaponAI=0;
+int ai_round=0;
+int anim1frame=0;
 
 SDL_Event event;
 SDL_Surface *screen;
@@ -56,6 +70,8 @@ SDL_Texture *combat_fireselect;
 SDL_Texture *combat_diag;
 SDL_Texture *combat_card;
 SDL_Texture *combat_mid;
+SDL_Texture *shot1;
+SDL_Texture *explosion1;
 
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
@@ -70,6 +86,7 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 	int w, h, r;
 	SDL_RendererFlip flip;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+	SDL_Rect srect;
 	SDL_Rect rect;
 	rect.x=x*scale;
 	rect.y=y*scale;
@@ -107,6 +124,12 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 			break;
 		case ROT90:
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case ROT45:
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 45, 0, 0);
+			break;
+		case ROT225:
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 225, 0, 0);
 			break;
 		case TWINK1:
 			if((rand()%64)==0){
@@ -152,6 +175,18 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 			}
 			SDL_SetTextureAlphaMod(tex, r);
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case ANIM1:
+			srect.x=(h*anim1frame);
+			srect.y=0;
+			srect.w=h;
+			srect.h=h;
+			rect.w=h*scale;
+		    SDL_RenderCopy(renderer, tex, &srect, &rect);
+			anim1frame++;
+			if(anim1frame > (w/h)){
+				anim1frame=0;
+			}
 			break;
 	}	
 }
@@ -234,20 +269,33 @@ void draw_combat(int time_pos){
 
 	blit(timerbar, time_pos, 0, MASK0, NOFLIP);
 	blit(ship1, shipX, shipY+bob1, MASK0, NOFLIP);
-	blit(baddy1, 37, 11+bob2, MASK0, NOFLIP);
+	blit(baddy1, AIshipX, AIshipY+bob2, MASK0, NOFLIP);
 	blit(combat_hud, 0, 55, MASK0, NOFLIP);
 	blit(combat_movetext, 4, 57, MASK0, NOFLIP);
 	blit(combat_firetext, 44, 57, MASK0, NOFLIP);
+	if(combat_weapon==1){
+		blit(shot1, shot1X, shot1Y, MASK2, ROT45);
+	}
+	if(combat_weapon==10){
+		blit(explosion1, shot1X-2, shot1Y-2, MASK0, ANIM1);
+	}
+	if(combat_weaponAI==1){
+		blit(shot1, AIshot1X, AIshot1Y, MASK1, ROT225);
+	}
+	if(combat_weaponAI==10){
+		blit(explosion1, AIshot1X-2, AIshot1Y-2, MASK0, ANIM1);
+	}
+
 	if(player_move1>0){
-		if(player_move1>9){
-			draw_action_button(player_move1-9, 28, 57, MASK2);
+		if(player_move1>10){
+			draw_action_button(player_move1-10, 28, 57, MASK2);
 		}else{
 			draw_action_button(player_move1, 28, 57, MASK1);
 		}
 	}
 	if(player_move2>0){
-		if(player_move2>9){
-			draw_action_button(player_move2-9, 34, 57, MASK2);
+		if(player_move2>10){
+			draw_action_button(player_move2-10, 34, 57, MASK2);
 		}else{
 			draw_action_button(player_move2, 34, 57, MASK1);
 		}
@@ -264,14 +312,30 @@ void draw_combat(int time_pos){
 
 void show_fight(){
 	int s=0;
+	int s2=0;
 	int back=0;
+	int baddy_back=0;
 	for(int h=0;h < 4; h++){ // 4 movements per round
-		if(h==0){s=player_move1;}
-		if(h==1){s=back;}
-		if(h==2){s=player_move2; back=0;}
-		if(h==3){s=back;}
-		if(s>0){
-			for(int i=0;i < 8; i++){ // 8 frames per movement
+		if(h==0){
+			s=player_move1;
+			s2=baddy1AI[ai_round];
+		}
+		if(h==1){
+			s=back;
+			s2=baddy_back;
+		}
+		if(h==2){
+			s=player_move2; 
+			back=0;
+			baddy_back=0;
+			s2=baddy1AI[ai_round];
+		}
+		if(h==3){
+			s=back;
+			s2=baddy_back;
+		}
+		for(int i=0;i < 8; i++){ // 8 frames per movement
+			if(s>0){
 				switch(s){
 					case 7:
 						shipX--;
@@ -361,6 +425,51 @@ void show_fight(){
 							back=7;
 						}
 						break;
+					case 17:
+						combat_weapon=1;
+						shot1X+=1;
+						shot1Y-=3;
+						break;
+					case 18:
+						combat_weapon=1;
+						shot1X+=2;
+						shot1Y-=3;
+						break;
+					case 19:
+						combat_weapon=1;
+						shot1X+=3;
+						shot1Y-=3;
+						break;
+					case 14:
+						combat_weapon=1;
+						shot1X+=1;
+						shot1Y-=2;
+						break;
+					case 15:
+						combat_weapon=1;
+						shot1X+=2;
+						shot1Y-=2;
+						break;
+					case 16:
+						combat_weapon=1;
+						shot1X+=3;
+						shot1Y-=2;
+						break;
+					case 11:
+						combat_weapon=1;
+						shot1X+=1;
+						shot1Y-=1;
+						break;
+					case 12:
+						combat_weapon=1;
+						shot1X+=2;
+						shot1Y-=1;
+						break;
+					case 13:
+						combat_weapon=1;
+						shot1X+=3;
+						shot1Y-=1;
+						break;
 				}
 				for(int j=0;j<6;j++){
 					if(starX[j] < -256){starX[j]=256;}
@@ -368,11 +477,123 @@ void show_fight(){
 					if(starY[j] < -256){starY[j]=256;}
 					if(starY[j] > 256){starY[j]=-256;}
 				}
-				draw_combat(0);
-				SDL_RenderPresent(renderer);
-				SDL_Delay(32);
 			}
+			switch(s2){
+				case 7:
+					AIshipX--;
+					AIshipY--;
+					baddy_back=3;
+					break;
+				case 8:
+					AIshipY--;
+					baddy_back=2;
+					break;
+				case 9:
+					AIshipX++;
+					AIshipY--;
+					baddy_back=1;
+					break;
+				case 4:
+					AIshipX--;
+					baddy_back=6;
+					break;
+				case 6:
+					AIshipX++;
+					baddy_back=4;
+					break;
+				case 1:
+					AIshipX--;
+					AIshipY++;
+					baddy_back=9;
+					break;
+				case 2:
+					AIshipY++;
+					baddy_back=8;
+					break;
+				case 3:
+					AIshipX++;
+					AIshipY++;
+					baddy_back=7;
+					break;
+				case 17:
+					combat_weaponAI=1;
+					AIshot1X-=3;
+					AIshot1Y+=1;
+					break;
+				case 18:
+					combat_weaponAI=1;
+					AIshot1X-=2;
+					AIshot1Y+=1;
+					break;
+				case 19:
+					combat_weaponAI=1;
+					AIshot1X-=1;
+					AIshot1Y+=1;
+					break;
+				case 14:
+					combat_weaponAI=1;
+					AIshot1X-=3;
+					AIshot1Y+=2;
+					break;
+				case 15:
+					combat_weaponAI=1;
+					AIshot1X-=2;
+					AIshot1Y+=2;
+					break;
+				case 16:
+					combat_weaponAI=1;
+					AIshot1X-=1;
+					AIshot1Y+=2;
+					break;
+				case 11:
+					combat_weaponAI=1;
+					AIshot1X-=3;
+					AIshot1Y+=3;
+					break;
+				case 12:
+					combat_weaponAI=1;
+					AIshot1X-=2;
+					AIshot1Y+=3;
+					break;
+				case 13:
+					combat_weaponAI=1;
+					AIshot1X-=1;
+					AIshot1Y+=3;
+					break;
+			}
+			draw_combat(0);
+			SDL_RenderPresent(renderer);
+			SDL_Delay(32);
 		}
+		if(h==0 || h==2){
+			if(s==baddy1AI[ai_round]+10 || 
+			  (s==15 && baddy1AI[ai_round] > 10)){
+				combat_weapon=10;
+			}else{
+				combat_weapon=0;
+			}
+			if(s+10==baddy1AI[ai_round] || 
+			  (s>10 && baddy1AI[ai_round]==15)){
+				combat_weaponAI=10;
+			}else{
+				combat_weaponAI=0;
+			}
+			if(combat_weapon==10 || combat_weaponAI==10){
+				for(int i=0;i<6;i++){
+					draw_combat(0);
+					SDL_RenderPresent(renderer);	
+					SDL_Delay(32);
+				}
+			}
+			ai_round++;
+			if(ai_round>7){ai_round=0;}
+		}
+		combat_weapon=0;
+		combat_weaponAI=0;
+		AIshot1X=40;
+		AIshot1Y=20;
+		shot1X=26;
+		shot1Y=34;
 	}
 }
 
@@ -414,6 +635,8 @@ int setup(){
 	combat_diag = Load_img("sprites/directional_diag.png");
 	combat_card = Load_img("sprites/directional_card.png");
 	combat_mid = Load_img("sprites/directional_mid.png");
+	shot1 = Load_img("sprites/projectile1.png");
+	explosion1 = Load_img("sprites/explosion1.png");
 
 	for(int i=0;i<6;i++){
 			starX[i]=-64;
@@ -464,7 +687,7 @@ while(event.type != SDL_QUIT){
 						if(xr==1 && yr==0){direction=8;}
 						if(xr==2 && yr==0){direction=9;}
 						if(xr==0 && yr==1){direction=4;}
-						if(xr==1 && yr==1){direction=0;} //move nowhere?
+						if(xr==1 && yr==1){direction=5;}
 						if(xr==2 && yr==1){direction=6;}
 						if(xr==0 && yr==2){direction=1;}
 						if(xr==1 && yr==2){direction=2;}
@@ -498,11 +721,11 @@ while(event.type != SDL_QUIT){
 						if(xr==1 && yr==2){direction=2;}
 						if(xr==2 && yr==2){direction=3;}
 						if(direction>0 && player_move1>0 && player_move2==0){
-							player_move2=direction+9;
+							player_move2=direction+10;
 							action=0;
 						}
 						if(direction>0 && player_move1==0){
-							player_move1=direction+9;
+							player_move1=direction+10;
 							action=0;
 						}
 					}else if(action!=2 && player_move2==0){
@@ -520,6 +743,8 @@ while(event.type != SDL_QUIT){
 		last_time=current_time;
 		time_pos--;
 		if(time_pos < -63){
+			if(player_move1==0){player_move1=5;}
+			if(player_move2==0){player_move2=5;}
 			time_pos=0;
 			show_fight();
 			action=0;
