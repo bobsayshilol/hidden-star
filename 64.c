@@ -1,4 +1,5 @@
-// gcc -o 64 64.c -O2 -lSDL2_image `sdl2-config --cflags --libs`
+// gcc -std=c99 -o 64 64.c -O2 -lSDL2_image `sdl2-config --cflags --libs` -lm
+// TODO hp hit number text
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@ int resX=64;
 int resY=64;
 int player_move1=0;
 int player_move2=0;
+int playerHP=100;
 int shipX=16;
 int shipY=32;
 int shot1X=26;
@@ -45,6 +47,7 @@ int AIshipX=37;
 int AIshipY=11;
 int AIshot1X=40;
 int AIshot1Y=20;
+int baddy1HP=100;
 int combat_weaponAI=0;
 int ai_round=0;
 int anim1frame=0;
@@ -244,6 +247,7 @@ void draw_action_buttons(){
 void draw_combat(int time_pos){
 	int bob1;
 	int bob2;
+	SDL_Rect hprect;
 	SDL_RenderClear(renderer);
 	for(int x=-256;x<=256;x+=256){
 		for(int y=-256;y<=256;y+=256){
@@ -273,6 +277,35 @@ void draw_combat(int time_pos){
 	blit(combat_hud, 0, 55, MASK0, NOFLIP);
 	blit(combat_movetext, 4, 57, MASK0, NOFLIP);
 	blit(combat_firetext, 44, 57, MASK0, NOFLIP);
+
+	SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
+	hprect.x = shipX*scale;
+	hprect.y = (shipY+bob1)*scale;
+	hprect.w = (16*scale);
+	hprect.h = (1*scale);
+	SDL_RenderFillRect(renderer, &hprect);
+	SDL_SetRenderDrawColor(renderer, 0, 224, 0, 255);
+	hprect.x = shipX*scale;
+	hprect.y = (shipY+bob1)*scale;
+	hprect.w = (round(playerHP*16/100)*scale);
+	hprect.h = (1*scale);
+	SDL_RenderFillRect(renderer, &hprect);
+
+	SDL_SetRenderDrawColor(renderer, 100, 0, 0, 255);
+	hprect.x = AIshipX*scale;
+	hprect.y = (AIshipY+bob2)*scale;
+	hprect.w = (16*scale);
+	hprect.h = (1*scale);
+	SDL_RenderFillRect(renderer, &hprect);
+	SDL_SetRenderDrawColor(renderer, 224, 0, 0, 255);
+	hprect.x = AIshipX*scale;
+	hprect.y = (AIshipY+bob2)*scale;
+	hprect.w = (round(baddy1HP*16/100)*scale);
+	hprect.h = (1*scale);
+	SDL_RenderFillRect(renderer, &hprect);
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
 	if(combat_weapon==1){
 		blit(shot1, shot1X, shot1Y, MASK2, ROT45);
 	}
@@ -310,6 +343,19 @@ void draw_combat(int time_pos){
 	}
 }
 
+void move_stars(int xm, int ym, int d){
+	int z;
+	for(int j=0;j<6;j++){
+		if(d==0){
+			z=j;
+		}else{
+			z=d-j;
+		}
+		starX[j]=starX[j]+(z*xm);
+		starY[j]=starY[j]+(z*ym);
+	}
+}
+
 void show_fight(){
 	int s=0;
 	int s2=0;
@@ -341,10 +387,7 @@ void show_fight(){
 						shipX--;
 						shipY--;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]+=6-j;
-								starY[j]+=6-j;
-							}
+							move_stars(1,1,6);
 						}else{
 							back=3;
 						}
@@ -352,9 +395,7 @@ void show_fight(){
 					case 8:
 						shipY--;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starY[j]+=6-j;
-							}
+							move_stars(0,1,6);
 						}else{
 							back=2;
 						}
@@ -363,10 +404,7 @@ void show_fight(){
 						shipX++;
 						shipY--;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]-=6-j;
-								starY[j]+=6-j;
-							}
+							move_stars(-1,1,6);
 						}else{
 							back=1;
 						}
@@ -374,9 +412,7 @@ void show_fight(){
 					case 4:
 						shipX--;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]+=6-j;
-							}
+							move_stars(1,0,6);
 						}else{
 							back=6;
 						}
@@ -384,9 +420,7 @@ void show_fight(){
 					case 6:
 						shipX++;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]-=6-j;
-							}
+							move_stars(-1,0,6);
 						}else{
 							back=4;
 						}
@@ -395,10 +429,7 @@ void show_fight(){
 						shipX--;
 						shipY++;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]+=6-j;
-								starY[j]-=6-j;
-							}
+							move_stars(1,-1,6);
 						}else{
 							back=9;
 						}
@@ -406,9 +437,7 @@ void show_fight(){
 					case 2:
 						shipY++;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starY[j]-=6-j;
-							}
+							move_stars(0,-1,6);
 						}else{
 							back=8;
 						}
@@ -417,10 +446,7 @@ void show_fight(){
 						shipX++;
 						shipY++;
 						if(back==s){
-							for(int j=0;j<6;j++){
-								starX[j]-=6-j;
-								starY[j]-=6-j;
-							}
+							move_stars(-1,-1,6);
 						}else{
 							back=7;
 						}
@@ -471,49 +497,75 @@ void show_fight(){
 						shot1Y-=1;
 						break;
 				}
-				for(int j=0;j<6;j++){
-					if(starX[j] < -256){starX[j]=256;}
-					if(starX[j] > 256){starX[j]=-256;}
-					if(starY[j] < -256){starY[j]=256;}
-					if(starY[j] > 256){starY[j]=-256;}
-				}
 			}
 			switch(s2){
 				case 7:
 					AIshipX--;
 					AIshipY--;
-					baddy_back=3;
+					if(baddy_back==s2){
+						move_stars(1,1,0);
+					}else{
+						baddy_back=3;
+					}
 					break;
 				case 8:
 					AIshipY--;
-					baddy_back=2;
+					if(baddy_back==s2){
+						move_stars(0,1,0);
+					}else{
+						baddy_back=2;
+					}
 					break;
 				case 9:
 					AIshipX++;
 					AIshipY--;
-					baddy_back=1;
+					if(baddy_back==s2){
+						move_stars(-1,1,0);
+					}else{
+						baddy_back=1;
+					}
 					break;
 				case 4:
 					AIshipX--;
-					baddy_back=6;
+					if(baddy_back==s2){
+						move_stars(1,0,0);
+					}else{
+						baddy_back=6;
+					}
 					break;
 				case 6:
 					AIshipX++;
-					baddy_back=4;
+					if(baddy_back==s2){
+						move_stars(-1,0,0);
+					}else{
+						baddy_back=4;
+					}
 					break;
 				case 1:
 					AIshipX--;
 					AIshipY++;
-					baddy_back=9;
+					if(baddy_back==s2){
+						move_stars(1,-1,0);
+					}else{
+						baddy_back=9;
+					}
 					break;
 				case 2:
 					AIshipY++;
-					baddy_back=8;
+					if(baddy_back==s2){
+						move_stars(0,-1,0);
+					}else{
+						baddy_back=8;
+					}
 					break;
 				case 3:
 					AIshipX++;
 					AIshipY++;
-					baddy_back=7;
+					if(baddy_back==s2){
+						move_stars(-1,-1,0);
+					}else{
+						baddy_back=7;
+					}
 					break;
 				case 17:
 					combat_weaponAI=1;
@@ -561,6 +613,12 @@ void show_fight(){
 					AIshot1Y+=3;
 					break;
 			}
+			for(int j=0;j<6;j++){
+					if(starX[j] < -256){starX[j]=256;}
+					if(starX[j] > 256){starX[j]=-256;}
+					if(starY[j] < -256){starY[j]=256;}
+					if(starY[j] > 256){starY[j]=-256;}
+			}
 			draw_combat(0);
 			SDL_RenderPresent(renderer);
 			SDL_Delay(32);
@@ -569,12 +627,14 @@ void show_fight(){
 			if(s==baddy1AI[ai_round]+10 || 
 			  (s==15 && baddy1AI[ai_round] > 10)){
 				combat_weapon=10;
+				baddy1HP-=10;
 			}else{
 				combat_weapon=0;
 			}
 			if(s+10==baddy1AI[ai_round] || 
 			  (s>10 && baddy1AI[ai_round]==15)){
 				combat_weaponAI=10;
+				playerHP-=10;
 			}else{
 				combat_weaponAI=0;
 			}
@@ -642,7 +702,7 @@ int setup(){
 			starX[i]=-64;
 			starY[i]=-64;
 	}
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 255);
 	draw_combat(0);
 }
 
