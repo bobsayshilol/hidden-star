@@ -1,5 +1,5 @@
 // gcc -std=c99 -o 64 64.c -O2 -lSDL2_image `sdl2-config --cflags --libs` -lm
-// TODO hp hit number text
+// TODO hp hit number text, death
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,14 +26,14 @@
 #define TWINK4 13
 #define TWINK5 14
 #define TWINK6 15
-#define ANIM1 20
 
 int scale=8;
 int resX=64;
 int resY=64;
 int player_move1=0;
 int player_move2=0;
-int playerHP=100;
+int playerHP=20;
+int player_dead=0;
 int shipX=16;
 int shipY=32;
 int shot1X=26;
@@ -47,10 +47,11 @@ int AIshipX=37;
 int AIshipY=11;
 int AIshot1X=40;
 int AIshot1Y=20;
-int baddy1HP=100;
+int baddy1HP=20;
+int baddy1_dead=0;
 int combat_weaponAI=0;
 int ai_round=0;
-int anim1frame=0;
+int aniframe1=0;
 
 SDL_Event event;
 SDL_Surface *screen;
@@ -75,6 +76,7 @@ SDL_Texture *combat_card;
 SDL_Texture *combat_mid;
 SDL_Texture *shot1;
 SDL_Texture *explosion1;
+SDL_Texture *explosion2;
 
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
@@ -85,11 +87,26 @@ SDL_Texture* Load_img(char *filename){
     return texture;
 }
 
+void animate(SDL_Texture *tex, int x, int y, int frame){
+	int w, h;
+	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+	SDL_Rect srect;
+	SDL_Rect drect;
+	drect.x=x*scale;
+	drect.y=y*scale;
+	drect.h=h*scale;
+	srect.x=(h*frame);
+	srect.y=0;
+	srect.w=h;
+	srect.h=h;
+	drect.w=h*scale;
+	SDL_RenderCopy(renderer, tex, &srect, &drect);
+}
+
 void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 	int w, h, r;
 	SDL_RendererFlip flip;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
-	SDL_Rect srect;
 	SDL_Rect rect;
 	rect.x=x*scale;
 	rect.y=y*scale;
@@ -179,18 +196,6 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 			SDL_SetTextureAlphaMod(tex, r);
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
-		case ANIM1:
-			srect.x=(h*anim1frame);
-			srect.y=0;
-			srect.w=h;
-			srect.h=h;
-			rect.w=h*scale;
-		    SDL_RenderCopy(renderer, tex, &srect, &rect);
-			anim1frame++;
-			if(anim1frame > (w/h)){
-				anim1frame=0;
-			}
-			break;
 	}	
 }
 
@@ -271,52 +276,68 @@ void draw_combat(int time_pos){
 	if(time_pos > -16 && time_pos <= -8){bob2=1;}
 	if(time_pos > -8){bob2=0;}
 
+	if(player_dead<3){
+		blit(ship1, shipX, shipY+bob1, MASK0, NOFLIP);
+	}
+	if(baddy1_dead<3){
+		blit(baddy1, AIshipX, AIshipY+bob2, MASK0, NOFLIP);
+	}
+
 	blit(timerbar, time_pos, 0, MASK0, NOFLIP);
-	blit(ship1, shipX, shipY+bob1, MASK0, NOFLIP);
-	blit(baddy1, AIshipX, AIshipY+bob2, MASK0, NOFLIP);
 	blit(combat_hud, 0, 55, MASK0, NOFLIP);
 	blit(combat_movetext, 4, 57, MASK0, NOFLIP);
 	blit(combat_firetext, 44, 57, MASK0, NOFLIP);
 
-	SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
-	hprect.x = shipX*scale;
-	hprect.y = (shipY+bob1)*scale;
-	hprect.w = (16*scale);
-	hprect.h = (1*scale);
-	SDL_RenderFillRect(renderer, &hprect);
-	SDL_SetRenderDrawColor(renderer, 0, 224, 0, 255);
-	hprect.x = shipX*scale;
-	hprect.y = (shipY+bob1)*scale;
-	hprect.w = (round(playerHP*16/100)*scale);
-	hprect.h = (1*scale);
-	SDL_RenderFillRect(renderer, &hprect);
-
-	SDL_SetRenderDrawColor(renderer, 100, 0, 0, 255);
-	hprect.x = AIshipX*scale;
-	hprect.y = (AIshipY+bob2)*scale;
-	hprect.w = (16*scale);
-	hprect.h = (1*scale);
-	SDL_RenderFillRect(renderer, &hprect);
-	SDL_SetRenderDrawColor(renderer, 224, 0, 0, 255);
-	hprect.x = AIshipX*scale;
-	hprect.y = (AIshipY+bob2)*scale;
-	hprect.w = (round(baddy1HP*16/100)*scale);
-	hprect.h = (1*scale);
-	SDL_RenderFillRect(renderer, &hprect);
+	if(player_dead==0){
+		SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
+		hprect.x = shipX*scale;
+		hprect.y = (shipY+bob1)*scale;
+		hprect.w = (16*scale);
+		hprect.h = (1*scale);
+		SDL_RenderFillRect(renderer, &hprect);
+		SDL_SetRenderDrawColor(renderer, 0, 224, 0, 255);
+		hprect.x = shipX*scale;
+		hprect.y = (shipY+bob1)*scale;
+		hprect.w = (round(playerHP*16/100)*scale);
+		hprect.h = (1*scale);
+		SDL_RenderFillRect(renderer, &hprect);
+	}
+	
+	if(baddy1_dead==0){
+		SDL_SetRenderDrawColor(renderer, 100, 0, 0, 255);
+		hprect.x = AIshipX*scale;
+		hprect.y = (AIshipY+bob2)*scale;
+		hprect.w = (16*scale);
+		hprect.h = (1*scale);
+		SDL_RenderFillRect(renderer, &hprect);
+		SDL_SetRenderDrawColor(renderer, 224, 0, 0, 255);
+		hprect.x = AIshipX*scale;
+		hprect.y = (AIshipY+bob2)*scale;
+		hprect.w = (round(baddy1HP*16/100)*scale);
+		hprect.h = (1*scale);
+		SDL_RenderFillRect(renderer, &hprect);
+	}
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 
 	if(combat_weapon==1){
 		blit(shot1, shot1X, shot1Y, MASK2, ROT45);
 	}
-	if(combat_weapon==10){
-		blit(explosion1, shot1X-2, shot1Y-2, MASK0, ANIM1);
+	if(combat_weapon==10 && baddy1_dead<2){
+		animate(explosion1, shot1X-2, shot1Y-2, aniframe1);
 	}
 	if(combat_weaponAI==1){
 		blit(shot1, AIshot1X, AIshot1Y, MASK1, ROT225);
 	}
-	if(combat_weaponAI==10){
-		blit(explosion1, AIshot1X-2, AIshot1Y-2, MASK0, ANIM1);
+	if(combat_weaponAI==10 && player_dead<2){
+		animate(explosion1, AIshot1X-2, AIshot1Y-1, aniframe1);
+	}
+
+	if(player_dead > 1 && player_dead < 4){
+		animate(explosion2, AIshot1X-14, AIshot1Y-14, aniframe1);
+	}
+	if(baddy1_dead > 1 && baddy1_dead < 4){
+		animate(explosion2, shot1X-12, shot1Y-16, aniframe1);
 	}
 
 	if(player_move1>0){
@@ -362,6 +383,7 @@ void show_fight(){
 	int back=0;
 	int baddy_back=0;
 	for(int h=0;h < 4; h++){ // 4 movements per round
+		if(player_dead>0 || baddy1_dead>0){break;}
 		if(h==0){
 			s=player_move1;
 			s2=baddy1AI[ai_round];
@@ -628,6 +650,7 @@ void show_fight(){
 			  (s==15 && baddy1AI[ai_round] > 10)){
 				combat_weapon=10;
 				baddy1HP-=10;
+				if(baddy1HP < 1 ){baddy1_dead=1;}
 			}else{
 				combat_weapon=0;
 			}
@@ -635,15 +658,35 @@ void show_fight(){
 			  (s>10 && baddy1AI[ai_round]==15)){
 				combat_weaponAI=10;
 				playerHP-=10;
+				if(playerHP < 1 ){player_dead=1;}
 			}else{
 				combat_weaponAI=0;
 			}
+			// extra render for hit explosion
 			if(combat_weapon==10 || combat_weaponAI==10){
 				for(int i=0;i<6;i++){
 					draw_combat(0);
 					SDL_RenderPresent(renderer);	
 					SDL_Delay(32);
+					aniframe1++;
 				}
+				aniframe1=0;
+			}
+			//extra extra render for death explosion
+			if(player_dead>0 || baddy1_dead>0){
+				if(player_dead==1){player_dead=2;}
+				if(baddy1_dead==1){baddy1_dead=2;}
+				for(int i=0;i<6;i++){
+					if(player_dead==2 && i==2){player_dead=3;}
+					if(baddy1_dead==2 && i==2){baddy1_dead=3;}
+					draw_combat(0);
+					SDL_RenderPresent(renderer);	
+					SDL_Delay(32);
+					aniframe1++;
+				}
+				aniframe1=0;
+				if(player_dead==3){player_dead=4;}
+				if(baddy1_dead==3){baddy1_dead=4;}
 			}
 			ai_round++;
 			if(ai_round>7){ai_round=0;}
@@ -697,6 +740,7 @@ int setup(){
 	combat_mid = Load_img("sprites/directional_mid.png");
 	shot1 = Load_img("sprites/projectile1.png");
 	explosion1 = Load_img("sprites/explosion1.png");
+	explosion2 = Load_img("sprites/explosion1_big.png");
 
 	for(int i=0;i<6;i++){
 			starX[i]=-64;
