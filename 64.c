@@ -42,7 +42,7 @@ int combat_weapon=0;
 int starX[6];
 int starY[6];
 int action=0;
-int baddy1AI[8]={8,16,6,15,2,15,4,15};
+int baddy1AI[8]={8,15,6,15,2,15,4,15};
 int AIshipX=37;
 int AIshipY=11;
 int AIshot1X=40;
@@ -54,7 +54,6 @@ int ai_round=0;
 int aniframe1=0;
 
 SDL_Event event;
-SDL_Surface *screen;
 SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Texture *stars1;
@@ -77,6 +76,7 @@ SDL_Texture *combat_mid;
 SDL_Texture *shot1;
 SDL_Texture *explosion1;
 SDL_Texture *explosion2;
+SDL_Texture *miss1;
 SDL_Texture *font1;
 
 SDL_Texture* Load_img(char *filename){
@@ -367,12 +367,20 @@ void draw_combat(int time_pos){
 		animate(explosion1, shot1X-2, shot1Y-2, aniframe1);
 		draw_number(font1, AIshipX-5,AIshipY+3, -10);
 	}
+	if(combat_weapon==20 && baddy1_dead<2){
+		animate(miss1, shot1X-2, shot1Y-2, aniframe1);
+		draw_number(font1, AIshipX-5,AIshipY+3, 0);
+	}
 	if(combat_weaponAI==1){
 		blit(shot1, AIshot1X, AIshot1Y, MASK1, ROT225);
 	}
 	if(combat_weaponAI==10 && player_dead<2){
 		animate(explosion1, AIshot1X-2, AIshot1Y-1, aniframe1);
 		draw_number(font1, shipX+28,shipY+4, -10);
+	}
+	if(combat_weaponAI==20 && player_dead<2){
+		animate(miss1, AIshot1X-2, AIshot1Y-1, aniframe1);
+		draw_number(font1, shipX+28,shipY+4, 0);
 	}
 
 	if(player_dead > 1 && player_dead < 4){
@@ -694,7 +702,11 @@ void show_fight(){
 				baddy1HP-=10;
 				if(baddy1HP < 1 ){baddy1_dead=1;}
 			}else{
-				combat_weapon=0;
+				if(combat_weapon==1){
+					combat_weapon=20;
+				}else{
+					combat_weapon=0;
+				}
 			}
 			if(s+10==baddy1AI[ai_round] || 
 			  (s>10 && baddy1AI[ai_round]==15)){
@@ -702,10 +714,14 @@ void show_fight(){
 				playerHP-=10;
 				if(playerHP < 1 ){player_dead=1;}
 			}else{
-				combat_weaponAI=0;
+				if(combat_weaponAI==1){
+					combat_weaponAI=20;
+				}else{
+					combat_weaponAI=0;
+				}
 			}
 			// extra render for hit explosion
-			if(combat_weapon==10 || combat_weaponAI==10){
+			if(combat_weapon>=10 || combat_weaponAI>=10){
 				for(int i=0;i<6;i++){
 					draw_combat(0);
 					SDL_RenderPresent(renderer);	
@@ -757,7 +773,6 @@ int setup(){
 
 //	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     SDL_RenderSetLogicalSize(renderer, resX, resY);
-//	screen = SDL_GetWindowSurface(window);
 	SDL_SetWindowTitle(window, "SixtyFour");
     atexit(SDL_Quit);
 
@@ -784,6 +799,7 @@ int setup(){
 	explosion1 = Load_img("sprites/explosion1.png");
 	explosion2 = Load_img("sprites/explosion1_big.png");
 	font1= Load_img("sprites/font_5x3_earth.png");
+	miss1= Load_img("sprites/miss1.png");
 
 	for(int i=0;i<6;i++){
 			starX[i]=-64;
