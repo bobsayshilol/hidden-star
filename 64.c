@@ -92,14 +92,14 @@ void animate(SDL_Texture *tex, int x, int y, int frame){
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect srect;
 	SDL_Rect drect;
-	drect.x=x*scale;
-	drect.y=y*scale;
-	drect.h=h*scale;
+	drect.x=x;
+	drect.y=y;
+	drect.h=h;
 	srect.x=(h*frame);
 	srect.y=0;
 	srect.w=h;
 	srect.h=h;
-	drect.w=h*scale;
+	drect.w=h;
 	SDL_RenderCopy(renderer, tex, &srect, &drect);
 }
 
@@ -108,10 +108,10 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 	SDL_RendererFlip flip;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect rect;
-	rect.x=x*scale;
-	rect.y=y*scale;
-	rect.w=w*scale;
-	rect.h=h*scale;
+	rect.x=x;
+	rect.y=y;
+	rect.w=w;
+	rect.h=h;
 	switch(mask){
 		case MASK0:
 			//no change
@@ -290,31 +290,31 @@ void draw_combat(int time_pos){
 
 	if(player_dead==0){
 		SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
-		hprect.x = shipX*scale;
-		hprect.y = (shipY+bob1)*scale;
-		hprect.w = (16*scale);
-		hprect.h = (1*scale);
+		hprect.x = shipX;
+		hprect.y = (shipY+bob1);
+		hprect.w = 16;
+		hprect.h = 1;
 		SDL_RenderFillRect(renderer, &hprect);
 		SDL_SetRenderDrawColor(renderer, 0, 224, 0, 255);
-		hprect.x = shipX*scale;
-		hprect.y = (shipY+bob1)*scale;
-		hprect.w = (round(playerHP*16/100)*scale);
-		hprect.h = (1*scale);
+		hprect.x = shipX;
+		hprect.y = (shipY+bob1);
+		hprect.w = (round(playerHP*16/100));
+		hprect.h = 1;
 		SDL_RenderFillRect(renderer, &hprect);
 	}
 	
 	if(baddy1_dead==0){
 		SDL_SetRenderDrawColor(renderer, 100, 0, 0, 255);
-		hprect.x = AIshipX*scale;
-		hprect.y = (AIshipY+bob2)*scale;
-		hprect.w = (16*scale);
-		hprect.h = (1*scale);
+		hprect.x = AIshipX;
+		hprect.y = (AIshipY+bob2);
+		hprect.w = 16;
+		hprect.h = 1;
 		SDL_RenderFillRect(renderer, &hprect);
 		SDL_SetRenderDrawColor(renderer, 224, 0, 0, 255);
-		hprect.x = AIshipX*scale;
-		hprect.y = (AIshipY+bob2)*scale;
-		hprect.w = (round(baddy1HP*16/100)*scale);
-		hprect.h = (1*scale);
+		hprect.x = AIshipX;
+		hprect.y = (AIshipY+bob2);
+		hprect.w = (round(baddy1HP*16/100));
+		hprect.h = 1;
 		SDL_RenderFillRect(renderer, &hprect);
 	}
 
@@ -714,7 +714,7 @@ int setup(){
     }
 
 //	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    SDL_RenderSetLogicalSize(renderer, resX*scale, resY*scale);
+    SDL_RenderSetLogicalSize(renderer, resX, resY);
 //	screen = SDL_GetWindowSurface(window);
 	SDL_SetWindowTitle(window, "SixtyFour");
     atexit(SDL_Quit);
