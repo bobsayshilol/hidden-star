@@ -42,7 +42,7 @@ int combat_weapon=0;
 int starX[6];
 int starY[6];
 int action=0;
-int baddy1AI[8]={8,15,6,15,2,15,4,15};
+int baddy1AI[8]={8,16,6,15,2,15,4,15};
 int AIshipX=37;
 int AIshipY=11;
 int AIshot1X=40;
@@ -77,6 +77,7 @@ SDL_Texture *combat_mid;
 SDL_Texture *shot1;
 SDL_Texture *explosion1;
 SDL_Texture *explosion2;
+SDL_Texture *font1;
 
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
@@ -85,6 +86,43 @@ SDL_Texture* Load_img(char *filename){
 		exit(0);
     }
     return texture;
+}
+
+void draw_number(SDL_Texture *tex, int x, int y, int num){
+	int w, h, f;
+	int c=0;
+	int n=1;
+	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+	SDL_Rect srect;
+	SDL_Rect drect;
+	drect.w=4;
+	drect.h=6;
+	if(num<0){
+		n=-1;
+	}
+	num*=n;
+	while(num){
+		c+=4;
+		f=(num%10);
+		num/=10;
+		srect.x=(f*4)+1;
+		srect.y=0;
+		srect.w=4;
+		srect.h=6;
+		drect.x=x-c;
+		drect.y=y;
+		SDL_RenderCopy(renderer, tex, &srect, &drect);
+	}
+	if(n<0){
+		c+=4;
+		srect.x=41;
+		srect.y=0;
+		srect.w=4;
+		srect.h=6;
+		drect.x=x-c;
+		drect.y=y;
+		SDL_RenderCopy(renderer, tex, &srect, &drect);
+	}
 }
 
 void animate(SDL_Texture *tex, int x, int y, int frame){
@@ -140,9 +178,11 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 0, 0, flip);
 			break;
 		case ROT270:
+			rect.y+=1;
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 270, 0, 0);
 			break;
 		case ROT90:
+			rect.x+=1;
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 		case ROT45:
@@ -325,12 +365,14 @@ void draw_combat(int time_pos){
 	}
 	if(combat_weapon==10 && baddy1_dead<2){
 		animate(explosion1, shot1X-2, shot1Y-2, aniframe1);
+		draw_number(font1, AIshipX-5,AIshipY+3, -10);
 	}
 	if(combat_weaponAI==1){
 		blit(shot1, AIshot1X, AIshot1Y, MASK1, ROT225);
 	}
 	if(combat_weaponAI==10 && player_dead<2){
 		animate(explosion1, AIshot1X-2, AIshot1Y-1, aniframe1);
+		draw_number(font1, shipX+28,shipY+4, -10);
 	}
 
 	if(player_dead > 1 && player_dead < 4){
@@ -741,6 +783,7 @@ int setup(){
 	shot1 = Load_img("sprites/projectile1.png");
 	explosion1 = Load_img("sprites/explosion1.png");
 	explosion2 = Load_img("sprites/explosion1_big.png");
+	font1= Load_img("sprites/font_5x3_earth.png");
 
 	for(int i=0;i<6;i++){
 			starX[i]=-64;
@@ -748,6 +791,7 @@ int setup(){
 	}
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 255);
 	draw_combat(0);
+	return 0;
 }
 
 
