@@ -766,7 +766,7 @@ int setup(){
 		return 3;
 	}
 
-	if (SDL_CreateWindowAndRenderer(resX*scale, resY*scale, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+	if (SDL_CreateWindowAndRenderer(resX*scale, resY*scale, SDL_WINDOW_OPENGL, &window, &renderer)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
 		return 3;
     }
@@ -822,6 +822,7 @@ int current_time;
 int last_time = SDL_GetTicks();
 int ani_time = SDL_GetTicks();
 int mouseX; int mouseY;
+int direction=0;
 
 while(event.type != SDL_QUIT){
 	draw_combat(time_pos);
@@ -830,6 +831,68 @@ while(event.type != SDL_QUIT){
 		switch (event.type) {
 			case SDL_QUIT:
 				exit(0);
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym){
+					case SDLK_F2:
+						if(scale>1){
+							scale/=2;
+						}
+						SDL_SetWindowSize(window, resX*scale, resY*scale);
+						break;
+					case SDLK_F3:
+						if(scale<32){
+							scale*=2;
+						}
+						SDL_SetWindowSize(window, resX*scale, resY*scale);
+						break;
+					case SDLK_KP_0:
+					case SDLK_LSHIFT:
+						action=1;
+						break;
+					case SDLK_KP_ENTER:
+					case SDLK_SPACE:
+						action=2;
+						break;
+					case SDLK_KP_7:
+					case SDLK_q:
+						direction=7;
+						break;
+					case SDLK_KP_8:
+					case SDLK_w:
+						direction=8;
+						break;
+					case SDLK_KP_9:
+					case SDLK_e:
+						direction=9;
+						break;
+					case SDLK_KP_4:
+					case SDLK_a:
+						direction=4;
+						break;
+					case SDLK_KP_5:
+					case SDLK_s:
+						direction=5;
+						break;
+					case SDLK_KP_6:
+					case SDLK_d:
+						direction=6;
+						break;
+					case SDLK_KP_1:
+					case SDLK_z:
+						direction=1;
+						break;
+					case SDLK_KP_2:
+					case SDLK_x:
+						direction=2;
+						break;
+					case SDLK_KP_3:
+					case SDLK_c:
+						direction=3;
+						break;
+				}
+				if(direction>0 && action==2){direction+=10;}
+				if(direction>0){action=0;}
+				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if(player_move2==0 && mouseX < (25*scale) 
 								   && mouseY > (56*scale)){
@@ -846,7 +909,6 @@ while(event.type != SDL_QUIT){
 					if(action==1){
 						int xr=round(((mouseX/scale)-12)/8);
 						int yr=round(((mouseY/scale)-28)/8);
-						int direction=0;
 						if(xr==0 && yr==0){direction=7;}
 						if(xr==1 && yr==0){direction=8;}
 						if(xr==2 && yr==0){direction=9;}
@@ -856,14 +918,6 @@ while(event.type != SDL_QUIT){
 						if(xr==0 && yr==2){direction=1;}
 						if(xr==1 && yr==2){direction=2;}
 						if(xr==2 && yr==2){direction=3;}
-						if(direction>0 && player_move1>0 && player_move2==0){
-							player_move2=direction;
-							action=0;
-						}
-						if(direction>0 && player_move1==0){
-							player_move1=direction;
-							action=0;
-						}
 					}else if(action!=1 && player_move2==0){
 						//movebutt on
 							action=1;
@@ -874,31 +928,35 @@ while(event.type != SDL_QUIT){
 					if(action==2){
 						int xr=round(((mouseX/scale)-33)/8);
 						int yr=round(((mouseY/scale)-7)/8);
-						int direction=0;
-						if(xr==0 && yr==0){direction=7;}
-						if(xr==1 && yr==0){direction=8;}
-						if(xr==2 && yr==0){direction=9;}
-						if(xr==0 && yr==1){direction=4;}
-						if(xr==1 && yr==1){direction=5;}
-						if(xr==2 && yr==1){direction=6;}
-						if(xr==0 && yr==2){direction=1;}
-						if(xr==1 && yr==2){direction=2;}
-						if(xr==2 && yr==2){direction=3;}
-						if(direction>0 && player_move1>0 && player_move2==0){
-							player_move2=direction+10;
-							action=0;
-						}
-						if(direction>0 && player_move1==0){
-							player_move1=direction+10;
-							action=0;
-						}
+						if(xr==0 && yr==0){direction=17;}
+						if(xr==1 && yr==0){direction=18;}
+						if(xr==2 && yr==0){direction=19;}
+						if(xr==0 && yr==1){direction=14;}
+						if(xr==1 && yr==1){direction=15;}
+						if(xr==2 && yr==1){direction=16;}
+						if(xr==0 && yr==2){direction=11;}
+						if(xr==1 && yr==2){direction=12;}
+						if(xr==2 && yr==2){direction=13;}
 					}else if(action!=2 && player_move2==0){
 						//firebutt on
 							action=2;
 					}
+				break;
 			}
-			
 		}
+		if(player_dead==0 && baddy1_dead ==0){
+			if(direction>0 && player_move1>0 && player_move2==0){
+				player_move2=direction;
+				action=0;
+			}
+			if(direction>0 && player_move1==0){
+				player_move1=direction;
+				action=0;
+			}
+		}else{
+			action=0;
+		}
+		direction=0;	
 	}
 
 	//round timer
