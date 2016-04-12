@@ -1,5 +1,5 @@
 // gcc -std=c99 -o 64 64.c -O2 -lSDL2_image `sdl2-config --cflags --libs` -lm
-// TODO hp hit number text, death
+// TODO tab key, thrusters on movement
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,14 +12,11 @@
 #define MASK0 0
 #define MASK1 1
 #define MASK2 2
+#define MASK3 3
 #define NOFLIP 0
 #define FLIPV 1
 #define FLIPH 2
 #define FLIPHV 3
-#define ROT270 4
-#define ROT225 5
-#define ROT90 6
-#define ROT45 7
 #define TWINK1 10
 #define TWINK2 11
 #define TWINK3 12
@@ -32,13 +29,14 @@ int resX=64;
 int resY=64;
 int player_move1=0;
 int player_move2=0;
-int playerHP=20;
+int playerHP=50;
 int player_dead=0;
 int shipX=16;
 int shipY=32;
 int shot1X=26;
 int shot1Y=34;
 int combat_weapon=0;
+int ship_thruster=0;
 int starX[6];
 int starY[6];
 int action=0;
@@ -47,9 +45,10 @@ int AIshipX=37;
 int AIshipY=11;
 int AIshot1X=40;
 int AIshot1Y=20;
-int baddy1HP=20;
+int baddy1HP=50;
 int baddy1_dead=0;
 int combat_weaponAI=0;
+int baddy_thruster=0;
 int ai_round=0;
 int aniframe1=0;
 
@@ -72,8 +71,11 @@ SDL_Texture *combat_moveselect;
 SDL_Texture *combat_fireselect;
 SDL_Texture *combat_diag;
 SDL_Texture *combat_card;
+SDL_Texture *combat_card_right;
 SDL_Texture *combat_mid;
 SDL_Texture *shot1;
+SDL_Texture *shot2;
+SDL_Texture *shot3;
 SDL_Texture *explosion1;
 SDL_Texture *explosion2;
 SDL_Texture *miss1;
@@ -152,7 +154,7 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 	rect.h=h;
 	switch(mask){
 		case MASK0:
-			//no change
+			SDL_SetTextureColorMod(tex, 255, 255, 255);
 			break;
 		case MASK1:
 			SDL_SetTextureColorMod(tex, 74, 142, 255);
@@ -160,6 +162,10 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 		case MASK2:
 			SDL_SetTextureColorMod(tex, 255, 0, 0);
 			break;
+		case MASK3:
+			SDL_SetTextureColorMod(tex, 235, 255, 0);
+			break;
+
 	}
 	switch(mode){
 		case NOFLIP:
@@ -176,20 +182,6 @@ void blit(SDL_Texture *tex, int x, int y, int mask, int mode){
 		case FLIPHV:
 			flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
 		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 0, 0, flip);
-			break;
-		case ROT270:
-			rect.y+=1;
-		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 270, 0, 0);
-			break;
-		case ROT90:
-			rect.x+=1;
-		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 90, 0, 0);
-			break;
-		case ROT45:
-		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 45, 0, 0);
-			break;
-		case ROT225:
-		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 225, 0, 0);
 			break;
 		case TWINK1:
 			if((rand()%64)==0){
@@ -251,13 +243,13 @@ void draw_action_button(int direction, int x, int y, int mask){
 			blit(combat_diag, x, y, mask, FLIPHV);
 			break;
 		case 4:
-			blit(combat_card, x, y, mask, ROT270);
+			blit(combat_card_right, x, y, mask, FLIPH);
 			break;
 		case 5:
 			blit(combat_mid, x, y, mask, NOFLIP);
 			break;
 		case 6:
-			blit(combat_card, x, y, mask, ROT90);
+			blit(combat_card_right, x, y, mask, NOFLIP);
 			break;
 		case 7:
 			blit(combat_diag, x, y, mask, NOFLIP);
@@ -289,6 +281,17 @@ void draw_action_buttons(){
 	draw_action_button(3, 29+offset, 45-offset, mask);
 }
 
+void draw_thruster(int x, int y, int thruster){
+		if(thruster==7){blit(shot2, x+11, y+9, MASK3, FLIPH);}
+		if(thruster==8){blit(shot1, x+6, y+8, MASK3, NOFLIP);}
+		if(thruster==9){blit(shot2, x, y+9, MASK3, NOFLIP);}
+		if(thruster==4){blit(shot3, x+11, y+6, MASK3, FLIPH);}
+		if(thruster==6){blit(shot3, x, y+6, MASK3, NOFLIP);}
+		if(thruster==1){blit(shot2, x+10, y+3, MASK3, FLIPHV);}
+		if(thruster==2){blit(shot1, x+6, y+2, MASK3, FLIPV);}
+		if(thruster==3){blit(shot2, x+1, y+3, MASK3, FLIPV);}
+}
+
 void draw_combat(int time_pos){
 	int bob1;
 	int bob2;
@@ -315,6 +318,13 @@ void draw_combat(int time_pos){
 	if(time_pos > -24 && time_pos <= -16){bob2=1;}
 	if(time_pos > -16 && time_pos <= -8){bob2=1;}
 	if(time_pos > -8){bob2=0;}
+
+	if(ship_thruster>0){
+		draw_thruster(shipX,shipY,ship_thruster);
+	}
+	if(baddy_thruster>0){
+		draw_thruster(AIshipX,AIshipY,baddy_thruster);
+	}
 
 	if(player_dead<3){
 		blit(ship1, shipX, shipY+bob1, MASK0, NOFLIP);
@@ -361,7 +371,7 @@ void draw_combat(int time_pos){
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 
 	if(combat_weapon==1){
-		blit(shot1, shot1X, shot1Y, MASK2, ROT45);
+		blit(shot2, shot1X, shot1Y, MASK2, NOFLIP);
 	}
 	if(combat_weapon==10 && baddy1_dead<2){
 		animate(explosion1, shot1X-2, shot1Y-2, aniframe1);
@@ -372,7 +382,7 @@ void draw_combat(int time_pos){
 		draw_number(font1, AIshipX-5,AIshipY+3, 0);
 	}
 	if(combat_weaponAI==1){
-		blit(shot1, AIshot1X, AIshot1Y, MASK1, ROT225);
+		blit(shot2, AIshot1X, AIshot1Y, MASK1, FLIPHV);
 	}
 	if(combat_weaponAI==10 && player_dead<2){
 		animate(explosion1, AIshot1X-2, AIshot1Y-1, aniframe1);
@@ -441,6 +451,7 @@ void show_fight(){
 		if(h==1){
 			s=back;
 			s2=baddy_back;
+			SDL_Delay(100);
 		}
 		if(h==2){
 			s=player_move2; 
@@ -451,6 +462,7 @@ void show_fight(){
 		if(h==3){
 			s=back;
 			s2=baddy_back;
+			SDL_Delay(100);
 		}
 		for(int i=0;i < 8; i++){ // 8 frames per movement
 			if(s>0){
@@ -461,6 +473,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(1,1,6);
 						}else{
+							ship_thruster=7;
 							back=3;
 						}
 						break;
@@ -469,6 +482,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(0,1,6);
 						}else{
+							ship_thruster=8;
 							back=2;
 						}
 						break;
@@ -478,6 +492,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(-1,1,6);
 						}else{
+							ship_thruster=9;
 							back=1;
 						}
 						break;
@@ -486,6 +501,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(1,0,6);
 						}else{
+							ship_thruster=4;
 							back=6;
 						}
 						break;
@@ -494,6 +510,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(-1,0,6);
 						}else{
+							ship_thruster=6;
 							back=4;
 						}
 						break;
@@ -503,6 +520,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(1,-1,6);
 						}else{
+							ship_thruster=1;
 							back=9;
 						}
 						break;
@@ -511,6 +529,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(0,-1,6);
 						}else{
+							ship_thruster=2;
 							back=8;
 						}
 						break;
@@ -520,6 +539,7 @@ void show_fight(){
 						if(back==s){
 							move_stars(-1,-1,6);
 						}else{
+							ship_thruster=3;
 							back=7;
 						}
 						break;
@@ -577,6 +597,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(1,1,0);
 					}else{
+						baddy_thruster=7;
 						baddy_back=3;
 					}
 					break;
@@ -585,6 +606,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(0,1,0);
 					}else{
+						baddy_thruster=8;
 						baddy_back=2;
 					}
 					break;
@@ -594,6 +616,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(-1,1,0);
 					}else{
+						baddy_thruster=9;
 						baddy_back=1;
 					}
 					break;
@@ -602,6 +625,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(1,0,0);
 					}else{
+						baddy_thruster=4;
 						baddy_back=6;
 					}
 					break;
@@ -610,6 +634,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(-1,0,0);
 					}else{
+						baddy_thruster=6;
 						baddy_back=4;
 					}
 					break;
@@ -619,6 +644,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(1,-1,0);
 					}else{
+						baddy_thruster=1;
 						baddy_back=9;
 					}
 					break;
@@ -627,6 +653,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(0,-1,0);
 					}else{
+						baddy_thruster=2;
 						baddy_back=8;
 					}
 					break;
@@ -636,6 +663,7 @@ void show_fight(){
 					if(baddy_back==s2){
 						move_stars(-1,-1,0);
 					}else{
+						baddy_thruster=3;
 						baddy_back=7;
 					}
 					break;
@@ -751,6 +779,8 @@ void show_fight(){
 		}
 		combat_weapon=0;
 		combat_weaponAI=0;
+		ship_thruster=0;
+		baddy_thruster=0;
 		AIshot1X=40;
 		AIshot1Y=20;
 		shot1X=26;
@@ -794,8 +824,11 @@ int setup(){
 	combat_fireselect = Load_img("sprites/combat_hud_fire_highlight.png");
 	combat_diag = Load_img("sprites/directional_diag.png");
 	combat_card = Load_img("sprites/directional_card.png");
+	combat_card_right = Load_img("sprites/directional_card_right.png");
 	combat_mid = Load_img("sprites/directional_mid.png");
 	shot1 = Load_img("sprites/projectile1.png");
+	shot2 = Load_img("sprites/projectile1_diag.png");
+	shot3 = Load_img("sprites/projectile1_right.png");
 	explosion1 = Load_img("sprites/explosion1.png");
 	explosion2 = Load_img("sprites/explosion1_big.png");
 	font1= Load_img("sprites/font_5x3_earth.png");
