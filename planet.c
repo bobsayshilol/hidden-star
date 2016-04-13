@@ -29,6 +29,10 @@ const int scale=8;
 const int resX=64;
 const int resY=64;
 
+int px1,px2,px3,px4=0;
+int psize=3;
+int p_ocn, p_cap, p_con, p_cld=0;
+
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
     if (!texture){
@@ -50,7 +54,7 @@ void blit(SDL_Texture *tex, int x, int y, int mask){
 	rect.h=h;
 	switch(mask){
 		case MASK0:
-			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
+			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 			break;
 		case MASK1:
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
@@ -60,13 +64,27 @@ void blit(SDL_Texture *tex, int x, int y, int mask){
 }
 
 void draw_planet(int time_pos){
-	int size=3;
+	int width=(int)(pow(2,(psize+3)))*2;
+	px1+=1;
+	px2+=2;
+	if(px1>width){px1=0;}
+	if(px2>width){px2=0;}
 	SDL_RenderClear(renderer);
-	blit(planet_mask[0][size],0,0, MASK0);
-	blit(ocean[0][size],0,0, MASK1);
-//	blit(continents[0][size],0,0, MASK1);
-//	blit(caps[0][size],0,0, MASK1);
-//	blit(clouds[0][size],0,0, MASK1);
+	blit(ocean[p_ocn][psize],px1,0, MASK0);
+	blit(ocean[p_ocn][psize],px1-width,0, MASK0);
+	if(p_con<2){
+	blit(continents[p_con][psize],px1,0, MASK0);
+	blit(continents[p_con][psize],px1-width,0, MASK0);
+	}
+	if(p_cap<2){
+	blit(caps[p_cap][psize],px1,0, MASK0);
+	blit(caps[p_cap][psize],px1-width,0, MASK0);
+	}
+	if(p_cld<2){
+	blit(clouds[p_cld][psize],px2,0, MASK0);
+	blit(clouds[p_cld][psize],px2-width,0, MASK0);
+	}
+	blit(planet_mask[0][psize],0,0, MASK1);
 }
 
  /* Init and start */
@@ -131,6 +149,11 @@ while(event.type != SDL_QUIT){
 				exit(0);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
+//				psize=(rand()%5);
+				p_ocn=(rand()%2);
+				p_con=(rand()%3);
+				p_cap=(rand()%3);
+				p_cld=(rand()%3);
 				break;
 		}
 	}
