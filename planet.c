@@ -7,7 +7,11 @@
 #include <math.h>
 #include "SDL.h" 
 #include "SDL_image.h"
-#include "SDL2_gfxPrimitives.h"
+//#include "SDL2_gfxPrimitives.h"
+
+#ifdef __MINGW64__
+	#include <windows.h>
+#endif
 
 
 #define MASK0 0
@@ -34,7 +38,7 @@ int scale=8;
 
 int px1,px2,px3,px4=0;
 int psize=3;
-int p_ocn, p_cap, p_con, p_cld, p_msk=3;
+int p_ocn, p_cap, p_con, p_cld, p_msk=0;
 
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
@@ -113,7 +117,7 @@ int setup(){
     }
 
     SDL_RenderSetLogicalSize(renderer, resX, resY);
-	SDL_SetWindowTitle(window, "Planet64");
+	SDL_SetWindowTitle(window, "Planet Generator 64");
     atexit(SDL_Quit);
 
 	srand(time(NULL));
@@ -141,12 +145,73 @@ int setup(){
 	return 0;
 }
 
+void get_random_planet()
+{
+	//psize=(rand()%5);
+	p_ocn=(rand()%MAXP);
+	p_con=(rand()%(MAXP+1));
+	p_cap=(rand()%(MAXP+1));
+	p_cld=(rand()%MAXP);
+	//p_msk=(rand()%4);
+}
+
+void get_default_planet(int p)
+{
+	p_ocn = p;
+	p_con = p;
+	p_cap = p;
+	p_cld = p;
+}
+
+void print_planet_params()
+{
+	printf("Current planet:\tocn: %d,\t", p_ocn);
+	if (p_con < MAXP)
+	{
+		printf("con: %d,\t", p_con);
+	}
+	else
+	{
+		printf("con: -,\t");
+	}
+	if (p_cap < MAXP)
+	{
+		printf("cap: %d,\t", p_cap);
+	}
+	else
+	{
+		printf("cap: -,\t");
+	}
+	printf("cld: %d\n", p_cld);
+}
+
+void print_usage()
+{
+	printf("*****************************\n");
+	printf(" SUPER COOL 64PX PLANET GENERATOR\n");
+	printf("*****************************\n\n");
+	printf("Click or press Enter to generate a new randomised planet.\n\n");
+	printf("Manual controls:\n");
+	printf("\tQ: Cycle surface layer (ocean).\n");
+	printf("\tW: Cycle continent layer.\n");
+	printf("\tE: Cycle polar cap layer.\n");
+	printf("\tR: Cycle cloud layer.\n");
+	printf("\tT: Cycle light position.\n");
+	printf("\tZ: Print current planet parameters.\n");
+	printf("\tF2: Decrease window size.\n");
+	printf("\tF3: Increase window size.\n");
+	printf("\tSpace: Cycle planet size.\n");
+	printf("\t1 through %d: Display default planet configuration.\n", MAXP);
+	printf("\tEscape: Quit :(\n\n");
+}
 
 int main(int argc, char *argv[]){
 	int s=setup();
 	if(s > 0){
 		return s;
 	}
+
+print_usage();
 
 int time_pos=0;
 int current_time;
@@ -174,25 +239,59 @@ while(event.type != SDL_QUIT){
 						}
 						SDL_SetWindowSize(window, resX*scale, resY*scale);
 						break;
-					case SDLK_1:
+					case SDLK_ESCAPE:
+						{
+						SDL_Event e;
+						e.type = SDL_QUIT;
+						SDL_PushEvent(&e);
+						}
+						break;
+					case SDLK_q:
 						p_ocn++;
 						if(p_ocn>=MAXP){p_ocn=0;}
 						break;
-					case SDLK_2:
+					case SDLK_w:
 						p_con++;
-						if(p_con>=MAXP){p_con=0;}
+						if(p_con>=MAXP+1){p_con=0;}
 						break;
-					case SDLK_3:
+					case SDLK_e:
 						p_cap++;
-						if(p_cap>=MAXP){p_cap=0;}
+						if(p_cap>=MAXP+1){p_cap=0;}
 						break;
-					case SDLK_4:
+					case SDLK_r:
 						p_cld++;
 						if(p_cld>=MAXP){p_cld=0;}
 						break;
-					case SDLK_5:
+					case SDLK_t:
 						p_msk++;
 						if(p_msk>=MAXP){p_msk=0;}
+						break;
+					case SDLK_z:
+						print_planet_params();
+						break;
+					case SDLK_1:
+					case SDLK_KP_1:
+						get_default_planet(0);
+						break;
+					case SDLK_2:
+					case SDLK_KP_2:
+						get_default_planet(1);
+						break;
+					case SDLK_3:
+					case SDLK_KP_3:
+						get_default_planet(2);
+						break;
+					case SDLK_4:
+					case SDLK_KP_4:
+						get_default_planet(3);
+						break;
+					case SDLK_5:
+					case SDLK_KP_5:
+						//TODO: Make a nicer way of doing this that automatically respects MAXP
+						break;
+					case SDLK_RETURN:
+					case SDLK_KP_ENTER:
+						get_random_planet();
 						break;
 					case SDLK_SPACE:
 						psize++;
@@ -201,12 +300,7 @@ while(event.type != SDL_QUIT){
 				}
 			break;
 			case SDL_MOUSEBUTTONDOWN:
-				psize=(rand()%5);
-				p_ocn=(rand()%MAXP);
-				p_con=(rand()%MAXP+1);
-				p_cap=(rand()%MAXP+1);
-				p_cld=(rand()%MAXP);
-				p_msk=(rand()%4);
+				get_random_planet();
 				break;
 		}
 	}
@@ -224,3 +318,11 @@ while(event.type != SDL_QUIT){
 }
 return 0;
 }
+
+#ifdef __MINGW64__
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	char* argv[0];
+	main(0, argv);
+}
+#endif
