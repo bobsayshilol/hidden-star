@@ -37,7 +37,8 @@ const int resX=64;
 const int resY=64;
 int scale=8;
 
-int px1,px2,px3,px4=0;
+float speed=1;
+float px1,px2,px3,px4=0;
 int psize=3;
 int p_ocn, p_cap, p_con, p_cld, p_msk=0;
 int p_r[4];
@@ -56,11 +57,11 @@ SDL_Texture* Load_img(char *filename){
 }
 
 
-void blit(SDL_Texture *tex, int x, int y, int mask){
+void blit(SDL_Texture *tex, float x, int y, int mask){
 	int w, h, r;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect rect;
-	rect.x=x;
+	rect.x=(int)round(x);
 	rect.y=y;
 	rect.w=w;
 	rect.h=h;
@@ -85,7 +86,7 @@ void blit(SDL_Texture *tex, int x, int y, int mask){
 	}
 }
 
-void draw_planet(int time_pos){
+void draw_planet(){
 	int width=(int)(pow(2,(psize+3)))*2;
 
 	SDL_Texture* auxtexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width/2, width/2);
@@ -126,10 +127,12 @@ void draw_planet(int time_pos){
 	blit(stars1,0,0, MASK0);
 	blit(newtexture,0,0,MASK2);
 	p_color=t;
-	px1+=1;
-	px2+=2;
+	px1+=speed;
+	px2+=(speed*2);
 	if(px1>width){px1=0;}
 	if(px2>width){px2=0;}
+	if(px1<0){px1=width;}
+	if(px2<0){px2=width;}
 }
 
  /* Init and start */
@@ -330,6 +333,12 @@ while(event.type != SDL_QUIT){
 						psize++;
 						if(psize>=5){psize=0;}
 						break;
+					case SDLK_a:
+						if(speed<10){speed+=0.1;}
+						break;
+					case SDLK_d:
+						if(speed>-10){speed-=0.1;}
+						break;
 				}
 			break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -351,11 +360,7 @@ while(event.type != SDL_QUIT){
 	current_time=SDL_GetTicks();
 	if((current_time-last_time) > 64){
 		last_time=current_time;
-		time_pos--;
-		if(time_pos < -63){
-			time_pos=0;
-		}
-		draw_planet(time_pos);
+		draw_planet();
 		SDL_RenderPresent(renderer);
 	}
 }
