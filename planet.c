@@ -52,40 +52,29 @@ SDL_Texture* Load_img(char *filename){
 
 void blit(SDL_Texture *tex, int x, int y, int mask){
 	int w, h, r;
-	SDL_RendererFlip flip;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect rect;
-	SDL_Rect srect;
 	rect.x=x;
 	rect.y=y;
 	rect.w=w;
 	rect.h=h;
-	srect.x=0;
-	srect.y=0;
-	srect.w=w;
-	srect.h=h;
-	int width=(int)(pow(2,(psize+3)));
 	switch(mask){
 		case MASK0:
-			if(x+w>width){srect.w=(w-width)-x;rect.w=(w-width)-x;}
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 			break;
 		case MASK1:
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
 			break;
 	}
-	SDL_RenderCopy(renderer, tex, &srect, &rect);
+	SDL_RenderCopy(renderer, tex, NULL, &rect);
 }
 
 void draw_planet(int time_pos){
 	int width=(int)(pow(2,(psize+3)))*2;
-	px1+=1;
-	px2+=2;
-	if(px1>width){px1=0;}
-	if(px2>width){px2=0;}
-	SDL_RenderClear(renderer);
 
-	blit(stars1,0,0, MASK0);
+	SDL_Texture* auxtexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width/2, width/2);
+	//Set the new texture as the render target
+	SDL_SetRenderTarget(renderer, auxtexture);
 
 	blit(ocean[p_ocn][psize],px1,0, MASK0);
 	blit(ocean[p_ocn][psize],px1-width,0, MASK0);
@@ -96,12 +85,27 @@ void draw_planet(int time_pos){
 	if(p_cap<MAXP){
 	blit(caps[p_cap][psize],px1,0, MASK0);
 	blit(caps[p_cap][psize],px1-width,0, MASK0);
-			}
+	}
 	if(p_cld<MAXP){
 	blit(clouds[p_cld][psize],px2,0, MASK0);
 	blit(clouds[p_cld][psize],px2-width,0, MASK0);
 	}
 	blit(planet_mask[p_msk][psize],0,0, MASK1);
+
+	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, surf->pixels, surf->pitch);
+	SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format,0,0,0));
+	SDL_Texture* newtexture=SDL_CreateTextureFromSurface(renderer, surf);
+
+
+	SDL_SetRenderTarget(renderer, NULL);
+	SDL_RenderClear(renderer);
+	blit(stars1,0,0, MASK0);
+	blit(newtexture,16,16,MASK0);
+	px1+=1;
+	px2+=2;
+	if(px1>width){px1=0;}
+	if(px2>width){px2=0;}
 }
 
  /* Init and start */
