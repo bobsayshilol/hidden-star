@@ -16,6 +16,7 @@
 
 #define MASK0 0
 #define MASK1 1
+#define MASK2 2
 #define MAXP 4
 
 SDL_Event event;
@@ -39,6 +40,11 @@ int scale=8;
 int px1,px2,px3,px4=0;
 int psize=3;
 int p_ocn, p_cap, p_con, p_cld, p_msk=0;
+int p_r[4];
+int p_g[4];
+int p_b[4];
+int p_color=0;
+SDL_Color p_c;
 
 SDL_Texture* Load_img(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
@@ -60,13 +66,23 @@ void blit(SDL_Texture *tex, int x, int y, int mask){
 	rect.h=h;
 	switch(mask){
 		case MASK0:
+			if(p_color==1){
+				SDL_SetTextureColorMod(tex, p_c.r, p_c.g, p_c.b);
+			}else{
+				SDL_SetTextureColorMod(tex, 255,255,255);
+			}
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+			SDL_RenderCopy(renderer, tex, NULL, &rect);
 			break;
 		case MASK1:
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
+			SDL_RenderCopy(renderer, tex, NULL, &rect);
+			break;
+		case MASK2:
+			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+		    SDL_RenderCopyEx(renderer, tex, NULL, &rect, 0, 0, SDL_FLIP_VERTICAL);
 			break;
 	}
-	SDL_RenderCopy(renderer, tex, NULL, &rect);
 }
 
 void draw_planet(int time_pos){
@@ -75,21 +91,28 @@ void draw_planet(int time_pos){
 	SDL_Texture* auxtexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width/2, width/2);
 	//Set the new texture as the render target
 	SDL_SetRenderTarget(renderer, auxtexture);
-
+	
+	p_c.r=p_r[0]; p_c.g=p_g[0]; p_c.b=p_b[0];
 	blit(ocean[p_ocn][psize],px1,0, MASK0);
 	blit(ocean[p_ocn][psize],px1-width,0, MASK0);
 	if(p_con<MAXP){
-	blit(continents[p_con][psize],px1,0, MASK0);
-	blit(continents[p_con][psize],px1-width,0, MASK0);
+		p_c.r=p_r[1]; p_c.g=p_g[1]; p_c.b=p_b[1];
+		blit(continents[p_con][psize],px1,0, MASK0);
+		blit(continents[p_con][psize],px1-width,0, MASK0);
 	}
 	if(p_cap<MAXP){
-	blit(caps[p_cap][psize],px1,0, MASK0);
-	blit(caps[p_cap][psize],px1-width,0, MASK0);
+		p_c.r=p_r[2]; p_c.g=p_g[2]; p_c.b=p_b[2];
+		blit(caps[p_cap][psize],px1,0, MASK0);
+		blit(caps[p_cap][psize],px1-width,0, MASK0);
 	}
 	if(p_cld<MAXP){
-	blit(clouds[p_cld][psize],px2,0, MASK0);
-	blit(clouds[p_cld][psize],px2-width,0, MASK0);
+		p_c.r=p_r[3]; p_c.g=p_g[3]; p_c.b=p_b[3];
+		blit(clouds[p_cld][psize],px2,0, MASK0);
+		blit(clouds[p_cld][psize],px2-width,0, MASK0);
 	}
+	int t=p_color;
+	p_color=0;
+
 	blit(planet_mask[p_msk][psize],0,0, MASK1);
 
 	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
@@ -101,7 +124,8 @@ void draw_planet(int time_pos){
 	SDL_SetRenderTarget(renderer, NULL);
 	SDL_RenderClear(renderer);
 	blit(stars1,0,0, MASK0);
-	blit(newtexture,16,16,MASK0);
+	blit(newtexture,0,0,MASK2);
+	p_color=t;
 	px1+=1;
 	px2+=2;
 	if(px1>width){px1=0;}
@@ -187,6 +211,11 @@ void print_planet_params()
 		printf("cap: -,\t");
 	}
 	printf("cld: %d\n", p_cld);
+	if(p_color>0){
+		for(int i=0;i<4;i++){
+			printf("R: %d G: %d B: %d\n",p_r[i],p_g[i],p_b[i]);
+		}
+	}
 }
 
 void print_usage()
@@ -304,7 +333,17 @@ while(event.type != SDL_QUIT){
 				}
 			break;
 			case SDL_MOUSEBUTTONDOWN:
-				get_random_planet();
+				if(event.button.button == SDL_BUTTON_LEFT){
+					get_random_planet();
+				}
+				if(event.button.button == SDL_BUTTON_RIGHT){
+					if(p_color==0){p_color=1;}else{p_color=0;}
+					for(int i=0;i<4;i++){
+						p_r[i]=(rand()%(255));
+						p_g[i]=(rand()%(255));
+						p_b[i]=(rand()%(255));
+					}
+				}
 				break;
 		}
 	}
