@@ -240,12 +240,14 @@ void print_usage()
 	printf("\tE: Cycle polar cap layer.\n");
 	printf("\tR: Cycle cloud layer.\n");
 	printf("\tT: Cycle light position.\n");
+	printf("\tRight Click: Toggle random planet colours.\n");
 	printf("\tZ: Print current planet parameters.\n");
 	printf("\tF2: Decrease window size.\n");
 	printf("\tF3: Increase window size.\n");
-	printf("\tA: positive planet spin.\n");
-	printf("\tD: negative planet spin.\n");
-	printf("\tS: change planet size.\n");
+	printf("\tA: Increase left-to-right planet spin.\n");
+	printf("\tD: Increase right-to-left planet spin.\n");
+	printf("\tS: Cycle planet size.\n");
+	printf("\tMouse Wheel: Adjust planet size.\n");
 	printf("\tSpace: random planet position.\n");
 	printf("\t1 through %d: Display default planet configuration.\n", MAXP);
 	printf("\tEscape: Quit :(\n\n");
