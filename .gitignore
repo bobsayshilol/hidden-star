@@ -30,6 +30,7 @@
 64
 intro
 planet
+hiddenstar
 
 # Debug files
 *.dSYM/
