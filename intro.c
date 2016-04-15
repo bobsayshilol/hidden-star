@@ -13,6 +13,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 SDL_Texture *background;
+SDL_Texture *flare;
 SDL_Texture *font[4];
 
 int scale=8;
@@ -102,11 +103,13 @@ void draw_intro(){
 	if(count4>5){count3=0;}
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, background, NULL, NULL);
-	draw_text(29-((count1*4)), 26, "hidden", count1);
-	draw_text(37, 26, "star", count2);
+	draw_text(31-((count1*4)), 28, "hidden", count1);
+	draw_text(39, 28, "star", count2);
 	if(count4<=5){
-		draw_number(34, 26, count1);
-		draw_number(38, 26, count2);
+		draw_number(36, 28, count1);
+		draw_number(40, 28, count2);
+	}else{
+		SDL_RenderCopy(renderer, flare, NULL, NULL);
 	}
 }
 
@@ -128,13 +131,14 @@ int setup(){
 
 	srand(time(NULL));
 
-	background = Load_img("sprites/stars/stars1_256.png");
+	background = Load_img("sprites/title_planet.png");
+	flare = Load_img("sprites/title_flare.png");
 	font[0] = Load_img("sprites/font_5x3_earth.png");
 	font[1] = Load_img("sprites/font_5x3_krull.png");
 	font[2] = Load_img("sprites/font_5x3_plink.png");
 	font[3] = Load_img("sprites/font_5x3_sneeb.png");
 
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 255);
+	SDL_SetRenderDrawColor(renderer, 0x05, 0x09, 0x14, 255);
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 	return 0;
 }
