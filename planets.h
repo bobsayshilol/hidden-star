@@ -17,7 +17,7 @@ SDL_Texture *ocean[P_MAX][5];
 SDL_Texture *planet_mask[4][5];
 
 float p_speed;
-float p_tx1,p_tx2;
+int p_tx1,p_tx2;
 int p_x, p_y;
 int p_size;
 int p_ocn, p_cap, p_con, p_cld, p_msk;

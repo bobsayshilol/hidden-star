@@ -34,8 +34,8 @@ void planet_draw(){
 	SDL_RenderClear(main_renderer);
 	main_blit(stars1,0,0, P_MODE0, NULL);
 	main_blit(newtexture,p_x,p_y,P_MODE2, NULL);
-	p_tx1+=p_speed;
-	p_tx2+=(p_speed*2);
+	p_tx1+=(int)p_speed;
+	p_tx2+=(int)(p_speed*2);
 	if(p_tx1>width){p_tx1=0;}
 	if(p_tx2>width){p_tx2=0;}
 	if(p_tx1<0){p_tx1=width;}
