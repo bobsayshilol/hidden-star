@@ -3,9 +3,6 @@
 
 #include "main.h"
 
-#define P_MODE0 0
-#define P_MODE1 1
-#define P_MODE2 2
 #define P_MAX 4
 
 

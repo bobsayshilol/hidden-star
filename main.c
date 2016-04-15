@@ -18,13 +18,13 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 	rect.y=y;
 	rect.w=w;
 	rect.h=h;
+	if(color){
+		SDL_SetTextureColorMod(tex, color->r, color->g, color->b);
+	}else{
+		SDL_SetTextureColorMod(tex, 255,255,255);
+	}
 	switch(mode){
 		case P_MODE0:
-			if(color){
-				SDL_SetTextureColorMod(tex, color->r, color->g, color->b);
-			}else{
-				SDL_SetTextureColorMod(tex, 255,255,255);
-			}
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
 			break;
@@ -36,6 +36,66 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 			flip=SDL_FLIP_VERTICAL;
 		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			break;
+		case NOFLIP:
+		    SDL_RenderCopy(main_renderer, tex, NULL, &rect);
+			break;
+		case FLIPV:
+			flip = SDL_FLIP_VERTICAL;
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			break;
+		case FLIPH:
+			flip = SDL_FLIP_HORIZONTAL;
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			break;
+		case FLIPHV:
+			flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			break;
+		case TWINK1:
+			if((rand()%64)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 8) + 32);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK2:
+			if((rand()%32)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 16) + 48);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK3:
+			if((rand()%32)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 24) + 64);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK4:
+			if((rand()%48)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 32) + 80);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			break;
+		case TWINK5:
+			if((rand()%56)==0){
+				r=((rand() % 256) + 128);
+			}else{
+				r=((rand() % 40) + 96);
+			}
+			SDL_SetTextureAlphaMod(tex, r);
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 	}
 	free(color);
@@ -144,15 +204,18 @@ int main_setup(){
 	return 0;
 }
 
-void draw_scene(int time_pos){
+void draw_scene(){
 	switch(main_scene){
 		case 0:
 			if(intro_draw()==1){
-				planet_setup(); //should be main menu
+				combat_setup(); //should be main menu
 			}
 			break;
 		case 1:
 			planet_draw();
+			break;
+		case 2:
+			combat_draw();
 			break;
 	}
 }
@@ -160,10 +223,13 @@ void draw_scene(int time_pos){
 void main_input(SDL_Event event){
 	switch(main_scene){
 		case 0:
-			planet_setup();	//skip intro
+			planet_setup();	//skip intro, should be main menu
 			break;
 		case 1:
 			planets_handle_input(event);
+			break;
+		case 2:
+			combat_handle_input(event);
 			break;
 	}
 }
@@ -174,7 +240,6 @@ int main(int argc, char *argv[]){
 		return check_init; // :(
 	}
 
-	int time_pos=0;
 	int frame=0;
 	int current_time;
 	int last_time = SDL_GetTicks();
@@ -236,7 +301,7 @@ int main(int argc, char *argv[]){
 			frame++;
 			if(frame>=frame_skip){
 				frame=0;
-				draw_scene(time_pos);
+				draw_scene();
 			}
 			SDL_RenderPresent(main_renderer);
 		}

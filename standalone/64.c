@@ -719,6 +719,9 @@ void show_fight(){
 					if(starY[j] < -256){starY[j]=256;}
 					if(starY[j] > 256){starY[j]=-256;}
 			}
+			if(i==3 || i==5 || i==7){ship_thruster=0;}
+			if(i==2 || i==4 || i==7){baddy_thruster=0;}
+
 			draw_combat(0);
 			SDL_RenderPresent(renderer);
 			SDL_Delay(32);

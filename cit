@@ -1,3 +1,3 @@
 echo "Compiling: main.c to hiddenstar"
-gcc -std=c99 -c main.c intro.c planets.c -O2 -lSDL2_image `sdl2-config --cflags`
-gcc -std=c99 -o hiddenstar main.o intro.o planets.o -O2 -lSDL2_image `sdl2-config --libs` -lm
+gcc -std=c99 -c main.c intro.c planets.c combat.c -O2 -lSDL2_image `sdl2-config --cflags`
+gcc -std=c99 -o hiddenstar main.o intro.o planets.o combat.o -O2 -lSDL2_image `sdl2-config --libs` -lm

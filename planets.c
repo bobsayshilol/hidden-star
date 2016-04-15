@@ -34,8 +34,8 @@ void planet_draw(){
 	SDL_RenderClear(main_renderer);
 	main_blit(stars1,0,0, P_MODE0, NULL);
 	main_blit(newtexture,p_x,p_y,P_MODE2, NULL);
-	p_tx1+=(int)p_speed;
-	p_tx2+=(int)(p_speed*2);
+	p_tx1+=(int)round(p_speed);
+	p_tx2+=(int)round((p_speed*2));
 	if(p_tx1>width){p_tx1=0;}
 	if(p_tx2>width){p_tx2=0;}
 	if(p_tx1<0){p_tx1=width;}
@@ -45,7 +45,7 @@ void planet_draw(){
 int planet_setup(){
 	printf("loading planet..\n");
 	main_scene=1;
-	frame_skip=0;
+	frame_skip=1;
 
 	p_speed=1;
 	p_tx1,p_tx2=0;
@@ -161,10 +161,10 @@ void planets_handle_input(SDL_Event event){
 						planet_random_pos();
 						break;
 					case SDLK_a:
-						if(p_speed<10){p_speed+=0.1;}
+						if(p_speed<10){p_speed+=0.2;}
 						break;
 					case SDLK_d:
-						if(p_speed>-10){p_speed-=0.1;}
+						if(p_speed>-10){p_speed-=0.2;}
 						break;
 					case SDLK_s:
 						p_size++;
