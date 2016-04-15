@@ -38,7 +38,8 @@ const int resY=64;
 int scale=8;
 
 float speed=1;
-float px1,px2,px3,px4=0;
+float ptx1,ptx2=0;
+int p_x, p_y=0;
 int psize=3;
 int p_ocn, p_cap, p_con, p_cld, p_msk=0;
 int p_r[4];
@@ -61,7 +62,7 @@ void blit(SDL_Texture *tex, float x, int y, int mask){
 	int w, h, r;
 	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 	SDL_Rect rect;
-	rect.x=(int)round(x);
+	rect.x=(int)floor(x);
 	rect.y=y;
 	rect.w=w;
 	rect.h=h;
@@ -94,22 +95,22 @@ void draw_planet(){
 	SDL_SetRenderTarget(renderer, auxtexture);
 	
 	p_c.r=p_r[0]; p_c.g=p_g[0]; p_c.b=p_b[0];
-	blit(ocean[p_ocn][psize],px1,0, MASK0);
-	blit(ocean[p_ocn][psize],px1-width,0, MASK0);
+	blit(ocean[p_ocn][psize],ptx1,0, MASK0);
+	blit(ocean[p_ocn][psize],ptx1-width,0, MASK0);
 	if(p_con<MAXP){
 		p_c.r=p_r[1]; p_c.g=p_g[1]; p_c.b=p_b[1];
-		blit(continents[p_con][psize],px1,0, MASK0);
-		blit(continents[p_con][psize],px1-width,0, MASK0);
+		blit(continents[p_con][psize],ptx1,0, MASK0);
+		blit(continents[p_con][psize],ptx1-width,0, MASK0);
 	}
 	if(p_cap<MAXP){
 		p_c.r=p_r[2]; p_c.g=p_g[2]; p_c.b=p_b[2];
-		blit(caps[p_cap][psize],px1,0, MASK0);
-		blit(caps[p_cap][psize],px1-width,0, MASK0);
+		blit(caps[p_cap][psize],ptx1,0, MASK0);
+		blit(caps[p_cap][psize],ptx1-width,0, MASK0);
 	}
 	if(p_cld<MAXP){
 		p_c.r=p_r[3]; p_c.g=p_g[3]; p_c.b=p_b[3];
-		blit(clouds[p_cld][psize],px2,0, MASK0);
-		blit(clouds[p_cld][psize],px2-width,0, MASK0);
+		blit(clouds[p_cld][psize],ptx2,0, MASK0);
+		blit(clouds[p_cld][psize],ptx2-width,0, MASK0);
 	}
 	int t=p_color;
 	p_color=0;
@@ -125,14 +126,14 @@ void draw_planet(){
 	SDL_SetRenderTarget(renderer, NULL);
 	SDL_RenderClear(renderer);
 	blit(stars1,0,0, MASK0);
-	blit(newtexture,0,0,MASK2);
+	blit(newtexture,p_x,p_y,MASK2);
 	p_color=t;
-	px1+=speed;
-	px2+=(speed*2);
-	if(px1>width){px1=0;}
-	if(px2>width){px2=0;}
-	if(px1<0){px1=width;}
-	if(px2<0){px2=width;}
+	ptx1+=speed;
+	ptx2+=(speed*2);
+	if(ptx1>width){ptx1=0;}
+	if(ptx2>width){ptx2=0;}
+	if(ptx1<0){ptx1=width;}
+	if(ptx2<0){ptx2=width;}
 }
 
  /* Init and start */
@@ -174,6 +175,12 @@ int setup(){
 	}
 
 	return 0;
+}
+
+void random_pos(){
+	int width=(int)(pow(2,(psize+3)));
+	p_x=(rand()%64+width)-(width+(width/2));
+	p_y=(rand()%64+width)-(width+(width/2));
 }
 
 void get_random_planet()
@@ -236,7 +243,10 @@ void print_usage()
 	printf("\tZ: Print current planet parameters.\n");
 	printf("\tF2: Decrease window size.\n");
 	printf("\tF3: Increase window size.\n");
-	printf("\tSpace: Cycle planet size.\n");
+	printf("\tA: positive planet spin.\n");
+	printf("\tD: negative planet spin.\n");
+	printf("\tS: change planet size.\n");
+	printf("\tSpace: random planet position.\n");
 	printf("\t1 through %d: Display default planet configuration.\n", MAXP);
 	printf("\tEscape: Quit :(\n\n");
 }
@@ -330,8 +340,7 @@ while(event.type != SDL_QUIT){
 						get_random_planet();
 						break;
 					case SDLK_SPACE:
-						psize++;
-						if(psize>=5){psize=0;}
+						random_pos();
 						break;
 					case SDLK_a:
 						if(speed<10){speed+=0.1;}
@@ -339,19 +348,37 @@ while(event.type != SDL_QUIT){
 					case SDLK_d:
 						if(speed>-10){speed-=0.1;}
 						break;
+					case SDLK_s:
+						psize++;
+						p_x=0; p_y=0;
+						if(psize>4){psize=0;}
+						break;
 				}
 			break;
-			case SDL_MOUSEBUTTONDOWN:
-				if(event.button.button == SDL_BUTTON_LEFT){
-					get_random_planet();
+			case SDL_MOUSEWHEEL:
+				if(event.wheel.y<0){
+					psize++;
+					p_x=0; p_y=0;
+					if(psize>4){psize=4;}
 				}
-				if(event.button.button == SDL_BUTTON_RIGHT){
-					if(p_color==0){p_color=1;}else{p_color=0;}
-					for(int i=0;i<4;i++){
-						p_r[i]=(rand()%(255));
-						p_g[i]=(rand()%(255));
-						p_b[i]=(rand()%(255));
-					}
+				if(event.wheel.y>0){
+					psize--;
+					p_x=0; p_y=0;
+					if(psize<0){psize=0;}
+				}
+			case SDL_MOUSEBUTTONDOWN:
+				switch(event.button.button){
+					case SDL_BUTTON_LEFT:
+						get_random_planet();
+						break;
+					case SDL_BUTTON_RIGHT:
+						if(p_color==0){p_color=1;}else{p_color=0;}
+						for(int i=0;i<4;i++){
+							p_r[i]=(rand()%(255));
+							p_g[i]=(rand()%(255));
+							p_b[i]=(rand()%(255));
+						}
+						break;
 				}
 				break;
 		}
