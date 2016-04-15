@@ -9,6 +9,38 @@ SDL_Texture* Load_tex(char *filename){
     return texture;
 }
 
+void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
+	int w, h, r;
+	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+	SDL_RendererFlip flip;
+	SDL_Rect rect;
+	rect.x=x;
+	rect.y=y;
+	rect.w=w;
+	rect.h=h;
+	switch(mode){
+		case P_MODE0:
+			if(color){
+				SDL_SetTextureColorMod(tex, color->r, color->g, color->b);
+			}else{
+				SDL_SetTextureColorMod(tex, 255,255,255);
+			}
+			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
+			break;
+		case P_MODE1:
+			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
+			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
+			break;
+		case P_MODE2:
+			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+			flip=SDL_FLIP_VERTICAL;
+		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			break;
+	}
+	free(color);
+}
+
 void draw_text(int x, int y, char *text, int length, int font_set){
 	int w, h, f, index;
 	int count=0;
@@ -18,7 +50,7 @@ void draw_text(int x, int y, char *text, int length, int font_set){
 		if(font_set==4){  //cycles font for random effect
 			count++;
 			if(count>3){count=1;}
-			SDL_SetTextureColorMod(font[count], 16, 128, 16);
+			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
 		index=(((int)text[i])-97);
 		SDL_Rect srect;
@@ -115,7 +147,23 @@ int main_setup(){
 void draw_scene(int time_pos){
 	switch(main_scene){
 		case 0:
-			intro_draw();
+			if(intro_draw()==1){
+				planet_setup(); //should be main menu
+			}
+			break;
+		case 1:
+			planet_draw();
+			break;
+	}
+}
+
+void main_input(SDL_Event event){
+	switch(main_scene){
+		case 0:
+			planet_setup();	//skip intro
+			break;
+		case 1:
+			planets_handle_input(event);
 			break;
 	}
 }
@@ -128,14 +176,14 @@ int main(int argc, char *argv[]){
 
 	int time_pos=0;
 	int frame=0;
-	int frame_skip;
 	int current_time;
 	int last_time = SDL_GetTicks();
 	int mouseX; int mouseY;
 
-	main_scene=0;
-	frame_skip=2;
 	intro_setup();
+
+	SDL_Event main_event;
+	while(SDL_PollEvent(&main_event)){} //flush event queue
 
 	while(main_event.type != SDL_QUIT){
 		SDL_GetMouseState(&mouseX, &mouseY);
@@ -143,6 +191,41 @@ int main(int argc, char *argv[]){
 			switch (main_event.type) {
 				case SDL_QUIT:
 					exit(0);
+					break;
+				case SDL_KEYDOWN:
+					switch(main_event.key.keysym.sym){
+                    	case SDLK_F2:
+                        	if(main_scale>1){
+                            	main_scale/=2;
+	                        }
+    	                    SDL_SetWindowSize(main_window, main_resX*main_scale, 
+														   main_resY*main_scale);
+        	                break;
+            	        case SDLK_F3:
+                	        if(main_scale<32){
+                    	        main_scale*=2;
+                        	}
+    	                    SDL_SetWindowSize(main_window, main_resX*main_scale, 
+														   main_resY*main_scale);
+        	                break;
+	                    case SDLK_ESCAPE:
+							//return to main menu?
+							{
+        	                SDL_Event e;
+            	            e.type = SDL_QUIT;
+                	        SDL_PushEvent(&e);
+							}
+                        	break;
+						default:
+							main_input(main_event);
+							break;
+					}
+					break;
+				case SDL_MOUSEWHEEL:
+					main_input(main_event);
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+					main_input(main_event);
 					break;
 			}
 		}

@@ -12,6 +12,6 @@ int intro_count3;
 int intro_font;
 
 int intro_setup();
-void intro_draw();
+int intro_draw();
 
 #endif
