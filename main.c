@@ -2,11 +2,11 @@
 
 SDL_Texture* Load_tex(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(main_renderer, filename);
-    if (!texture){
-	    printf("Load image error: %s, %s \n",filename, IMG_GetError());
+	if (!texture){
+		printf("Load image error: %s, %s \n",filename, IMG_GetError());
 		exit(0);
-    }
-    return texture;
+	}
+	return texture;
 }
 
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
@@ -35,22 +35,22 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 		case P_MODE2:
 			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 			flip=SDL_FLIP_VERTICAL;
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
 			break;
 		case NOFLIP:
-		    SDL_RenderCopy(main_renderer, tex, NULL, &rect);
+			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
 			break;
 		case FLIPV:
 			flip = SDL_FLIP_VERTICAL;
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
 			break;
 		case FLIPH:
 			flip = SDL_FLIP_HORIZONTAL;
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
 			break;
 		case FLIPHV:
 			flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
 			break;
 		case TWINK1:
 			if((rand()%64)==0){
@@ -59,7 +59,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 8) + 32);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 		case TWINK2:
 			if((rand()%32)==0){
@@ -68,7 +68,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 16) + 48);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 		case TWINK3:
 			if((rand()%32)==0){
@@ -77,7 +77,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 24) + 64);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 		case TWINK4:
 			if((rand()%48)==0){
@@ -86,7 +86,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 32) + 80);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 		case TWINK5:
 			if((rand()%56)==0){
@@ -95,7 +95,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 40) + 96);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-		    SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
 			break;
 	}
 	free(color);
@@ -107,7 +107,7 @@ void draw_text(int x, int y, char *text, int length, int font_set){
 	SDL_QueryTexture(font[count], NULL, NULL, &w, &h);
 	SDL_SetTextureColorMod(font[count], 255, 255, 255);
 	for(int i=0;i<length;i++){
-		if(font_set==4){  //cycles font for random effect
+		if(font_set==FONT_CYCLE){  //cycles font for random effect
 			count++;
 			if(count>3){count=1;}
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
@@ -149,7 +149,7 @@ void draw_number(int x, int y, int num){
 		c+=4;
 		f=(num%10);
 		num/=10;
-		srect.x=(f*4)+1;
+		srect.x=(f*4);
 		srect.y=0;
 		srect.w=4;
 		srect.h=6;
@@ -171,10 +171,19 @@ void draw_number(int x, int y, int num){
 
 void load_fonts(){
 	printf("loading fonts..\n");
-	font[0] = Load_tex("sprites/font_5x3_earth.png");
-	font[1] = Load_tex("sprites/font_5x3_krull.png");
-	font[2] = Load_tex("sprites/font_5x3_plink.png");
-	font[3] = Load_tex("sprites/font_5x3_sneeb.png");
+	font[FONT_EARTH] = Load_tex("sprites/gui/font_5x3_earth.png");
+	font[FONT_KRULL] = Load_tex("sprites/gui/font_5x3_krull.png");
+	font[FONT_PLINK] = Load_tex("sprites/gui/font_5x3_plink.png");
+	font[FONT_SNEEB] = Load_tex("sprites/gui/font_5x3_sneeb.png");
+}
+
+void main_menu_setup()
+{
+	add_button("com", 0, 36, -1 ,BUTTON_STATE_ENABLED, -1, &combat_setup);
+	add_button("planets", 0, 44, -1 ,BUTTON_STATE_ENABLED, -1, &planet_setup);
+	add_button("travel", 0, 52, -1, BUTTON_STATE_DISABLED, -1, &travel_setup);
+
+	update_button_state(0, BUTTON_STATE_SELECTED);
 }
 
  /* Init and start */
@@ -189,14 +198,14 @@ int main_setup(){
 
 	if (SDL_CreateWindowAndRenderer(main_resX *main_scale, main_resY * main_scale, 
 									SDL_WINDOW_OPENGL, &main_window, &main_renderer)) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, 
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, 
 			"Couldn't create window and renderer: %s", SDL_GetError());
 		return 3;
-    }
+	}
 
-    SDL_RenderSetLogicalSize(main_renderer, main_resX, main_resY);
+	SDL_RenderSetLogicalSize(main_renderer, main_resX, main_resY);
 	SDL_SetWindowTitle(main_window, "Hidden Star");
-    atexit(SDL_Quit);
+	atexit(SDL_Quit);
 
 	srand(time(NULL));
 
@@ -208,7 +217,8 @@ void draw_scene(){
 	switch(main_scene){
 		case 0:
 			if(intro_draw()==1){
-				combat_setup(); //should be main menu
+				//combat_setup(); //should be main menu
+				gui_draw();
 			}
 			break;
 		case 1:
@@ -221,9 +231,38 @@ void draw_scene(){
 }
 
 void main_input(SDL_Event event){
+	int mouseX, mouseY;
+	SDL_GetMouseState(&mouseX, &mouseY);
+	mouseX /= main_scale;
+	mouseY /= main_scale;
 	switch(main_scene){
 		case 0:
-			planet_setup();	//skip intro, should be main menu
+		switch (event.type) {
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym){
+					case SDLK_TAB:
+						if (event.key.keysym.mod == KMOD_LSHIFT || event.key.keysym.mod == KMOD_RSHIFT)
+						{
+							gui_cycle_next_button(0);
+						}
+						else
+						{
+							gui_cycle_next_button(1);
+						}
+						break;
+						gui_do_button_action();
+					case SDLK_RETURN:
+					case SDLK_KP_ENTER:
+						gui_do_button_action();
+						break;
+					}
+					break;
+			case SDL_MOUSEMOTION:
+				gui_update_hover_state(mouseX, mouseY);
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				gui_do_button_action_coords(mouseX, mouseY);
+			}
 			break;
 		case 1:
 			planets_handle_input(event);
@@ -246,6 +285,8 @@ int main(int argc, char *argv[]){
 	int mouseX; int mouseY;
 
 	intro_setup();
+	gui_setup();
+	main_menu_setup();
 
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
@@ -259,28 +300,28 @@ int main(int argc, char *argv[]){
 					break;
 				case SDL_KEYDOWN:
 					switch(main_event.key.keysym.sym){
-                    	case SDLK_F2:
-                        	if(main_scale>1){
-                            	main_scale/=2;
-	                        }
-    	                    SDL_SetWindowSize(main_window, main_resX*main_scale, 
-														   main_resY*main_scale);
-        	                break;
-            	        case SDLK_F3:
-                	        if(main_scale<32){
-                    	        main_scale*=2;
-                        	}
-    	                    SDL_SetWindowSize(main_window, main_resX*main_scale, 
-														   main_resY*main_scale);
-        	                break;
-	                    case SDLK_ESCAPE:
+						case SDLK_F2:
+							if(main_scale>1){
+								main_scale/=2;
+							}
+							SDL_SetWindowSize(main_window, main_resX*main_scale, 
+							main_resY*main_scale);
+							break;
+						case SDLK_F3:
+							if(main_scale<32){
+								main_scale*=2;
+							}
+							SDL_SetWindowSize(main_window, main_resX*main_scale, 
+							main_resY*main_scale);
+							break;
+						case SDLK_ESCAPE:
 							//return to main menu?
 							{
-        	                SDL_Event e;
-            	            e.type = SDL_QUIT;
-                	        SDL_PushEvent(&e);
+								SDL_Event e;
+								e.type = SDL_QUIT;
+								SDL_PushEvent(&e);
 							}
-                        	break;
+							break;
 						default:
 							main_input(main_event);
 							break;
@@ -290,6 +331,9 @@ int main(int argc, char *argv[]){
 					main_input(main_event);
 					break;
 				case SDL_MOUSEBUTTONDOWN:
+					main_input(main_event);
+					break;
+				case SDL_MOUSEMOTION:
 					main_input(main_event);
 					break;
 			}

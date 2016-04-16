@@ -9,9 +9,11 @@
 #include "SDL.h" 
 #include "SDL_image.h"
 
+#include "gui.h"
 #include "intro.h"
 #include "planets.h"
 #include "combat.h"
+#include "travel.h"
 
 #define main_resX 64
 #define main_resY 64
@@ -29,6 +31,12 @@
 #define TWINK4 13
 #define TWINK5 14
 #define TWINK6 15
+
+#define FONT_EARTH 0
+#define FONT_KRULL 1
+#define FONT_PLINK 2
+#define FONT_SNEEB 3
+#define FONT_CYCLE 4
 
 SDL_Surface *main_screen;
 SDL_Window *main_window;
