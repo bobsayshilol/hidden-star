@@ -9,21 +9,16 @@ include_directories (${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 # hiddenstar files
 add_library (combat combat.c)
-add_library (intro intro.c)
 add_library (gui gui.c)
+add_library (intro intro.c)
+add_library (planets planets.c)
 add_library (travel travel.c)
 add_executable (hiddenstar main.c)
 set_property (TARGET hiddenstar PROPERTY C_STANDARD 99)
-target_link_libraries (hiddenstar combat intro planets ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
+target_link_libraries (hiddenstar combat gui intro planets travel)
+target_link_libraries (hiddenstar ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
 
-add_executable (standalone/planet standalone/planet.c)
-set_property (TARGET planet PROPERTY C_STANDARD 99)
-target_link_libraries (planet ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
-
-add_executable (standalone/64 standalone/64.c)
-set_property (TARGET 64 PROPERTY C_STANDARD 99)
-target_link_libraries (64 ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
+add_subdirectory (standalone)
 
 # Installation
 install (TARGETS hiddenstar DESTINATION bin)
-install (TARGETS standalone/planet DESTINATION bin)
