@@ -9,7 +9,7 @@
 	shortcut is the keyboard shortcut for the button (to be implemented)
 	action is the function to be called when the action is cliecked
 */
-int add_button(char* text, int x, int y, int width, int state, int shortcut, int (*action)())
+int gui_add_button(char* text, int x, int y, int width, int state, int shortcut, int (*action)())
 {
 	SDL_Rect text_bounds;
 	text_bounds.x = x + BUTTON_MARGIN_HORIZONTAL;
@@ -113,7 +113,7 @@ void gui_draw()
 		}
 		main_blit(g_button_cap[g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
 		main_blit(g_button_cap[g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - BUTTON_MARGIN_HORIZONTAL, g_button_list[i].button_bounds.y, FLIPH, NULL);
-		draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH);
+		draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].state]);
 	}
 }
 
@@ -149,6 +149,152 @@ int gui_cycle_next_button(int direction)
 	update_button_state(temp, BUTTON_STATE_SELECTED);
 }
 
+int gui_seek_next_button_h(int direction)
+{
+	//direction should be 0 or 1
+	int temp = current_button;
+	int closest_button = -1;
+	int current_x = g_button_list[temp].button_bounds.x;
+	int current_y = g_button_list[temp].button_bounds.y;
+	if (direction >= 1)
+	{
+		printf("Seeking right...\n");
+		int closest_x = 64;
+		int closest_y = 64;
+		for(int i = 0; i < button_count; i++)
+		{
+			printf("\tChecking button %d\n", i);
+			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
+			{
+				printf("\t\tIs enabled\n");
+				if (g_button_list[i].button_bounds.x - current_x > 0)
+				{
+					printf("\t\tIs right of\n");
+					if (g_button_list[i].button_bounds.x - current_x == closest_x)
+					{
+						printf("\t\tIs equal to previous\n");
+						if (abs(g_button_list[i].button_bounds.y - current_y) < abs(closest_y))
+						{
+							printf("\t\tIs closer than previous closest along non-natural axis %d, %d\n", abs(g_button_list[i].button_bounds.y - current_y), abs(closest_y));
+							closest_button = i;
+							closest_x = g_button_list[i].button_bounds.x - current_x;
+							closest_y = g_button_list[i].button_bounds.y - current_y;
+						}
+					}
+					else if (g_button_list[i].button_bounds.x - current_x < closest_x)
+					{
+						printf("\t\tIs closer than previous\n");
+						closest_button = i;
+						closest_x = g_button_list[i].button_bounds.x - current_x;
+						closest_y = g_button_list[i].button_bounds.y - current_y;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		printf("Seeking right...\n");
+		int closest_x = -64;
+		int closest_y = -64;
+		for(int i = 0; i < button_count; i++)
+		{
+			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
+			{
+				if (g_button_list[i].button_bounds.x - current_x < 0)
+				{
+					if (g_button_list[i].button_bounds.x - current_x == closest_x)
+					{
+						if (abs(g_button_list[i].button_bounds.y - current_y) < abs(closest_y))
+						{
+							closest_button = i;
+							closest_x = g_button_list[i].button_bounds.x - current_x;
+							closest_y = g_button_list[i].button_bounds.y - current_y;
+						}
+					}
+					else if (g_button_list[i].button_bounds.x - current_x > closest_x)
+					{
+						closest_button = i;
+						closest_x = g_button_list[i].button_bounds.x - current_x;
+						closest_y = g_button_list[i].button_bounds.y - current_y;
+					}
+				}
+			}
+		}
+	}
+	update_button_state(closest_button, BUTTON_STATE_SELECTED);
+}
+
+int gui_seek_next_button_v(int direction)
+{
+	//direction should be 0 or 1
+	int temp = current_button;
+	int closest_button = -1;
+	int current_x = g_button_list[temp].button_bounds.x;
+	int current_y = g_button_list[temp].button_bounds.y;
+
+	if (direction >= 1)
+	{
+		int closest_x = 64;
+		int closest_y = 64;
+		printf("Seeking down\n");
+		for(int i = 0; i < button_count; i++)
+		{
+			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
+			{
+				if (g_button_list[i].button_bounds.y - current_y > 0)
+				{
+					if (g_button_list[i].button_bounds.y - current_y == closest_y)
+					{
+						if (abs(g_button_list[i].button_bounds.x - current_x) < abs(closest_x))
+						{
+							closest_button = i;
+							closest_x = g_button_list[i].button_bounds.x - current_x;
+							closest_y = g_button_list[i].button_bounds.y - current_y;
+						}
+					}
+					else if (g_button_list[i].button_bounds.y - current_y < closest_y)
+					{
+						closest_button = i;
+						closest_x = g_button_list[i].button_bounds.x - current_x;
+						closest_y = g_button_list[i].button_bounds.y - current_y;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		int closest_x = -64;
+		int closest_y = -64;
+		for(int i = 0; i < button_count; i++)
+		{
+			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
+			{
+				if (g_button_list[i].button_bounds.y - current_y < 0)
+				{
+					if (g_button_list[i].button_bounds.y - current_y == closest_y)
+					{
+						if (abs(g_button_list[i].button_bounds.x - current_x) < abs(closest_x))
+						{
+							closest_button = i;
+							closest_x = g_button_list[i].button_bounds.x - current_x;
+							closest_y = g_button_list[i].button_bounds.y - current_y;
+						}
+					}
+					else if (g_button_list[i].button_bounds.y - current_y > closest_y)
+					{
+						closest_button = i;
+						closest_x = g_button_list[i].button_bounds.x - current_x;
+						closest_y = g_button_list[i].button_bounds.y - current_y;
+					}
+				}
+			}
+		}
+	}
+	update_button_state(closest_button, BUTTON_STATE_SELECTED);
+}
+
 int gui_update_hover_state(int x, int y)
 {
 	for(int i = 0; i < button_count; i++)
@@ -177,9 +323,13 @@ void gui_clear()
 
 int gui_setup()
 {
-	printf("Loading gui...");
+	printf("Loading gui...\n");
 	button_count = 0;
 	current_button = -1;
+
+	g_button_text_colour[BUTTON_STATE_DISABLED] = BUTTON_TEXT_COLOR_DISABLED;
+	g_button_text_colour[BUTTON_STATE_ENABLED] = BUTTON_TEXT_COLOR_ENABLED;
+	g_button_text_colour[BUTTON_STATE_SELECTED] = BUTTON_TEXT_COLOR_SELECTED;
 
 	g_button_bg[BUTTON_STATE_DISABLED] = Load_tex("sprites/gui/button_background_d.png");
 	g_button_bg[BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_background.png");

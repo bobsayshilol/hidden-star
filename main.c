@@ -101,11 +101,11 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 	free(color);
 }
 
-void draw_text(int x, int y, char *text, int length, int font_set){
+void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
 	int w, h, f, index;
 	int count=0;
 	SDL_QueryTexture(font[count], NULL, NULL, &w, &h);
-	SDL_SetTextureColorMod(font[count], 255, 255, 255);
+	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
 		if(font_set==FONT_CYCLE){  //cycles font for random effect
 			count++;
@@ -179,9 +179,9 @@ void load_fonts(){
 
 void main_menu_setup()
 {
-	add_button("com", 0, 36, -1 ,BUTTON_STATE_ENABLED, -1, &combat_setup);
-	add_button("planets", 0, 44, -1 ,BUTTON_STATE_ENABLED, -1, &planet_setup);
-	add_button("travel", 0, 52, -1, BUTTON_STATE_DISABLED, -1, &travel_setup);
+	gui_add_button("combat", 0, 36, 35,BUTTON_STATE_ENABLED, -1, &combat_setup);
+	gui_add_button("planets", 0, 44, 35 ,BUTTON_STATE_ENABLED, -1, &planet_setup);
+	gui_add_button("travel", 0, 52, 35, BUTTON_STATE_DISABLED, -1, &travel_setup);
 
 	update_button_state(0, BUTTON_STATE_SELECTED);
 }
@@ -254,6 +254,18 @@ void main_input(SDL_Event event){
 					case SDLK_RETURN:
 					case SDLK_KP_ENTER:
 						gui_do_button_action();
+						break;
+					case SDLK_LEFT:
+						gui_seek_next_button_h(0);
+						break;
+					case SDLK_RIGHT:
+						gui_seek_next_button_h(1);
+						break;
+					case SDLK_UP:
+						gui_seek_next_button_v(0);
+						break;
+					case SDLK_DOWN:
+						gui_seek_next_button_v(1);
 						break;
 					}
 					break;
