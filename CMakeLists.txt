@@ -25,4 +25,4 @@ target_link_libraries (64 ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
 
 # Installation
 install (TARGETS hiddenstar DESTINATION bin)
-install (TARGETS planet DESTINATION bin)
+install (TARGETS standalone/planet DESTINATION bin)
