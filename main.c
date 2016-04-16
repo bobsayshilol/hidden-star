@@ -179,11 +179,15 @@ void load_fonts(){
 
 void main_menu_setup()
 {
-	gui_add_button("combat", 0, 36, 35,BUTTON_STATE_ENABLED, -1, &combat_setup);
-	gui_add_button("planets", 0, 44, 35 ,BUTTON_STATE_ENABLED, -1, &planet_setup);
-	gui_add_button("travel", 0, 52, 35, BUTTON_STATE_DISABLED, -1, &travel_setup);
+	int default_button;
+	default_button = gui_add_button("combat", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup);
+	gui_add_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup);
+	gui_add_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
+	gui_add_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
+	gui_add_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
+	gui_add_button("comms", 0, 52, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
 
-	update_button_state(0, BUTTON_STATE_SELECTED);
+	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
  /* Init and start */

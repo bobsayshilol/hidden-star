@@ -9,7 +9,7 @@
 	shortcut is the keyboard shortcut for the button (to be implemented)
 	action is the function to be called when the action is cliecked
 */
-int gui_add_button(char* text, int x, int y, int width, int state, int shortcut, int (*action)())
+int gui_add_button(char* text, int x, int y, int width, int state, int style, int shortcut, int (*action)())
 {
 	SDL_Rect text_bounds;
 	text_bounds.x = x + BUTTON_MARGIN_HORIZONTAL;
@@ -36,6 +36,7 @@ int gui_add_button(char* text, int x, int y, int width, int state, int shortcut,
 	b.text_bounds = text_bounds;
 	b.button_bounds = button_bounds;
 	b.state = state;
+	b.style = style;
 	b.shortcut = shortcut;
 	b.action = action;
 	g_button_list[button_count] = b;
@@ -106,19 +107,26 @@ void gui_draw()
 {
 	for(int i = 0; i < button_count; i++)
 	{
-		//draw left cap, draw middle, draw end cap
-		for (int j = 0; j < g_button_list[i].text_bounds.w; j++)
+		if (g_button_list[i].style == BUTTON_STYLE_GUI)
 		{
-			main_blit(g_button_bg[g_button_list[i].state], g_button_list[i].text_bounds.x + j, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			for (int j = 0; j < g_button_list[i].text_bounds.w; j++)
+			{
+				main_blit(g_button_bg[g_button_list[i].style][g_button_list[i].state], g_button_list[i].text_bounds.x + j, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			}
+			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - BUTTON_MARGIN_HORIZONTAL, g_button_list[i].button_bounds.y, FLIPH, NULL);
 		}
-		main_blit(g_button_cap[g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
-		main_blit(g_button_cap[g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - BUTTON_MARGIN_HORIZONTAL, g_button_list[i].button_bounds.y, FLIPH, NULL);
-		draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].state]);
+		else
+		{
+			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+		}
+		draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].style][g_button_list[i].state]);
 	}
 }
 
 int gui_cycle_next_button(int direction)
 {
+	printf("Seeking next button in direction %d\n", direction);
 	//direction should be 0 or 1
 	int temp = current_button;
 	do
@@ -127,10 +135,12 @@ int gui_cycle_next_button(int direction)
 		{
 			if (temp < button_count - 1)
 			{
+				printf("Increasing temp %d\n", g_button_list[temp].state);
 				temp ++;
 			}
 			else
 			{
+				printf("Setting temp to 0  %d\n", g_button_list[temp].state);
 				temp = 0;
 			}
 		}
@@ -138,14 +148,17 @@ int gui_cycle_next_button(int direction)
 		{
 			if (temp > 0)
 			{
+				printf("Decreasing temp %d\n", g_button_list[temp].state);
 				temp --;
 			}
 			else
 			{
+				printf("Setting temp to button_count -1 %d\n", g_button_list[temp].state);
 				temp = button_count - 1;
 			}
 		}
 	} while(g_button_list[temp].state == BUTTON_STATE_DISABLED); //TODO: What happens if there are no enabled buttons?
+	printf("Updating current button from %d to %d\n", current_button, temp);
 	update_button_state(temp, BUTTON_STATE_SELECTED);
 }
 
@@ -318,16 +331,30 @@ int gui_setup()
 	button_count = 0;
 	current_button = -1;
 
-	g_button_text_colour[BUTTON_STATE_DISABLED] = BUTTON_TEXT_COLOR_DISABLED;
-	g_button_text_colour[BUTTON_STATE_ENABLED] = BUTTON_TEXT_COLOR_ENABLED;
-	g_button_text_colour[BUTTON_STATE_SELECTED] = BUTTON_TEXT_COLOR_SELECTED;
+	SDL_Texture *trans;
+	trans = Load_tex("sprites/gui/trans1x1.png");
 
-	g_button_bg[BUTTON_STATE_DISABLED] = Load_tex("sprites/gui/button_background_d.png");
-	g_button_bg[BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_background.png");
-	g_button_bg[BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/button_background_h.png");
-	g_button_cap[BUTTON_STATE_DISABLED] = Load_tex("sprites/gui/button_left_d.png");
-	g_button_cap[BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_left.png");
-	g_button_cap[BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/button_left_h.png");
+	g_button_text_colour[BUTTON_STYLE_GUI][BUTTON_STATE_DISABLED] = GUI_TEXT_COLOR_DISABLED;
+	g_button_text_colour[BUTTON_STYLE_GUI][BUTTON_STATE_ENABLED] = GUI_TEXT_COLOR_ENABLED;
+	g_button_text_colour[BUTTON_STYLE_GUI][BUTTON_STATE_SELECTED] = GUI_TEXT_COLOR_SELECTED;
+
+	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = MENU_TEXT_COLOR_DISABLED;
+	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = MENU_TEXT_COLOR_ENABLED;
+	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = MENU_TEXT_COLOR_SELECTED;
+
+	g_button_bg[BUTTON_STYLE_GUI][BUTTON_STATE_DISABLED] = Load_tex("sprites/gui/button_background_d.png");
+	g_button_bg[BUTTON_STYLE_GUI][BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_background.png");
+	g_button_bg[BUTTON_STYLE_GUI][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/button_background_h.png");
+	g_button_cap[BUTTON_STYLE_GUI][BUTTON_STATE_DISABLED] = Load_tex("sprites/gui/button_left_d.png");
+	g_button_cap[BUTTON_STYLE_GUI][BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_left.png");
+	g_button_cap[BUTTON_STYLE_GUI][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/button_left_h.png");
+
+	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = trans;
+	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
+	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = trans;
+	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = trans;
+	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
+	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
 
 	return 0;
 }
