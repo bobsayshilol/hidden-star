@@ -158,24 +158,18 @@ int gui_seek_next_button_h(int direction)
 	int current_y = g_button_list[temp].button_bounds.y;
 	if (direction >= 1)
 	{
-		printf("Seeking right...\n");
 		int closest_x = 64;
 		int closest_y = 64;
 		for(int i = 0; i < button_count; i++)
 		{
-			printf("\tChecking button %d\n", i);
 			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
 			{
-				printf("\t\tIs enabled\n");
 				if (g_button_list[i].button_bounds.x - current_x > 0)
 				{
-					printf("\t\tIs right of\n");
 					if (g_button_list[i].button_bounds.x - current_x == closest_x)
 					{
-						printf("\t\tIs equal to previous\n");
 						if (abs(g_button_list[i].button_bounds.y - current_y) < abs(closest_y))
 						{
-							printf("\t\tIs closer than previous closest along non-natural axis %d, %d\n", abs(g_button_list[i].button_bounds.y - current_y), abs(closest_y));
 							closest_button = i;
 							closest_x = g_button_list[i].button_bounds.x - current_x;
 							closest_y = g_button_list[i].button_bounds.y - current_y;
@@ -183,7 +177,6 @@ int gui_seek_next_button_h(int direction)
 					}
 					else if (g_button_list[i].button_bounds.x - current_x < closest_x)
 					{
-						printf("\t\tIs closer than previous\n");
 						closest_button = i;
 						closest_x = g_button_list[i].button_bounds.x - current_x;
 						closest_y = g_button_list[i].button_bounds.y - current_y;
@@ -194,7 +187,6 @@ int gui_seek_next_button_h(int direction)
 	}
 	else
 	{
-		printf("Seeking right...\n");
 		int closest_x = -64;
 		int closest_y = -64;
 		for(int i = 0; i < button_count; i++)
@@ -237,7 +229,6 @@ int gui_seek_next_button_v(int direction)
 	{
 		int closest_x = 64;
 		int closest_y = 64;
-		printf("Seeking down\n");
 		for(int i = 0; i < button_count; i++)
 		{
 			if (g_button_list[i].state == BUTTON_STATE_ENABLED)
