@@ -104,6 +104,8 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
 	int index;
 	int count=0;
+	SDL_Rect srect;
+	SDL_Rect drect;
 	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
 		if(font_set==FONT_CYCLE){  //cycles font for random effect
@@ -111,16 +113,14 @@ void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color col
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
 		index=((int)text[i]);
-		SDL_Rect srect;
-		SDL_Rect drect;
-		drect.w=4;
-		drect.h=6;
-		drect.x=x+(i*4);
-		drect.y=y;
 		srect.x=fonts[index].x;
 		srect.y=fonts[index].y;
 		srect.w=4;
 		srect.h=6;
+		drect.w=4;
+		drect.h=6;
+		drect.x=x+(i*4);
+		drect.y=y;
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
 	}
 }
@@ -137,6 +137,10 @@ void load_fonts(){
 	font[FONT_KRULL] = Load_tex("sprites/gui/font_5x3_krull.png");
 	font[FONT_PLINK] = Load_tex("sprites/gui/font_5x3_plink.png");
 	font[FONT_SNEEB] = Load_tex("sprites/gui/font_5x3_sneeb.png");
+	for(int i=0;i<256;i++){
+		fonts[i].x=60;
+		fonts[i].y=58;
+	}
 	fonts[48].x = 0; fonts[48].y = 0; // 0
 	fonts[49].x = 4; fonts[49].y = 0; // 1
 	fonts[50].x = 8; fonts[50].y = 0; // 2
