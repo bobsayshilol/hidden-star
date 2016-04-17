@@ -2,9 +2,14 @@
 
 int comms_setup()
 {
-	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
-	subject_name = "from xornax 12";
 	printf("loading comms...\n");
+
+	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
+	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
+	portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
+	subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	subject_name = "from xornax 12";
+
 	main_scene = SCENE_COMMS;
 	frame_skip=0;
 	comms_draw_count = 0;
@@ -96,10 +101,6 @@ void comms_load_player_choices()
 
 void comms_setup_intro()
 {
-	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
-	portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
-	subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
-
 	int w, h;
 	SDL_QueryTexture(subject, NULL, NULL, &w, &h);
 	comms_subject_pos[0] = -w;
@@ -114,9 +115,8 @@ void comms_setup_intro()
 
 	comms_text_offset = h + 1;
 
-	SDL_QueryTexture(portrait_image, NULL, NULL, &w, &h);
 	comms_portrait_pos[0] = 2;
-	comms_portrait_pos[1] = abs(comms_portrait_background_pos[1]) / 2 - h / 2;
+	comms_portrait_pos[1] = 0;
 
 	comms_state = COMMS_STATE_INTRO;
 	current_npc_text = 0;
@@ -152,19 +152,19 @@ void comms_setup_player_choices()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_button(comms_player_choices[current_player_choice].text0, 0, comms_text_offset - 1, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action0);
+	default_button = gui_add_button(comms_player_choices[current_player_choice].text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action0);
 
 	if (comms_player_choices[current_player_choice].text1 != NULL)
 	{
-		gui_add_button(comms_player_choices[current_player_choice].text1, 0, comms_text_offset + 6, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action1);
+		gui_add_button(comms_player_choices[current_player_choice].text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action1);
 
 		if (comms_player_choices[current_player_choice].text2 != NULL)
 		{
-			gui_add_button(comms_player_choices[current_player_choice].text2, 0, comms_text_offset + 13, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action2);
+			gui_add_button(comms_player_choices[current_player_choice].text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action2);
 
 			if (comms_player_choices[current_player_choice].text3 != NULL)
 			{
-				gui_add_button(comms_player_choices[current_player_choice].text3, 0, comms_text_offset + 20, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action3);
+				gui_add_button(comms_player_choices[current_player_choice].text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action3);
 			}
 		}
 	}
