@@ -3,7 +3,6 @@
 int comms_setup()
 {
 	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
-	//todo: load possible npc text from file and select appropriate one based on disposition/bounty/resource need
 	subject_name = "from xornax 12";
 	printf("loading comms...\n");
 	main_scene = SCENE_COMMS;
@@ -21,6 +20,7 @@ int comms_setup()
 
 void comms_load_npc_text()
 {
+	//todo: load possible npc text from file and select appropriate one based on disposition/bounty/resource need
 	comms_npc_text[COMMS_NPC_GREETING].text = "greetings @";
 	comms_npc_text[COMMS_NPC_GREETING].next_state = COMMS_STATE_PLAYER_CHOICE;
 	comms_npc_text[COMMS_NPC_GREETING].next_state_index = COMMS_PLAYER_CHOICE_MAIN;
@@ -130,7 +130,6 @@ void comms_setup_intro()
 
 void comms_setup_npc_text()
 {
-	printf("Setting up npc text...\n");
 	comms_state = COMMS_STATE_NPC_TEXT;
 	comms_subject_pos[0] = comms_subject_final_pos;
 	comms_portrait_background_pos[1] = comms_portrait_background_final_pos;
