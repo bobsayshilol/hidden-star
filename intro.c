@@ -2,7 +2,7 @@
 
 int intro_setup(){
 	printf("loading intro..\n");
-	main_scene=0;
+	main_scene=SCENE_INTRO;
 	frame_skip=2;
 
 	intro_bg=Load_tex("sprites/title_planet.png");
