@@ -13,6 +13,7 @@
 #include "intro.h"
 #include "planets.h"
 #include "combat.h"
+#include "comms.h"
 #include "travel.h"
 
 #define main_resX 64
@@ -38,6 +39,15 @@
 #define FONT_SNEEB 3
 #define FONT_CYCLE 4
 
+#define SCENE_INTRO 0
+#define SCENE_MAIN_MENU 1
+#define SCENE_COMBAT 2
+#define SCENE_COMMS 3
+#define SCENE_TRAVEL 4
+#define SCENE_TRADE 5
+#define SCENE_PLANET_GEN 6
+
+
 SDL_Surface *main_screen;
 SDL_Window *main_window;
 SDL_Renderer *main_renderer;
@@ -56,10 +66,11 @@ font_map fonts[256];
 
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);
-void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color);
+int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color);
 void draw_number(int x, int y, int num);
 void draw_scene();
 void main_input(SDL_Event event);
 int main_setup();
+void main_menu_setup();
 
 #endif

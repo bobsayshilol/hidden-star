@@ -126,7 +126,6 @@ void gui_draw()
 
 int gui_cycle_next_button(int direction)
 {
-	printf("Seeking next button in direction %d\n", direction);
 	//direction should be 0 or 1
 	int temp = current_button;
 	do
@@ -135,12 +134,10 @@ int gui_cycle_next_button(int direction)
 		{
 			if (temp < button_count - 1)
 			{
-				printf("Increasing temp %d\n", g_button_list[temp].state);
 				temp ++;
 			}
 			else
 			{
-				printf("Setting temp to 0  %d\n", g_button_list[temp].state);
 				temp = 0;
 			}
 		}
@@ -148,17 +145,14 @@ int gui_cycle_next_button(int direction)
 		{
 			if (temp > 0)
 			{
-				printf("Decreasing temp %d\n", g_button_list[temp].state);
 				temp --;
 			}
 			else
 			{
-				printf("Setting temp to button_count -1 %d\n", g_button_list[temp].state);
 				temp = button_count - 1;
 			}
 		}
 	} while(g_button_list[temp].state == BUTTON_STATE_DISABLED); //TODO: What happens if there are no enabled buttons?
-	printf("Updating current button from %d to %d\n", current_button, temp);
 	update_button_state(temp, BUTTON_STATE_SELECTED);
 }
 

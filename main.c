@@ -59,7 +59,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 8) + 32);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 		case TWINK2:
 			if((rand()%32)==0){
@@ -68,7 +68,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 16) + 48);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 		case TWINK3:
 			if((rand()%32)==0){
@@ -77,7 +77,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 24) + 64);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 		case TWINK4:
 			if((rand()%48)==0){
@@ -86,7 +86,7 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 32) + 80);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 		case TWINK5:
 			if((rand()%56)==0){
@@ -95,34 +95,44 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 				r=((rand() % 40) + 96);
 			}
 			SDL_SetTextureAlphaMod(tex, r);
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 90, 0, 0);
+			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 	}
 	free(color);
 }
 
-void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
+int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
 	int index;
 	int count=0;
+	int offset_y = 0;
+	int offset_x = 0;
 	SDL_Rect srect;
 	SDL_Rect drect;
 	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
+		if (text[i] == '\n')
+		{
+			offset_x = -i - 1;
+			offset_y += 6;
+			continue;
+		}
+
 		if(font_set==FONT_CYCLE){  //cycles font for random effect
 			count=(rand()%3)+1;
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
 		index=((int)text[i]);
-		srect.x=fonts[index].x;
-		srect.y=fonts[index].y;
-		srect.w=4;
-		srect.h=6;
-		drect.w=4;
-		drect.h=6;
-		drect.x=x+(i*4);
-		drect.y=y;
+		srect.x = fonts[index].x;
+		srect.y = fonts[index].y;
+		srect.w = 4;
+		srect.h = 6;
+		drect.w = 4;
+		drect.h = 6;
+		drect.x = x + (i + offset_x) * 4;
+		drect.y = y + offset_y;
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
 	}
+	return offset_y;
 }
 
 void draw_number(int x, int y, int num){
@@ -156,6 +166,7 @@ void load_fonts(){
 	fonts[61].x= 48; fonts[61].y = 0; // =
 	fonts[37].x= 52; fonts[37].y = 0; // %
 	fonts[42].x= 56; fonts[42].y = 0; // *
+	fonts[96].x= 20; fonts[96].y =24; // `
 	fonts[97].x = 0; fonts[97].y = 6; // a
 	fonts[98].x = 4; fonts[98].y = 6; // b
 	fonts[99].x = 8; fonts[99].y = 6; // c
@@ -186,26 +197,28 @@ void load_fonts(){
 	fonts[33].x= 48; fonts[33].y= 12; // ?
 	fonts[40].x= 52; fonts[40].y= 12; // (
 	fonts[41].x= 56; fonts[41].y= 12; // )
-	fonts[60].x = 0; fonts[60].y= 18; // >
-	fonts[62].x = 4; fonts[62].y= 18; // <
+	fonts[60].x = 4; fonts[60].y= 18; // >
+	fonts[62].x = 0; fonts[62].y= 18; // <
 	fonts[95].x = 8; fonts[95].y= 18; // _
 	fonts[46].x= 12; fonts[46].y= 18; // .
 	fonts[44].x= 16; fonts[44].y= 18; // ,
 	fonts[39].x= 20; fonts[39].y= 18; // '
 	fonts[34].x= 24; fonts[34].y= 18; // "
 	fonts[58].x= 28; fonts[58].y= 18; // :
+	fonts[59].x= 16; fonts[59].y= 24; // ;
 	fonts[94].x= 32; fonts[94].y= 18; // ^
 	fonts[91].x= 36; fonts[91].y= 18; // [
 	fonts[93].x= 40; fonts[93].y= 18; // ]
 	fonts[123].x=44; fonts[123].y=18; // {
 	fonts[125].x=48; fonts[125].y=18; // }
+	fonts[126].x=24; fonts[126].y=24; // }
 	fonts[47].x= 52; fonts[47].y= 18; // forwardslash
 	fonts[92].x= 56; fonts[92].y= 18; // backslash
 	fonts[64].x = 0; fonts[64].y= 24; // @ smiley
 	fonts[36].x = 4; fonts[36].y= 24; // $ poutey
 	fonts[38].x = 8; fonts[38].y= 24; // & hmmmmm
 	fonts[35].x= 12; fonts[35].y= 24; // #
-	fonts[32].x= 16; fonts[32].y= 24; // space
+	fonts[32].x= 60; fonts[32].y= 0; // space
 }
 
 void main_menu_setup()
@@ -216,7 +229,7 @@ void main_menu_setup()
 	gui_add_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
 	gui_add_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
 	gui_add_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
-	gui_add_button("comms", 0, 52, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
+	gui_add_button("comms", 0, 52, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_setup);
 
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
@@ -250,17 +263,21 @@ int main_setup(){
 
 void draw_scene(){
 	switch(main_scene){
-		case 0:
+		case SCENE_INTRO:
 			if(intro_draw()==1){
-				//combat_setup(); //should be main menu
+				//should be main menu
 				gui_draw();
 			}
 			break;
-		case 1:
+		case SCENE_PLANET_GEN:
 			planet_draw();
 			break;
-		case 2:
+		case SCENE_COMBAT:
 			combat_draw();
+			break;
+		case SCENE_COMMS:
+			comms_draw();
+			gui_draw();
 			break;
 	}
 }
@@ -270,51 +287,56 @@ void main_input(SDL_Event event){
 	SDL_GetMouseState(&mouseX, &mouseY);
 	mouseX /= main_scale;
 	mouseY /= main_scale;
-	switch(main_scene){
-		case 0:
-		switch (event.type) {
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym){
-					case SDLK_TAB:
-						if (event.key.keysym.mod == KMOD_LSHIFT || event.key.keysym.mod == KMOD_RSHIFT)
-						{
-							gui_cycle_next_button(0);
-						}
-						else
-						{
-							gui_cycle_next_button(1);
-						}
-						break;
-						gui_do_button_action();
-					case SDLK_RETURN:
-					case SDLK_KP_ENTER:
-						gui_do_button_action();
-						break;
-					case SDLK_LEFT:
-						gui_seek_next_button_h(0);
-						break;
-					case SDLK_RIGHT:
-						gui_seek_next_button_h(1);
-						break;
-					case SDLK_UP:
-						gui_seek_next_button_v(0);
-						break;
-					case SDLK_DOWN:
-						gui_seek_next_button_v(1);
-						break;
+
+	//since gui junk isn't scene specific, we should handle gui input all the time?
+	switch (event.type)
+	{
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.sym){
+				case SDLK_TAB:
+					if (event.key.keysym.mod == KMOD_LSHIFT || event.key.keysym.mod == KMOD_RSHIFT)
+					{
+						gui_cycle_next_button(0);
+					}
+					else
+					{
+						gui_cycle_next_button(1);
 					}
 					break;
-			case SDL_MOUSEMOTION:
-				gui_update_hover_state(mouseX, mouseY);
+					gui_do_button_action();
+				case SDLK_RETURN:
+				case SDLK_KP_ENTER:
+					gui_do_button_action();
+					break;
+				case SDLK_LEFT:
+					gui_seek_next_button_h(0);
+					break;
+				case SDLK_RIGHT:
+					gui_seek_next_button_h(1);
+					break;
+				case SDLK_UP:
+					gui_seek_next_button_v(0);
+					break;
+				case SDLK_DOWN:
+					gui_seek_next_button_v(1);
+					break;
+				}
 				break;
-			case SDL_MOUSEBUTTONDOWN:
-				gui_do_button_action_coords(mouseX, mouseY);
-			}
+		case SDL_MOUSEMOTION:
+			gui_update_hover_state(mouseX, mouseY);
 			break;
-		case 1:
+		case SDL_MOUSEBUTTONDOWN:
+			gui_do_button_action_coords(mouseX, mouseY);
+			break;
+	}
+
+	switch(main_scene){
+		case SCENE_INTRO:
+			break;
+		case SCENE_PLANET_GEN:
 			planets_handle_input(event);
 			break;
-		case 2:
+		case SCENE_COMBAT:
 			combat_handle_input(event);
 			break;
 	}
