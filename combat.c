@@ -198,22 +198,22 @@ void combat_show(int time_pos){
 	}
 	if(c_player_weapon==10 && c_AI_dead<2){
 		combat_animate(c_explosion1, c_player_shot1X-2, c_player_shot1Y-2, c_aniframe1);
-		draw_number(c_AI_shipX-5,c_AI_shipY+3, -10);
+		draw_number(c_AI_shipX-12,c_AI_shipY+4, -10);
 	}
 	if(c_player_weapon==20 && c_AI_dead<2){
 		combat_animate(c_miss1, c_player_shot1X-2, c_player_shot1Y-2, c_aniframe1);
-		draw_number(c_AI_shipX-5,c_AI_shipY+3, 0);
+		draw_number(c_AI_shipX-12,c_AI_shipY+4, 0);
 	}
 	if(c_AI_weapon==1){
 		main_blit(c_shot2, c_AI_shot1X, c_AI_shot1Y, FLIPHV, combat_get_color(1));
 	}
 	if(c_AI_weapon==10 && c_player_dead<2){
 		combat_animate(c_explosion1, c_AI_shot1X-2, c_AI_shot1Y-1, c_aniframe1);
-		draw_number(c_player_shipX+28,c_player_shipY+4, -10);
+		draw_number(c_player_shipX+18,c_player_shipY+4, -10);
 	}
 	if(c_AI_weapon==20 && c_player_dead<2){
 		combat_animate(c_miss1, c_AI_shot1X-2, c_AI_shot1Y-1, c_aniframe1);
-		draw_number(c_player_shipX+28,c_player_shipY+4, 0);
+		draw_number(c_player_shipX+18,c_player_shipY+4, 0);
 	}
 
 	if(c_player_dead > 1 && c_player_dead < 4){

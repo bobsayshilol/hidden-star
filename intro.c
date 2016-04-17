@@ -27,8 +27,8 @@ int intro_draw(){
 	draw_text(32-((intro_count1*4)), 29, "hidden", intro_count1, intro_font, GUI_TEXT_COLOR_DEFAULT);
 	draw_text(40, 29, "star", intro_count2, intro_font, GUI_TEXT_COLOR_DEFAULT);
 	if(intro_count3<=5){
-		draw_number(36, 29, intro_count1);
-		draw_number(40, 29, intro_count2);
+		draw_number(32, 29, intro_count1);
+		draw_number(36, 29, intro_count2);
 	}
 
 	if(intro_count3>10){

@@ -47,6 +47,12 @@ int main_scene;
 int frame_skip;
 
 SDL_Texture *font[4];
+typedef struct font_map{
+	int x;
+	int y;
+}font_map;
+
+font_map fonts[256];
 
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);

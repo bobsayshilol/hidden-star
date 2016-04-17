@@ -102,30 +102,23 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 }
 
 void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
-	int w, h, f, index;
+	int index;
 	int count=0;
-	SDL_QueryTexture(font[count], NULL, NULL, &w, &h);
 	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
 		if(font_set==FONT_CYCLE){  //cycles font for random effect
-			count++;
-			if(count>3){count=1;}
+			count=(rand()%3)+1;
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
-		index=(((int)text[i])-97);
+		index=((int)text[i]);
 		SDL_Rect srect;
 		SDL_Rect drect;
 		drect.w=4;
 		drect.h=6;
 		drect.x=x+(i*4);
 		drect.y=y;
-		if(index<15){
-			srect.x=index*4;
-			srect.y=6;
-		}else{
-			srect.x=(index-15)*4;
-			srect.y=12;
-		}
+		srect.x=fonts[index].x;
+		srect.y=fonts[index].y;
 		srect.w=4;
 		srect.h=6;
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
@@ -133,40 +126,9 @@ void draw_text(int x, int y, char *text, int length, int font_set, SDL_Color col
 }
 
 void draw_number(int x, int y, int num){
-	int w, h, f;
-	int c=0;
-	int n=1;
-	SDL_QueryTexture(font[0], NULL, NULL, &w, &h);
-	SDL_Rect srect;
-	SDL_Rect drect;
-	drect.w=4;
-	drect.h=6;
-	if(num<0){
-		n=-1;
-	}
-	num*=n;
-	while(num){
-		c+=4;
-		f=(num%10);
-		num/=10;
-		srect.x=(f*4);
-		srect.y=0;
-		srect.w=4;
-		srect.h=6;
-		drect.x=x-c;
-		drect.y=y;
-		SDL_RenderCopy(main_renderer, font[0], &srect, &drect);
-	}
-	if(n<0){
-		c+=4;
-		srect.x=41;
-		srect.y=0;
-		srect.w=4;
-		srect.h=6;
-		drect.x=x-c;
-		drect.y=y;
-		SDL_RenderCopy(main_renderer, font[0], &srect, &drect);
-	}
+	char s[16];
+	int len=sprintf(s, "%d", num);
+	draw_text(x, y, s, len, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
 }
 
 void load_fonts(){
@@ -175,6 +137,71 @@ void load_fonts(){
 	font[FONT_KRULL] = Load_tex("sprites/gui/font_5x3_krull.png");
 	font[FONT_PLINK] = Load_tex("sprites/gui/font_5x3_plink.png");
 	font[FONT_SNEEB] = Load_tex("sprites/gui/font_5x3_sneeb.png");
+	fonts[48].x = 0; fonts[48].y = 0; // 0
+	fonts[49].x = 4; fonts[49].y = 0; // 1
+	fonts[50].x = 8; fonts[50].y = 0; // 2
+	fonts[51].x= 12; fonts[51].y = 0; // 3
+	fonts[52].x= 16; fonts[52].y = 0; // 4
+	fonts[53].x= 20; fonts[53].y = 0; // 5
+	fonts[54].x= 24; fonts[54].y = 0; // 6
+	fonts[55].x= 28; fonts[55].y = 0; // 7
+	fonts[56].x= 32; fonts[56].y = 0; // 8
+	fonts[57].x= 36; fonts[57].y = 0; // 9
+	fonts[45].x= 40; fonts[45].y = 0; // -
+	fonts[43].x= 44; fonts[43].y = 0; // +
+	fonts[61].x= 48; fonts[61].y = 0; // =
+	fonts[37].x= 52; fonts[37].y = 0; // %
+	fonts[42].x= 56; fonts[42].y = 0; // *
+	fonts[97].x = 0; fonts[97].y = 6; // a
+	fonts[98].x = 4; fonts[98].y = 6; // b
+	fonts[99].x = 8; fonts[99].y = 6; // c
+	fonts[100].x=12; fonts[100].y= 6; // d
+	fonts[101].x=16; fonts[101].y= 6; // e
+	fonts[102].x=20; fonts[102].y= 6; // f
+	fonts[103].x=24; fonts[103].y= 6; // g
+	fonts[104].x=28; fonts[104].y= 6; // h
+	fonts[105].x=32; fonts[105].y= 6; // i
+	fonts[106].x=36; fonts[106].y= 6; // j
+	fonts[107].x=40; fonts[107].y= 6; // k
+	fonts[108].x=44; fonts[108].y= 6; // l
+	fonts[109].x=48; fonts[109].y= 6; // m
+	fonts[110].x=52; fonts[110].y= 6; // n
+	fonts[111].x=56; fonts[111].y= 6; // o
+	fonts[112].x= 0; fonts[112].y=12; // p
+	fonts[113].x= 4; fonts[113].y=12; // q
+	fonts[114].x= 8; fonts[114].y=12; // r
+	fonts[115].x=12; fonts[115].y=12; // s
+	fonts[116].x=16; fonts[116].y=12; // t
+	fonts[117].x=20; fonts[117].y=12; // u
+	fonts[118].x=24; fonts[118].y=12; // v
+	fonts[119].x=28; fonts[119].y=12; // w
+	fonts[120].x=32; fonts[120].y=12; // x
+	fonts[121].x=36; fonts[121].y=12; // y
+	fonts[122].x=40; fonts[122].y=12; // z
+	fonts[63].x= 44; fonts[63].y= 12; // !
+	fonts[33].x= 48; fonts[33].y= 12; // ?
+	fonts[40].x= 52; fonts[40].y= 12; // (
+	fonts[41].x= 56; fonts[41].y= 12; // )
+	fonts[60].x = 0; fonts[60].y= 18; // >
+	fonts[62].x = 4; fonts[62].y= 18; // <
+	fonts[95].x = 8; fonts[95].y= 18; // _
+	fonts[46].x= 12; fonts[46].y= 18; // .
+	fonts[44].x= 16; fonts[44].y= 18; // ,
+	fonts[39].x= 20; fonts[39].y= 18; // '
+	fonts[34].x= 24; fonts[34].y= 18; // "
+	fonts[58].x= 28; fonts[58].y= 18; // :
+	fonts[94].x= 32; fonts[94].y= 18; // ^
+	fonts[91].x= 36; fonts[91].y= 18; // [
+	fonts[93].x= 40; fonts[93].y= 18; // ]
+	fonts[123].x=44; fonts[123].y=18; // {
+	fonts[125].x=48; fonts[125].y=18; // }
+	fonts[47].x= 52; fonts[47].y= 18; // forwardslash
+	fonts[92].x= 56; fonts[92].y= 18; // backslash
+	fonts[64].x = 0; fonts[64].y= 24; // @ smiley
+	fonts[36].x = 4; fonts[36].y= 24; // $ poutey
+	fonts[38].x = 8; fonts[38].y= 24; // & hmmmmm
+	fonts[35].x= 12; fonts[35].y= 24; // #
+	fonts[32].x= 16; fonts[32].y= 24; // space
 }
 
 void main_menu_setup()
