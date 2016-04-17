@@ -617,8 +617,8 @@ void combat_show_fight(){
 
  /* Init and start */
 int combat_setup(){
-	printf("loading combat..\n");
-	main_scene=2;
+	printf("loading combat...\n");
+	main_scene=SCENE_COMBAT;
 	frame_skip=0;
 
 	c_player_move1=0;
