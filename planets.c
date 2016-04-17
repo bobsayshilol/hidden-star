@@ -43,8 +43,8 @@ void planet_draw(){
 }
 
 int planet_setup(){
-	printf("loading planet..\n");
-	main_scene=1;
+	printf("loading planet...\n");
+	main_scene=SCENE_PLANET_GEN;
 	frame_skip=1;
 
 	p_speed=1;
