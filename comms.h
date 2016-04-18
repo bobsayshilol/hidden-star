@@ -2,6 +2,7 @@
 #define HS_COMMS
 
 #include "main.h"
+#include "util/vector.h"
 
 int comms_draw_count;
 
@@ -51,8 +52,8 @@ SDL_Texture *portrait_background;
 SDL_Texture *portrait_image;
 SDL_Texture *subject;
 
-Comms_PlayerChoice comms_player_choices[3];
-Comms_NPCDialogue comms_npc_text[10];
+Vector comms_player_choices;
+Vector comms_npc_text;
 int current_npc_text;
 int current_player_choice;
 int selected_player_choice;

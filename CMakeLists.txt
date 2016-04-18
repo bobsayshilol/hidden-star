@@ -16,10 +16,13 @@ add_library (planets planets.c)
 add_library (travel travel.c)
 add_executable (hiddenstar main.c)
 set_property (TARGET hiddenstar PROPERTY C_STANDARD 99)
+include_directories (util)
 target_link_libraries (hiddenstar combat comms gui intro planets travel)
+target_link_libraries (util)
 target_link_libraries (hiddenstar ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} m)
 
 add_subdirectory (standalone)
+add_subdirectory (util)
 
 # Installation
 install (TARGETS hiddenstar DESTINATION bin)

@@ -25,78 +25,120 @@ int comms_setup()
 
 void comms_load_npc_text()
 {
+	printf("Loading NPC text...\n");
+	//todo: free any existing text?
+	vector_free(&comms_npc_text);
+	vector_init(&comms_npc_text, 10);
+	vector_fill(&comms_npc_text, NULL);
+
 	//todo: load possible npc text from file and select appropriate one based on disposition/bounty/resource need
-	comms_npc_text[COMMS_NPC_GREETING].text = "greetings @";
-	comms_npc_text[COMMS_NPC_GREETING].next_state = COMMS_STATE_PLAYER_CHOICE;
-	comms_npc_text[COMMS_NPC_GREETING].next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	Comms_NPCDialogue *npcd;
 
-	comms_npc_text[COMMS_NPC_DEFEND].text = "you want to fight?\nwe fight $";
-	comms_npc_text[COMMS_NPC_DEFEND].next_state = COMMS_STATE_ENTER_COMBAT;
-	comms_npc_text[COMMS_NPC_DEFEND].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "greetings (@)";
+	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
+	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	vector_set(&comms_npc_text, COMMS_NPC_GREETING, npcd);
 
-	comms_npc_text[COMMS_NPC_ATTACK_ACCEPT].text = "we are glad you\nembrace fight\nwillingly";
-	comms_npc_text[COMMS_NPC_ATTACK_ACCEPT].next_state = COMMS_STATE_ENTER_COMBAT;
-	comms_npc_text[COMMS_NPC_ATTACK_ACCEPT].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "you want to fight?\nwe fight ($)";
+	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_DEFEND, npcd);
 
-	comms_npc_text[COMMS_NPC_ATTACK_FLEE].text = "you get away.\nfor today.";
-	comms_npc_text[COMMS_NPC_ATTACK_FLEE].next_state = COMMS_STATE_ENTER_TRAVEL;
-	comms_npc_text[COMMS_NPC_ATTACK_FLEE].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "we are glad you\nembrace fight\nwillingly";
+	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_ACCEPT, npcd);
 
-	comms_npc_text[COMMS_NPC_ATTACK_PLEAD].text = "you too pitiful\nto fight";
-	comms_npc_text[COMMS_NPC_ATTACK_PLEAD].next_state = COMMS_STATE_PLAYER_CHOICE;
-	comms_npc_text[COMMS_NPC_ATTACK_PLEAD].next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text ="you get away.\nfor today.";
+	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_FLEE, npcd);
 
-	comms_npc_text[COMMS_NPC_TRADE].text = "let's trade";
-	comms_npc_text[COMMS_NPC_TRADE].next_state = COMMS_STATE_ENTER_TRADE;
-	comms_npc_text[COMMS_NPC_TRADE].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "you too pitiful\nto fight";
+	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
+	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_PLEAD, npcd);
 
-	comms_npc_text[COMMS_NPC_TRADE_ACCEPT].text = "good, let's trade";
-	comms_npc_text[COMMS_NPC_TRADE_ACCEPT].next_state = COMMS_STATE_ENTER_TRADE;
-	comms_npc_text[COMMS_NPC_TRADE_ACCEPT].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "let's trade";
+	npcd->next_state = COMMS_STATE_ENTER_TRADE;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_TRADE, npcd);
 
-	comms_npc_text[COMMS_NPC_TRADE_DECLINE].text = "no trade? oh well";
-	comms_npc_text[COMMS_NPC_TRADE_DECLINE].next_state = COMMS_STATE_PLAYER_CHOICE;
-	comms_npc_text[COMMS_NPC_TRADE_DECLINE].next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "good, let's trade";
+	npcd->next_state = COMMS_STATE_ENTER_TRADE;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_TRADE_ACCEPT, npcd);
 
-	comms_npc_text[COMMS_NPC_INFO].text = "you want info?\nwe have none.";
-	comms_npc_text[COMMS_NPC_INFO].next_state = COMMS_STATE_PLAYER_CHOICE;
-	comms_npc_text[COMMS_NPC_INFO].next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "no trade? oh well";
+	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
+	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	vector_set(&comms_npc_text, COMMS_NPC_TRADE_DECLINE, npcd);
 
-	comms_npc_text[COMMS_NPC_FAREWELL].text = "goodbye #";
-	comms_npc_text[COMMS_NPC_FAREWELL].next_state = COMMS_STATE_ENTER_TRAVEL;
-	comms_npc_text[COMMS_NPC_FAREWELL].next_state_index = -1;
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "you want info?\nwe have none.";
+	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
+	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	vector_set(&comms_npc_text, COMMS_NPC_INFO, npcd);
+
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = "goodbye (&)";
+	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
+	npcd->next_state_index = -1;
+	vector_set(&comms_npc_text, COMMS_NPC_FAREWELL, npcd);
+
+	printf("NPC text loaded\n");
 }
 
 void comms_load_player_choices()
 {
-	//default player choices
-	//event-specific player choices should use whatever we use for the info dialogue trees
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].text0 = "attack";
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].choice0 = COMMS_NPC_DEFEND;
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].text2 = "trade";
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].choice2 = COMMS_NPC_TRADE;
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].text3 = "talk";
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].choice3 = COMMS_NPC_INFO;
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].text1 = "disengage";
-	comms_player_choices[COMMS_PLAYER_CHOICE_MAIN].choice1 = COMMS_NPC_FAREWELL;
+	//todo: free any existing text?
+	vector_free(&comms_player_choices);
+	vector_init(&comms_player_choices, 3);
+	vector_fill(&comms_player_choices, NULL);
 
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].text0 = "agree";
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].choice0 = COMMS_NPC_TRADE_ACCEPT;
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].text1 = "decline";
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].choice1 = COMMS_NPC_TRADE_DECLINE;
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].text2 = NULL;
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].choice2 -1;
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].text3 = NULL;
-	comms_player_choices[COMMS_PLAYER_CHOICE_TRADE].choice3 -1;
 
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].text0 = "attack";
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].choice0 = COMMS_NPC_ATTACK_ACCEPT;
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].text1 = "flee";
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].choice1 = COMMS_NPC_ATTACK_FLEE;
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].text2 = "plead";
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].choice2 = COMMS_NPC_ATTACK_PLEAD;
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].text3 = NULL;
-	comms_player_choices[COMMS_PLAYER_CHOICE_DEFEND].choice3 = -1;
+	Comms_PlayerChoice *pc;
+
+	pc = malloc(sizeof(Comms_PlayerChoice));
+	pc->text0 = "attack";
+	pc->choice0 = COMMS_NPC_DEFEND;
+	pc->text1 = "trade";
+	pc->choice1 = COMMS_NPC_TRADE;
+	pc->text2 = "talk";
+	pc->choice2 = COMMS_NPC_INFO;
+	pc->text3 = "disengage";
+	pc->choice3 = COMMS_NPC_FAREWELL;
+	vector_set(&comms_player_choices, COMMS_PLAYER_CHOICE_MAIN, pc);
+
+	pc = malloc(sizeof(Comms_PlayerChoice));
+	pc->text0 = "aggree";
+	pc->choice0 = COMMS_NPC_TRADE_ACCEPT;
+	pc->text1 = "decline";
+	pc->choice1 = COMMS_NPC_TRADE_DECLINE;
+	pc->text2 = NULL;
+	pc->choice2 = -1;
+	pc->text3 = NULL;
+	pc->choice3 = -1;
+	vector_set(&comms_player_choices, COMMS_PLAYER_CHOICE_TRADE, pc);
+
+	pc = malloc(sizeof(Comms_PlayerChoice));
+	pc->text0 = "attack";
+	pc->choice0 = COMMS_NPC_ATTACK_ACCEPT;
+	pc->text1 = "flee";
+	pc->choice1 = COMMS_NPC_ATTACK_FLEE;
+	pc->text2 = "plead";
+	pc->choice2 = COMMS_NPC_ATTACK_PLEAD;
+	pc->text3 = NULL;
+	pc->choice3 = -1;
+	vector_set(&comms_player_choices, COMMS_PLAYER_CHOICE_DEFEND, pc);
 }
 
 void comms_setup_intro()
@@ -133,7 +175,6 @@ void comms_setup_npc_text()
 	comms_state = COMMS_STATE_NPC_TEXT;
 	comms_subject_pos[0] = comms_subject_final_pos;
 	comms_portrait_background_pos[1] = comms_portrait_background_final_pos;
-	//current_npc_text = comms_npc_text[current_npc_text].next_state_index;
 	gui_clear();
 
 	int default_button;
@@ -144,27 +185,27 @@ void comms_setup_npc_text()
 void comms_setup_player_choices()
 {
 	comms_state = COMMS_STATE_PLAYER_CHOICE;
-	current_player_choice = comms_npc_text[current_npc_text].next_state_index;
+	current_player_choice = ((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->next_state_index;
 	comms_subject_pos[0] = comms_subject_final_pos;
 	comms_portrait_background_pos[1] = comms_portrait_background_final_pos;
-	current_npc_text = comms_npc_text[current_npc_text].next_state_index;
+	current_npc_text = ((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->next_state_index;
 
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_button(comms_player_choices[current_player_choice].text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action0);
+	default_button = gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action0);
 
-	if (comms_player_choices[current_player_choice].text1 != NULL)
+	if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1 != NULL)
 	{
-		gui_add_button(comms_player_choices[current_player_choice].text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action1);
+		gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action1);
 
-		if (comms_player_choices[current_player_choice].text2 != NULL)
+		if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2 != NULL)
 		{
-			gui_add_button(comms_player_choices[current_player_choice].text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action2);
+			gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action2);
 
-			if (comms_player_choices[current_player_choice].text3 != NULL)
+			if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3 != NULL)
 			{
-				gui_add_button(comms_player_choices[current_player_choice].text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action3);
+				gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action3);
 			}
 		}
 	}
@@ -243,13 +284,13 @@ void comms_draw_npc_text()
 	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
 	main_blit(portrait_background, comms_portrait_background_pos[0], comms_portrait_background_pos[1], NOFLIP, NULL);
 	main_blit(portrait_image, comms_portrait_pos[0], comms_portrait_pos[1], NOFLIP, NULL);
-	if (comms_draw_count < strlen(comms_npc_text[current_npc_text].text) * 2)
+	if (comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->text) * 2)
 	{
-		draw_text(1, comms_text_offset, comms_npc_text[current_npc_text].text, comms_draw_count / 2, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->text, comms_draw_count / 2, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
 	}
 	else
 	{
-		draw_text(1, comms_text_offset, comms_npc_text[current_npc_text].text, strlen(comms_npc_text[current_npc_text].text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->text, strlen(((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
 	}
 }
 
@@ -261,10 +302,10 @@ void comms_draw_player_choices()
 }
 
 //todo: make button actions accept a parameter so that we can do this sort of junk in one function
-int comms_action0() { selected_player_choice = comms_player_choices[current_player_choice].choice0; advance_comms(); return 0; }
-int comms_action1() { selected_player_choice = comms_player_choices[current_player_choice].choice1; advance_comms(); return 0; }
-int comms_action2() { selected_player_choice = comms_player_choices[current_player_choice].choice2; advance_comms(); return 0; }
-int comms_action3() { selected_player_choice = comms_player_choices[current_player_choice].choice3; advance_comms(); return 0; }
+int comms_action0() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice0; advance_comms(); return 0; }
+int comms_action1() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice1; advance_comms(); return 0; }
+int comms_action2() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice2; advance_comms(); return 0; }
+int comms_action3() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice3; advance_comms(); return 0; }
 
 int advance_comms()
 {
@@ -276,7 +317,7 @@ int advance_comms()
 			comms_setup_npc_text();
 			break;
 		case COMMS_STATE_NPC_TEXT:
-			switch(comms_npc_text[current_npc_text].next_state)
+			switch(((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->next_state)
 			{
 				case COMMS_STATE_INTRO:
 					//restart dialogue? don't know why we might want to do this. could be fun?
