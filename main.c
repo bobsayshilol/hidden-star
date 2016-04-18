@@ -180,6 +180,32 @@ void load_fonts(){
 	fonts[37].x= 52; fonts[37].y = 0; // %
 	fonts[42].x= 56; fonts[42].y = 0; // *
 	fonts[96].x= 20; fonts[96].y =24; // `
+	fonts[65].x = 0; fonts[65].y = 6; // A
+	fonts[66].x = 4; fonts[66].y = 6; // B
+	fonts[67].x = 8; fonts[67].y = 6; // C
+	fonts[68].x =12; fonts[68].y = 6; // D
+	fonts[69].x =16; fonts[69].y = 6; // E
+	fonts[70].x =20; fonts[70].y = 6; // F
+	fonts[71].x =24; fonts[71].y = 6; // G
+	fonts[72].x =28; fonts[72].y = 6; // H
+	fonts[73].x =32; fonts[73].y = 6; // I
+	fonts[74].x =36; fonts[74].y = 6; // J
+	fonts[75].x =40; fonts[75].y = 6; // K
+	fonts[76].x =44; fonts[76].y = 6; // L
+	fonts[77].x =48; fonts[77].y = 6; // M
+	fonts[78].x =52; fonts[78].y = 6; // N
+	fonts[79].x =56; fonts[79].y = 6; // O
+	fonts[80].x = 0; fonts[80].y =12; // P
+	fonts[81].x = 4; fonts[81].y =12; // Q
+	fonts[82].x = 8; fonts[82].y =12; // R
+	fonts[83].x =12; fonts[83].y =12; // S
+	fonts[84].x =16; fonts[84].y =12; // T
+	fonts[85].x =20; fonts[85].y =12; // U
+	fonts[86].x =24; fonts[86].y =12; // V
+	fonts[87].x =28; fonts[87].y =12; // W
+	fonts[88].x =32; fonts[88].y =12; // X
+	fonts[89].x =36; fonts[89].y =12; // Y
+	fonts[90].x =40; fonts[90].y =12; // Z
 	fonts[97].x = 0; fonts[97].y = 6; // a
 	fonts[98].x = 4; fonts[98].y = 6; // b
 	fonts[99].x = 8; fonts[99].y = 6; // c
