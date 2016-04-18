@@ -65,9 +65,11 @@ void comms_load_npc_text()
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_PLEAD, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "Let's trade";
-	npcd->next_state = COMMS_STATE_ENTER_TRADE;
-	npcd->next_state_index = -1;
+	npcd->text = "No trade";
+	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
+	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+	//npcd->next_state = COMMS_STATE_ENTER_TRADE;
+	//npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
@@ -342,8 +344,7 @@ int advance_comms()
 					break;
 				case COMMS_STATE_ENTER_TRAVEL:
 					gui_clear();
-					intro_setup(); 
-					main_menu_setup(); //exit comms, start travel
+					travel_setup(); //exit comms, start travel
 					break;
 				case COMMS_STATE_ENTER_TRADE:
 					gui_clear();

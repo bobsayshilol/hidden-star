@@ -18,14 +18,27 @@ int travel_setup()
 	SDL_QueryTexture(t_node, NULL, NULL, &half_node_sprite, NULL);
 	half_node_sprite /= 2;
 
+	update_travel_icons();
+
+
+	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+	return 0;
+}
+
+void generate_starmap()
+{
+
 	vector_free_and_free(&node_list);
 	vector_init(&node_list, TRAVEL_MAX_NODES);
 	for (int i = 0; i < TRAVEL_MAX_NODES; i ++)
 	{
 		Travel_Node *t = malloc(sizeof(Travel_Node));
+		//todo: unclump
+		//todo: panning
 		t->x = rand() % 60;
 		t->y = rand() % 60;
 		t->faction = rand() % 4;
+		t->is_inhabited = rand() % 2;
 		t->connectedNode1 = -1;
 		t->connectedNode2 = -1;
 		printf("Adding node %d, %d\n", t->x, t->y);
@@ -81,13 +94,8 @@ int travel_setup()
 				break;
 			}
 		}
-
-		current_node = 0;
-		update_travel_icons();
 	}
-
-	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
-	return 0;
+	current_node = 0;
 }
 
 void update_travel_icons()
@@ -119,24 +127,43 @@ int travel_go(int destination)
 	printf("Initiating travel to %d!\n", destination);
 	current_node = destination;
 	update_travel_icons();
+
+	Travel_Node *cn = (Travel_Node *)vector_get(&node_list, current_node);
+	if (cn->is_inhabited)
+	{
+		printf("Found habited planet!");
+		comms_setup();
+	}
 	return 0;
 }
 
 void travel_draw()
 {
 	SDL_RenderClear(main_renderer);
+
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
-		SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
 		Travel_Node *t = (Travel_Node *)vector_get(&node_list, i);
 		if (t->connectedNode1 > -1)
 		{
+			int a = 128;
+			if (i == current_node || t->connectedNode1 == current_node)
+			{
+				a = 255;
+			}
 			Travel_Node *c1 = (Travel_Node *)vector_get(&node_list, t->connectedNode1);
+			SDL_SetRenderDrawColor(main_renderer, a, a, a, 1);
 			SDL_RenderDrawLine(main_renderer, t->x, t->y, c1->x, c1->y);
 		}
 		if (t->connectedNode2 > -1)
 		{
+			int a = 128;
+			if (i == current_node || t->connectedNode2 == current_node)
+			{
+				a = 255;
+			}
 			Travel_Node *c2 = (Travel_Node *)vector_get(&node_list, t->connectedNode2);
+			SDL_SetRenderDrawColor(main_renderer, a, a, a, 1);
 			SDL_RenderDrawLine(main_renderer, t->x, t->y, c2->x, c2->y);
 		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);

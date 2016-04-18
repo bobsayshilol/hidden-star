@@ -20,6 +20,7 @@ typedef struct Travel_Node
 	int x;
 	int y;
 	int faction;
+	int is_inhabited;
 	int connectedNode1;
 	int connectedNode2;
 } Travel_Node;
@@ -38,6 +39,7 @@ int current_node;
 int half_node_sprite;
 
 int travel_setup();
+void generate_starmap();
 void update_travel_icons();
 int travel_go();
 void travel_draw();

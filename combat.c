@@ -112,6 +112,11 @@ void combat_draw(){
 		c_player_move2=0;
 	}
 	combat_show(c_time_pos);
+	if (c_AI_dead>0)
+	{
+		//todo: handle reputation implications of the fight
+		travel_setup();
+	}
 }
 
 void combat_show(int time_pos){
