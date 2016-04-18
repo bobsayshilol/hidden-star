@@ -472,8 +472,8 @@ int main(int argc, char *argv[]){
 			if(frame>=frame_skip){
 				frame=0;
 				draw_scene();
+				SDL_RenderPresent(main_renderer);
 			}
-			SDL_RenderPresent(main_renderer);
 		}
 	}
 
