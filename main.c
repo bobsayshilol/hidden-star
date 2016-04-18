@@ -112,7 +112,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 	for(int i=0;i<length;i++){
 		if (text[i] == '\n')
 		{
-			offset_x = -i - 1;
+			offset_x = 0;
 			offset_y += 6;
 			continue;
 		}
@@ -128,9 +128,22 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 		srect.h = 6;
 		drect.w = 4;
 		drect.h = 6;
-		drect.x = x + (i + offset_x) * 4;
+		drect.x = x + offset_x;
 		drect.y = y + offset_y;
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
+
+		if (text[i] == ' ' || text[i] == '\'' || text[i] == '.' || text[i] == ',' || text[i] == '!' || text[i] == ':' || text[i] == ';')
+		{
+			offset_x += 2;
+		}
+		else if (text[i] == '`' || text[i] == '(' || text[i] == ')' || text[i] == '[' || text[i] == ']' || text[i] == '{' || text[i] == '}')
+		{
+			offset_x += 3;
+		}
+		else
+		{
+			offset_x += 4;
+		}
 	}
 	return offset_y;
 }
@@ -193,8 +206,8 @@ void load_fonts(){
 	fonts[120].x=32; fonts[120].y=12; // x
 	fonts[121].x=36; fonts[121].y=12; // y
 	fonts[122].x=40; fonts[122].y=12; // z
-	fonts[63].x= 44; fonts[63].y= 12; // !
-	fonts[33].x= 48; fonts[33].y= 12; // ?
+	fonts[33].x= 44; fonts[33].y= 12; // !
+	fonts[63].x= 48; fonts[63].y= 12; // ?
 	fonts[40].x= 52; fonts[40].y= 12; // (
 	fonts[41].x= 56; fonts[41].y= 12; // )
 	fonts[60].x = 4; fonts[60].y= 18; // >
@@ -217,7 +230,7 @@ void load_fonts(){
 	fonts[64].x = 0; fonts[64].y= 24; // @ smiley
 	fonts[36].x = 4; fonts[36].y= 24; // $ poutey
 	fonts[38].x = 8; fonts[38].y= 24; // & hmmmmm
-	fonts[35].x= 12; fonts[35].y= 24; // #
+	fonts[35].x= 12; fonts[35].y= 24; // # solid block
 	fonts[32].x= 60; fonts[32].y= 0; // space
 }
 
