@@ -1,4 +1,7 @@
 #include "main.h"
+#ifdef __MINGW64__
+	#include <windows.h>
+#endif
 
 SDL_Texture* Load_tex(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(main_renderer, filename);
@@ -476,3 +479,11 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
+
+#ifdef __MINGW64__
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	char* argv[0];
+	main(0, argv);
+}
+#endif
