@@ -60,6 +60,7 @@ void combat_draw_action_button(int direction, int x, int y, int mask);
 void combat_draw_action_buttons();
 void combat_draw_thruster(int x, int y, int thruster);
 void combat_draw();
+void combat_set_faction(int f);
 void combat_show(int time_pos);
 void combat_move_stars(int xm, int ym, int d);
 void combat_show_fight();

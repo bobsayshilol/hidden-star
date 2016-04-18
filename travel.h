@@ -37,6 +37,7 @@ Vector node_list;
 
 int current_node;
 int half_node_sprite;
+int inhabited_planet_count;
 
 int travel_setup();
 void generate_starmap();

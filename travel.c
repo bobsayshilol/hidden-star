@@ -27,6 +27,7 @@ int travel_setup()
 
 void generate_starmap()
 {
+	inhabited_planet_count = 0;
 
 	vector_free_and_free(&node_list);
 	vector_init(&node_list, TRAVEL_MAX_NODES);
@@ -41,9 +42,14 @@ void generate_starmap()
 		t->is_inhabited = rand() % 2;
 		t->connectedNode1 = -1;
 		t->connectedNode2 = -1;
-		printf("Adding node %d, %d\n", t->x, t->y);
+		if (t->is_inhabited > 0)
+		{
+			inhabited_planet_count++;
+		}
 		vector_add(&node_list, t);
 	}
+
+	printf("Generating map of %d systems with %d inhabited planets.", TRAVEL_MAX_NODES, inhabited_planet_count);
 
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
@@ -131,7 +137,8 @@ int travel_go(int destination)
 	Travel_Node *cn = (Travel_Node *)vector_get(&node_list, current_node);
 	if (cn->is_inhabited)
 	{
-		printf("Found habited planet!");
+		printf("Found habited planet! %d\n", cn->faction);
+		comms_set_faction(cn->faction);
 		comms_setup();
 	}
 	return 0;

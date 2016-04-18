@@ -1,5 +1,6 @@
 // TODO tab key
 #include "combat.h"
+#include "travel.h"
 
 void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 	int w, h;
@@ -15,6 +16,22 @@ void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 	srect.h=h;
 	drect.w=h;
 	SDL_RenderCopy(main_renderer, tex, &srect, &drect);
+}
+
+void combat_set_faction(int f)
+{
+	if (f == TRAVEL_FACTION_SNEEB)
+	{
+		c_baddy1 = Load_tex("sprites/ships/tri2_front.png");
+	}
+	else if (f == TRAVEL_FACTION_KRULL)
+	{
+		c_baddy1 = Load_tex("sprites/ships/tri3_front.png");
+	}
+	else if (f == TRAVEL_FACTION_PLINK)
+	{
+		c_baddy1 = Load_tex("sprites/ships/ring1_front.png");
+	}
 }
 
 void combat_draw_action_button(int direction, int x, int y, int mask){
@@ -660,7 +677,10 @@ int combat_setup(){
 	c_stars5 = Load_tex("sprites/stars/stars5_256.png");
 	c_stars6 = Load_tex("sprites/stars/stars6_256.png");
 	c_ship1 = Load_tex("sprites/ship1.png");
-	c_baddy1 = Load_tex("sprites/baddy1.png");
+	if (c_baddy1 == NULL)
+	{
+		c_baddy1 = Load_tex("sprites/baddy1.png");
+	}
 	c_timerbar = Load_tex("sprites/timerbar.png");
 	c_hud = Load_tex("sprites/combat_hud_bottom.png");
 	c_firetext = Load_tex("sprites/combat_hud_fire.png");

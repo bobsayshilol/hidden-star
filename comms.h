@@ -69,8 +69,11 @@ int comms_text_offset;
 
 char *subject_name;
 char *comms_intro_text;
+int comms_faction;
+
 
 int comms_setup();
+void comms_set_faction(int f);
 void comms_load_npc_text();
 void comms_load_player_choices();
 void comms_setup_intro();

@@ -1,4 +1,5 @@
 #include "comms.h"
+#include "travel.h"
 
 int comms_setup()
 {
@@ -6,8 +7,15 @@ int comms_setup()
 
 	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
 	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
-	portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
-	subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	if (portrait_image == NULL)
+	{
+		portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
+	}
+
+	if (subject == NULL)
+	{
+		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	}
 	subject_name = "from xornax 12";
 
 	main_scene = SCENE_COMMS;
@@ -21,6 +29,26 @@ int comms_setup()
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
 	return 0;
+}
+
+void comms_set_faction(int f)
+{
+	if (f == TRAVEL_FACTION_KRULL)
+	{
+		portrait_image = Load_tex("sprites/portraits/krull_1.png");
+		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	}
+	else if (f == TRAVEL_FACTION_PLINK)
+	{
+		portrait_image = Load_tex("sprites/portraits/plink_1.png");
+		subject = Load_tex("sprites/ships/ring_ship1_closeup.png");
+	}
+	else if (f == TRAVEL_FACTION_SNEEB)
+	{
+		portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
+		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	}
+	comms_faction = f;
 }
 
 void comms_load_npc_text()
@@ -340,6 +368,7 @@ int advance_comms()
 					break;
 				case COMMS_STATE_ENTER_COMBAT:
 					gui_clear();
+					combat_set_faction(comms_faction);
 					combat_setup(); //exit comms, start combat
 					break;
 				case COMMS_STATE_ENTER_TRAVEL:
