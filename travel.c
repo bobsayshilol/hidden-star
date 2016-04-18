@@ -5,7 +5,6 @@ int travel_setup()
 	printf("Loading travel...\n");
 	main_scene = SCENE_TRAVEL;
 	frame_skip=0;
-	gui_clear();
 
 	t_stars1 = Load_tex("sprites/stars/stars1_256.png");
 	t_stars2 = Load_tex("sprites/stars/stars2_256.png");
@@ -32,9 +31,6 @@ int travel_setup()
 		printf("Adding node %d, %d\n", t->x, t->y);
 		vector_add(&node_list, t);
 	}
-
-	current_node = 0;
-	update_travel_icons();
 
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
@@ -85,6 +81,9 @@ int travel_setup()
 				break;
 			}
 		}
+
+		current_node = 0;
+		update_travel_icons();
 	}
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
@@ -93,23 +92,33 @@ int travel_setup()
 
 void update_travel_icons()
 {
+	gui_clear();
+	Travel_Node *cn = (Travel_Node *)vector_get(&node_list, current_node);
+
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
 		Travel_Node *t = (Travel_Node *)vector_get(&node_list, i);
 		SDL_Texture* tex = t_node;
+		int state = BUTTON_STATE_DISABLED;
 		if (current_node == i)
 		{
 			tex = t_node_current;
 		}
-		gui_add_sprite_button(tex, t->x - half_node_sprite, t->y - half_node_sprite, -1,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_go, i);
+		if (i == cn->connectedNode1 || i == cn->connectedNode2)
+		{
+			state = BUTTON_STATE_ENABLED;
+		}
+		gui_add_sprite_button(tex, t->x - half_node_sprite, t->y - half_node_sprite, -1,  state, BUTTON_STYLE_MENU, -1, &travel_go, i);
 	}
-
+	update_button_state(current_node, BUTTON_STATE_SELECTED);
 }
 
 int travel_go(int destination)
 {
 	//get selected button
 	printf("Initiating travel to %d!\n", destination);
+	current_node = destination;
+	update_travel_icons();
 	return 0;
 }
 
