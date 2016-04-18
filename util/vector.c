@@ -109,3 +109,13 @@ void vector_free(Vector *v)
 {
 	free(v->data);
 }
+
+void vector_free_and_free(Vector *v)
+{
+	for (int i = 0; i < v->count; i++)
+	{
+		free(v->data[i]);
+		v->data[i] = NULL;
+	}
+	free(v->data);
+}
