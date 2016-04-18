@@ -24,12 +24,14 @@
 typedef struct GUI_Button
 {
 	char* text;
+	SDL_Texture* sprite;
 	SDL_Rect button_bounds;
 	SDL_Rect text_bounds;
 	int state;
 	int style;
 	int shortcut; //SDLK values?
-	int (*action)();
+	int action_value;
+	int (*action)(int v);
 } GUI_Button;
 
 GUI_Button g_button_list[20];
@@ -39,7 +41,8 @@ int current_button;
 SDL_Texture *g_button_bg[2][3];
 SDL_Texture *g_button_cap[2][3];
 
-int gui_add_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)());
+int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
+int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
 int update_button_state(int button, int state);
 int gui_cycle_next_button(int direction);
 int gui_seek_next_button_h(int direction);

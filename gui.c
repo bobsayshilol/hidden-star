@@ -9,7 +9,7 @@
 	shortcut is the keyboard shortcut for the button (to be implemented)
 	action is the function to be called when the action is cliecked
 */
-int gui_add_button(char* text, int x, int y, int width, int state, int style, int shortcut, int (*action)())
+int gui_add_text_button(char* text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value)
 {
 	SDL_Rect text_bounds;
 	text_bounds.x = x + BUTTON_MARGIN_HORIZONTAL;
@@ -32,6 +32,7 @@ int gui_add_button(char* text, int x, int y, int width, int state, int style, in
 	button_bounds.h = text_bounds.h + BUTTON_MARGIN_VERTICAL * 2;
 
 	GUI_Button b;
+	b.sprite = NULL;
 	b.text = text;
 	b.text_bounds = text_bounds;
 	b.button_bounds = button_bounds;
@@ -39,6 +40,47 @@ int gui_add_button(char* text, int x, int y, int width, int state, int style, in
 	b.style = style;
 	b.shortcut = shortcut;
 	b.action = action;
+	b.action_value = _action_value;
+	g_button_list[button_count] = b;
+	button_count ++;
+
+	return button_count - 1;
+}
+
+int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value)
+{
+	int w, h;
+	SDL_QueryTexture(_sprite, NULL, NULL, &w, &h);
+
+	SDL_Rect text_bounds;
+	text_bounds.x = x;
+	text_bounds.y = y;
+	if (width <= w)
+	{
+		text_bounds.w = w; //todo: Account for spaces?
+	}
+	else
+	{
+		text_bounds.w = width;
+	}
+	text_bounds.h = 5; //todo: account for wrapped text
+
+	SDL_Rect button_bounds;
+	button_bounds.x = x;
+	button_bounds.y = y;
+	button_bounds.w = text_bounds.w;
+	button_bounds.h = text_bounds.h;
+
+	GUI_Button b;
+	b.sprite = _sprite;
+	b.text = "";
+	b.text_bounds = text_bounds;
+	b.button_bounds = button_bounds;
+	b.state = state;
+	b.style = style;
+	b.shortcut = shortcut;
+	b.action = action;
+	b.action_value = _action_value;
 	g_button_list[button_count] = b;
 	button_count ++;
 
@@ -94,7 +136,7 @@ void gui_do_button_action()
 {
 	if (current_button > -1 && current_button < button_count)
 	{
-		g_button_list[current_button].action();
+		g_button_list[current_button].action(g_button_list[current_button].action_value);
 		//TODO: Handle non-zero returns
 	}
 	else
@@ -107,20 +149,37 @@ void gui_draw()
 {
 	for(int i = 0; i < button_count; i++)
 	{
-		if (g_button_list[i].style == BUTTON_STYLE_GUI)
+		if (g_button_list[i].sprite == NULL)
 		{
-			for (int j = 0; j < g_button_list[i].text_bounds.w; j++)
+			//Draw text button
+			if (g_button_list[i].style == BUTTON_STYLE_GUI)
 			{
-				main_blit(g_button_bg[g_button_list[i].style][g_button_list[i].state], g_button_list[i].text_bounds.x + j, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+				for (int j = 0; j < g_button_list[i].text_bounds.w; j++)
+				{
+					main_blit(g_button_bg[g_button_list[i].style][g_button_list[i].state], g_button_list[i].text_bounds.x + j, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+				}
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - BUTTON_MARGIN_HORIZONTAL, g_button_list[i].button_bounds.y, FLIPH, NULL);
 			}
-			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
-			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - BUTTON_MARGIN_HORIZONTAL, g_button_list[i].button_bounds.y, FLIPH, NULL);
+			else
+			{
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			}
+			draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].style][g_button_list[i].state]);
 		}
 		else
 		{
-			main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			//Draw sprite button
+			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			if (g_button_list[i].state == BUTTON_STATE_SELECTED)
+			{
+				//TODO: Store the previous draw colour
+				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
+				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
+				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
+			}
 		}
-		draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].style][g_button_list[i].state]);
 	}
 }
 

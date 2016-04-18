@@ -2,7 +2,7 @@
 
 int comms_setup()
 {
-	printf("loading comms...\n");
+	printf("Loading comms...\n");
 
 	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
 	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
@@ -26,8 +26,8 @@ int comms_setup()
 void comms_load_npc_text()
 {
 	printf("Loading NPC text...\n");
-	//todo: free any existing text?
-	vector_free(&comms_npc_text);
+
+	vector_free_and_free(&comms_npc_text);
 	vector_init(&comms_npc_text, 10);
 	vector_fill(&comms_npc_text, NULL);
 
@@ -35,61 +35,61 @@ void comms_load_npc_text()
 	Comms_NPCDialogue *npcd;
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "greetings (@)";
+	npcd->text = "Greetings (@)";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_GREETING, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "you want to fight?\nwe fight ($)";
+	npcd->text = "You want to fight?\nWe fight ($)";
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_DEFEND, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "we are glad you\nembrace fight\nwillingly";
+	npcd->text = "We are glad you\nembrace fight\nwillingly";
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_ACCEPT, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text ="you get away.\nfor today.";
+	npcd->text ="You get away.\nfor today.";
 	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_FLEE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "you too pitiful\nto fight";
+	npcd->text = "You are too pitiful\nto fight";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_PLEAD, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "let's trade";
+	npcd->text = "Let's trade";
 	npcd->next_state = COMMS_STATE_ENTER_TRADE;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "good, let's trade";
+	npcd->text = "Good, let's trade";
 	npcd->next_state = COMMS_STATE_ENTER_TRADE;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE_ACCEPT, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "no trade? oh well";
+	npcd->text = "No trade? oh well";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE_DECLINE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "you want info?\nwe have none.";
+	npcd->text = "You want info?\nwe have none.";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_INFO, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "goodbye (&)";
+	npcd->text = "Goodbye (&)";
 	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_FAREWELL, npcd);
@@ -99,8 +99,7 @@ void comms_load_npc_text()
 
 void comms_load_player_choices()
 {
-	//todo: free any existing text?
-	vector_free(&comms_player_choices);
+	vector_free_and_free(&comms_player_choices);
 	vector_init(&comms_player_choices, 3);
 	vector_fill(&comms_player_choices, NULL);
 
@@ -166,7 +165,7 @@ void comms_setup_intro()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &advance_comms);
+	default_button = gui_add_text_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
@@ -178,7 +177,7 @@ void comms_setup_npc_text()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &advance_comms);
+	default_button = gui_add_text_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
@@ -193,19 +192,19 @@ void comms_setup_player_choices()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action0);
+	default_button = gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice0);
 
 	if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1 != NULL)
 	{
-		gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action1);
+		gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice1);
 
 		if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2 != NULL)
 		{
-			gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action2);
+			gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice2);
 
 			if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3 != NULL)
 			{
-				gui_add_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action3);
+				gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice3);
 			}
 		}
 	}
@@ -302,10 +301,18 @@ void comms_draw_player_choices()
 }
 
 //todo: make button actions accept a parameter so that we can do this sort of junk in one function
-int comms_action0() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice0; advance_comms(); return 0; }
-int comms_action1() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice1; advance_comms(); return 0; }
-int comms_action2() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice2; advance_comms(); return 0; }
-int comms_action3() { selected_player_choice = ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice3; advance_comms(); return 0; }
+int comms_action(int v)
+{
+	selected_player_choice = v;
+	advance_comms();
+	return 0;
+}
+
+int comms_skip(int v)
+{
+	advance_comms();
+	return 0;
+}
 
 int advance_comms()
 {

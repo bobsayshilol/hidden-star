@@ -81,9 +81,7 @@ void comms_draw_intro();
 void comms_draw_npc_text();
 void comms_draw_player_choices();
 int advance_comms();
-int comms_action0();
-int comms_action1();
-int comms_action2();
-int comms_action3();
+int comms_action(int v);
+int comms_skip(int v);
 
 #endif

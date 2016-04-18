@@ -5,6 +5,7 @@ int travel_setup()
 	printf("Loading travel...\n");
 	main_scene = SCENE_TRAVEL;
 	frame_skip=0;
+	gui_clear();
 
 	t_stars1 = Load_tex("sprites/stars/stars1_256.png");
 	t_stars2 = Load_tex("sprites/stars/stars2_256.png");
@@ -14,6 +15,7 @@ int travel_setup()
 	t_stars6 = Load_tex("sprites/stars/stars6_256.png");
 
 	t_node = Load_tex("sprites/starmap/starmap_star_inactive.png");
+	t_node_current = Load_tex("sprites/starmap/starmap_star_active.png");
 	SDL_QueryTexture(t_node, NULL, NULL, &half_node_sprite, NULL);
 	half_node_sprite /= 2;
 
@@ -30,6 +32,9 @@ int travel_setup()
 		printf("Adding node %d, %d\n", t->x, t->y);
 		vector_add(&node_list, t);
 	}
+
+	current_node = 0;
+	update_travel_icons();
 
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
@@ -61,7 +66,6 @@ int travel_setup()
 
 		for (int j = 0; j < vector_get_size(&node_list); j++)
 		{
-			int j = rand() % TRAVEL_MAX_NODES;
 			if (j != i)
 			{
 				Travel_Node *n = vector_get(&node_list, j);
@@ -84,7 +88,28 @@ int travel_setup()
 	}
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
-	gui_clear();
+	return 0;
+}
+
+void update_travel_icons()
+{
+	for (int i = 0; i < vector_get_size(&node_list); i++)
+	{
+		Travel_Node *t = (Travel_Node *)vector_get(&node_list, i);
+		SDL_Texture* tex = t_node;
+		if (current_node == i)
+		{
+			tex = t_node_current;
+		}
+		gui_add_sprite_button(tex, t->x - half_node_sprite, t->y - half_node_sprite, -1,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_go, i);
+	}
+
+}
+
+int travel_go(int destination)
+{
+	//get selected button
+	printf("Initiating travel to %d!\n", destination);
 	return 0;
 }
 
@@ -93,17 +118,18 @@ void travel_draw()
 	SDL_RenderClear(main_renderer);
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
+		SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
 		Travel_Node *t = (Travel_Node *)vector_get(&node_list, i);
-		Travel_Node *c1 = (Travel_Node *)vector_get(&node_list, t->connectedNode1);
-		Travel_Node *c2 = (Travel_Node *)vector_get(&node_list, t->connectedNode2);
-
-		main_blit(t_node, t->x - half_node_sprite, t->y - half_node_sprite, NOFLIP, NULL);
-
-
-		SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 128);
-		SDL_RenderDrawLine(main_renderer, t->x, t->y, c1->x, c1->y);
-		SDL_RenderDrawLine(main_renderer, t->x, t->y, c2->x, c2->y);
+		if (t->connectedNode1 > -1)
+		{
+			Travel_Node *c1 = (Travel_Node *)vector_get(&node_list, t->connectedNode1);
+			SDL_RenderDrawLine(main_renderer, t->x, t->y, c1->x, c1->y);
+		}
+		if (t->connectedNode2 > -1)
+		{
+			Travel_Node *c2 = (Travel_Node *)vector_get(&node_list, t->connectedNode2);
+			SDL_RenderDrawLine(main_renderer, t->x, t->y, c2->x, c2->y);
+		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
-		//printf("Drawing node %d, %d, %d, %d\n", t->x, t->y, t->connectedNode1, t->connectedNode2);
 	}
 }

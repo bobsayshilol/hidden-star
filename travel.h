@@ -31,11 +31,15 @@ SDL_Texture *t_stars4;
 SDL_Texture *t_stars5;
 SDL_Texture *t_stars6;
 SDL_Texture *t_node;
+SDL_Texture *t_node_current;
 Vector node_list;
 
+int current_node;
 int half_node_sprite;
 
 int travel_setup();
+void update_travel_icons();
+int travel_go();
 void travel_draw();
 
 #endif

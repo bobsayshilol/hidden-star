@@ -263,12 +263,12 @@ void load_fonts(){
 void main_menu_setup()
 {
 	int default_button;
-	default_button = gui_add_button("combat", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup);
-	gui_add_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup);
-	gui_add_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
-	gui_add_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
-	gui_add_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup);
-	gui_add_button("comms", 0, 52, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_setup);
+	default_button = gui_add_text_button("combat", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup, SCENE_COMBAT);
+	gui_add_text_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup, SCENE_PLANET_GEN);
+	gui_add_text_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
+	gui_add_text_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
+	gui_add_text_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
+	gui_add_text_button("comms", 0, 52, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_setup, SCENE_COMMS);
 
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
@@ -290,6 +290,7 @@ int main_setup(){
 		return 3;
 	}
 
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	SDL_RenderSetLogicalSize(main_renderer, main_resX, main_resY);
 	SDL_SetWindowTitle(main_window, "Hidden Star");
 	atexit(SDL_Quit);
@@ -313,6 +314,10 @@ void draw_scene(){
 			break;
 		case SCENE_COMBAT:
 			combat_draw();
+			break;
+		case SCENE_TRAVEL:
+			travel_draw();
+			gui_draw();
 			break;
 		case SCENE_COMMS:
 			comms_draw();
