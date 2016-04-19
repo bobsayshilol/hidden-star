@@ -104,6 +104,33 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 }
 
 int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
+/*
+	int last_space = -1;
+	int last_space_distance = 0;
+	int line_width = 0;
+
+	for (int i = 0; i < strlen(text); i++)
+	{
+		if (text[i] == ' ')
+		{
+			last_space = text[i];
+			last_space_distance = 0;
+			continue;
+		}
+		if (line_width + font[0][text[i]].a > 62)
+		{
+			//must wrap
+			text[last_space] = '\n';
+			line_width = last_space_distance;
+		}
+
+		if (last_space_distance > 0)
+		{
+			line_width += font[0][text[i]].a;
+		}
+		last_space_distance += font[0][text[i]].a; 
+	}
+*/
 	int index;
 	int count=0;
 	int offset_y = 0;
@@ -126,9 +153,9 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 		index=((int)text[i]);
 		srect.x = fonts[index].x;
 		srect.y = fonts[index].y;
-		srect.w = 4;
+		srect.w = fonts[index].a;
 		srect.h = 6;
-		drect.w = 4;
+		drect.w = fonts[index].a;
 		drect.h = 6;
 		drect.x = x + offset_x;
 		drect.y = y + offset_y;
@@ -156,6 +183,8 @@ void load_fonts(){
 		fonts[i].y=58;
 		fonts[i].a=4;
 	}
+	fonts[10].x =60; fonts[10].y =58; fonts[48].a= 0; //\n
+	fonts[13].x =60; fonts[13].y =58; fonts[48].a= 0; //\r
 	fonts[48].x = 0; fonts[48].y = 0; fonts[48].a= 4; // 0
 	fonts[49].x = 4; fonts[49].y = 0; fonts[49].a= 4; // 1
 	fonts[50].x = 8; fonts[50].y = 0; fonts[50].a= 4; // 2
