@@ -56,7 +56,7 @@ int planet_setup(){
 	p_con=0;
 	p_cld=0;
 	p_msk=0;
-	p_color=0;
+	p_color_state=0;
 
 	stars1 = Load_tex("sprites/stars/stars1_256.png");
 	for(int j=0;j<5;j++){
@@ -81,10 +81,8 @@ int planet_setup(){
 }
 
 SDL_Color* planet_get_color(int index){
-	SDL_Color *color=malloc(sizeof *color);
-	if(p_color==1){
-		color->r=p_r[index]; color->g=p_g[index]; color->b=p_b[index];
-		return color;
+	if(p_color_state==1){
+		return &p_color[index];
 	}
 	return NULL;
 }
@@ -190,11 +188,11 @@ void planets_handle_input(SDL_Event event){
 						planet_get_random();
 						break;
 					case SDL_BUTTON_RIGHT:
-						if(p_color==0){p_color=1;}else{p_color=0;}
+						if(p_color_state==0){p_color_state=1;}else{p_color_state=0;}
 						for(int i=0;i<4;i++){
-							p_r[i]=(rand()%(255));
-							p_g[i]=(rand()%(255));
-							p_b[i]=(rand()%(255));
+							p_color[i].r=(rand()%(255));
+							p_color[i].g=(rand()%(255));
+							p_color[i].b=(rand()%(255));
 						}
 						break;
 				}

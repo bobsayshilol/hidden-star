@@ -31,6 +31,7 @@ typedef struct GUI_Button
 	int style;
 	int shortcut; //SDLK values?
 	int action_value;
+	SDL_Color color;
 	int (*action)(int v);
 } GUI_Button;
 

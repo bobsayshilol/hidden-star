@@ -101,7 +101,6 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, 0);
 			break;
 	}
-	free(color);
 }
 
 int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){

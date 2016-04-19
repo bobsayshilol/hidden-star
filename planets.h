@@ -18,10 +18,8 @@ int p_tx1,p_tx2;
 int p_x, p_y;
 int p_size;
 int p_ocn, p_cap, p_con, p_cld, p_msk;
-int p_r[4];
-int p_g[4];
-int p_b[4];
-int p_color;
+SDL_Color p_color[4];
+int p_color_state;
 
 void planet_draw();
 int planet_setup();

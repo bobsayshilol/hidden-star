@@ -147,6 +147,9 @@ int travel_go(int destination)
 void travel_draw()
 {
 	SDL_RenderClear(main_renderer);
+	SDL_Texture* newtexture = SDL_CreateTexture(main_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, main_resX, main_resY);
+	//Set the new texture as the render target
+	SDL_SetRenderTarget(main_renderer, newtexture);
 
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
@@ -175,4 +178,6 @@ void travel_draw()
 		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 	}
+	SDL_SetRenderTarget(main_renderer, NULL);
+	SDL_RenderCopy(main_renderer, newtexture, NULL, NULL);
 }

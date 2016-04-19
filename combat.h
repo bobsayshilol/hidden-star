@@ -29,6 +29,7 @@ int c_AI_round;
 int c_aniframe1;
 int c_time_pos;
 int c_b1_AI[8];
+SDL_Color c_color;
 
 SDL_Texture *c_stars1;
 SDL_Texture *c_stars2;

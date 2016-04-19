@@ -96,22 +96,21 @@ void combat_draw_thruster(int x, int y, int thruster){
 }
 
 SDL_Color* combat_get_color(int index){
-	SDL_Color *color=malloc(sizeof *color);
 	switch(index){
 		case 0:
 			return NULL;
 			break;
 		case 1: 
-			color->r=74; color->g=142; color->b=255;
-			return color;
+			c_color.r=74; c_color.g=142; c_color.b=255;
+			return &c_color;
 			break;
 		case 2:
-			color->r=255; color->g=0; color->b=0;
-			return color;
+			c_color.r=255; c_color.g=0; c_color.b=0;
+			return &c_color;
 			break;
 		case 3:
-			color->r=235; color->g=255; color->b=0;
-			return color;
+			c_color.r=235; c_color.g=255; c_color.b=0;
+			return &c_color;
 			break;
 	}
 	return NULL;

@@ -64,6 +64,10 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 		text_bounds.w = width;
 	}
 	text_bounds.h = 5; //todo: account for wrapped text
+	SDL_Color color; //FIXME should be passed as param?
+	color.r=(rand()%128)+128;
+	color.g=(rand()%128)+128;
+	color.b=(rand()%128)+128;
 
 	SDL_Rect button_bounds;
 	button_bounds.x = x;
@@ -81,6 +85,7 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	b.shortcut = shortcut;
 	b.action = action;
 	b.action_value = _action_value;
+	b.color = color;
 	g_button_list[button_count] = b;
 	button_count ++;
 
@@ -170,14 +175,17 @@ void gui_draw()
 		else
 		{
 			//Draw sprite button
-			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, &g_button_list[i].color);
 			if (g_button_list[i].state == BUTTON_STATE_SELECTED)
 			{
 				//TODO: Store the previous draw colour
-				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
-				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
-				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
-				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
+//				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+//				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
+//				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
+				draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				
+//				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 			}
 		}
 	}
