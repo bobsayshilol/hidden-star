@@ -53,7 +53,7 @@ void generate_starmap()
 		vector_add(&node_list, t);
 	}
 
-	printf("Generating map of %d systems with %d inhabited planets.", TRAVEL_MAX_NODES, inhabited_planet_count);
+	printf("Generating map of %d systems with %d inhabited planets.\n", TRAVEL_MAX_NODES, inhabited_planet_count);
 
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
