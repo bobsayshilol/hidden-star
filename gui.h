@@ -39,6 +39,7 @@ GUI_Button g_button_list[20];
 SDL_Color g_button_text_colour[2][3];
 int button_count;
 int current_button;
+int g_blink;
 SDL_Texture *g_button_bg[2][3];
 SDL_Texture *g_button_cap[2][3];
 

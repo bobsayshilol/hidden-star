@@ -182,8 +182,13 @@ void gui_draw()
 //				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
 //				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
 //				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
-				draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
-				draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				if(g_blink<4){
+					draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+					draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				}
+				g_blink++;
+				if(g_blink>4){g_blink=0;}
+
 				
 //				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 			}
@@ -417,5 +422,6 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
 
+	g_blink=0;
 	return 0;
 }
