@@ -173,7 +173,7 @@ void comms_load_player_choices()
 void comms_setup_intro()
 {
 	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
-	int w=(int)(pow(2,(t->p->size+3)))*2;
+	int w=(int)(pow(2,(t->p->size+3)));
 	int h=w;
 	comms_subject_pos[0] = -w;
 	comms_subject_pos[1] = h = 32 - h / 2;
