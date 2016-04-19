@@ -172,8 +172,9 @@ void comms_load_player_choices()
 
 void comms_setup_intro()
 {
-	int w, h;
-	SDL_QueryTexture(subject, NULL, NULL, &w, &h);
+	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	int w=(int)(pow(2,(t->p->size+3)))*2;
+	int h=w;
 	comms_subject_pos[0] = -w;
 	comms_subject_pos[1] = h = 32 - h / 2;
 	comms_subject_final_pos = 64 - w * 0.75;
@@ -203,6 +204,8 @@ void comms_setup_npc_text()
 {
 	comms_state = COMMS_STATE_NPC_TEXT;
 	comms_subject_pos[0] = comms_subject_final_pos;
+	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	t->p->x=comms_subject_final_pos;
 	comms_portrait_background_pos[1] = comms_portrait_background_final_pos;
 	gui_clear();
 
