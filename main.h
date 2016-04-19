@@ -60,6 +60,7 @@ SDL_Texture *font[4];
 typedef struct font_map{
 	int x;
 	int y;
+	int a;
 }font_map;
 
 font_map fonts[256];
