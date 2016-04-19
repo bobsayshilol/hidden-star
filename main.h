@@ -63,12 +63,15 @@ typedef struct font_map{
 }font_map;
 
 font_map fonts[256];
+char* pref_path;
+int screenshot_counter;
 
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);
 int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color);
 void draw_number(int x, int y, int num);
 void draw_scene();
+void save_screenshot();
 int menu_quit();
 void main_input(SDL_Event event);
 int main_setup();

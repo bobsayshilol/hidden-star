@@ -330,6 +330,38 @@ void draw_scene(){
 	}
 }
 
+void save_screenshot()
+{
+	SDL_Surface * screen = SDL_CreateRGBSurface(0, main_resX * main_scale, main_resY * main_scale, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
+	SDL_RenderReadPixels(main_renderer, NULL, SDL_PIXELFORMAT_ABGR8888, screen->pixels, screen->pitch);
+
+	char screenshot_name[strlen(pref_path) + 40];
+	screenshot_name[0] = '\0';
+	strcat(screenshot_name, pref_path);
+	strcat(screenshot_name, "screenshot");
+
+	static char shot_count[8];
+	sprintf(shot_count, "_%03d.png", screenshot_counter);
+	screenshot_counter ++;
+
+	static char date_string[20];
+	time_t timestamp;
+	time(&timestamp);
+	if (strftime(date_string, 20, "%Y-%m-%d_%H-%M-%S", localtime(&timestamp)))
+	{
+		strcat(screenshot_name, date_string);
+		strcat(screenshot_name, shot_count);
+	}
+	else
+	{
+		strcat(screenshot_name, shot_count);
+	}
+	IMG_SavePNG(screen, screenshot_name);
+	printf("Saving screenshot to %s\n", screenshot_name);
+
+	SDL_FreeSurface(screen);
+}
+
 int menu_quit()
 {
 	SDL_Event e;
@@ -375,6 +407,9 @@ void main_input(SDL_Event event){
 				case SDLK_DOWN:
 					gui_seek_next_button_v(1);
 					break;
+				case SDLK_F12:
+					save_screenshot();
+					break;
 				}
 				break;
 		case SDL_MOUSEMOTION:
@@ -407,6 +442,9 @@ int main(int argc, char *argv[]){
 	int current_time;
 	int last_time = SDL_GetTicks();
 	int mouseX; int mouseY;
+
+	pref_path = SDL_GetPrefPath("HiddenStar", "HiddenStar");
+	screenshot_counter = 0;
 
 	intro_setup();
 	gui_setup();
