@@ -266,7 +266,12 @@ void comms_draw_intro()
 	{
 		comms_subject_pos[0]++;
 	}
-	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
+//	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
+
+	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	t->p->x=comms_subject_pos[0];
+	t->p->y=comms_subject_pos[1];
+	planet_draw(t->p);
 
 	if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
 	{
@@ -310,7 +315,10 @@ void comms_draw_intro()
 
 void comms_draw_npc_text()
 {
-	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
+	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	planet_draw(t->p);
+
+//	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
 	main_blit(portrait_background, comms_portrait_background_pos[0], comms_portrait_background_pos[1], NOFLIP, NULL);
 	main_blit(portrait_image, comms_portrait_pos[0], comms_portrait_pos[1], NOFLIP, NULL);
 	if (comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_npc_text, current_npc_text))->text) * 2)
@@ -325,7 +333,10 @@ void comms_draw_npc_text()
 
 void comms_draw_player_choices()
 {
-	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
+	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	planet_draw(t->p);
+
+//	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
 	main_blit(portrait_background, comms_portrait_background_pos[0], comms_portrait_background_pos[1], NOFLIP, NULL);
 	main_blit(portrait_image, comms_portrait_pos[0], comms_portrait_pos[1], NOFLIP, NULL);
 }

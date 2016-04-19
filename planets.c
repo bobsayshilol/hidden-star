@@ -1,28 +1,28 @@
 #include "planets.h"
 
-void planet_draw(){
-	int width=(int)(pow(2,(p_size+3)))*2;
+void planet_draw(Planet *p){
+	int width=(int)(pow(2,(p->size+3)))*2;
 
 	SDL_Texture* auxtexture = SDL_CreateTexture(main_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width/2, width/2);
 	//Set the new texture as the render target
 	SDL_SetRenderTarget(main_renderer, auxtexture);
 	
-	main_blit(ocean[p_ocn][p_size],p_tx1,0, P_MODE0, planet_get_color(0));
-	main_blit(ocean[p_ocn][p_size],p_tx1-width,0, P_MODE0, planet_get_color(0));
-	if(p_con<P_MAX){
-		main_blit(continents[p_con][p_size],p_tx1,0, P_MODE0, planet_get_color(1));
-		main_blit(continents[p_con][p_size],p_tx1-width,0, P_MODE0, planet_get_color(1));
+	main_blit(ocean[p->ocn][p->size],p->tx1,0, P_MODE0, planet_get_color(p,0));
+	main_blit(ocean[p->ocn][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,0));
+	if(p->con<P_MAX){
+		main_blit(continents[p->con][p->size],p->tx1,0, P_MODE0, planet_get_color(p,1));
+		main_blit(continents[p->con][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,1));
 	}
-	if(p_cap<P_MAX){
-		main_blit(caps[p_cap][p_size],p_tx1,0, P_MODE0, planet_get_color(2));
-		main_blit(caps[p_cap][p_size],p_tx1-width,0, P_MODE0, planet_get_color(2));
+	if(p->cap<P_MAX){
+		main_blit(caps[p->cap][p->size],p->tx1,0, P_MODE0, planet_get_color(p,2));
+		main_blit(caps[p->cap][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,2));
 	}
-	if(p_cld<P_MAX){
-		main_blit(clouds[p_cld][p_size],p_tx2,0, P_MODE0, planet_get_color(3));
-		main_blit(clouds[p_cld][p_size],p_tx2-width,0, P_MODE0, planet_get_color(3));
+	if(p->cld<P_MAX){
+		main_blit(clouds[p->cld][p->size],p->tx2,0, P_MODE0, planet_get_color(p,3));
+		main_blit(clouds[p->cld][p->size],p->tx2-width,0, P_MODE0, planet_get_color(p,3));
 	}
 
-	main_blit(planet_mask[p_msk][p_size],0,0, P_MODE1, NULL);
+	main_blit(planet_mask[p->msk][p->size],0,0, P_MODE1, NULL);
 
 	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	SDL_RenderReadPixels(main_renderer, NULL, SDL_PIXELFORMAT_RGBA8888, surf->pixels, surf->pitch);
@@ -33,30 +33,19 @@ void planet_draw(){
 	SDL_SetRenderTarget(main_renderer, NULL);
 	SDL_RenderClear(main_renderer);
 	main_blit(stars1,0,0, P_MODE0, NULL);
-	main_blit(newtexture,p_x,p_y,P_MODE2, NULL);
-	p_tx1+=(int)round(p_speed);
-	p_tx2+=(int)round((p_speed*2));
-	if(p_tx1>width){p_tx1=0;}
-	if(p_tx2>width){p_tx2=0;}
-	if(p_tx1<0){p_tx1=width;}
-	if(p_tx2<0){p_tx2=width;}
+	main_blit(newtexture,p->x,p->y,P_MODE2, NULL);
+	p->tx1+=(int)round(p->speed);
+	p->tx2+=(int)round((p->speed*2));
+	if(p->tx1>width){p->tx1=0;}
+	if(p->tx2>width){p->tx2=0;}
+	if(p->tx1<0){p->tx1=width;}
+	if(p->tx2<0){p->tx2=width;}
 }
 
 int planet_setup(){
 	printf("loading planet...\n");
-	main_scene=SCENE_PLANET_GEN;
-	frame_skip=1;
-
-	p_speed=1;
-	p_tx1,p_tx2=0;
-	p_x, p_y=0;
-	p_size=3;
-	p_ocn=0;
-	p_cap=0;
-	p_con=0;
-	p_cld=0;
-	p_msk=0;
-	p_color_state=0;
+//	main_scene=SCENE_PLANET_GEN;
+//	frame_skip=1;
 
 	stars1 = Load_tex("sprites/stars/stars1_256.png");
 	for(int j=0;j<5;j++){
@@ -80,56 +69,66 @@ int planet_setup(){
 	return 0;
 }
 
-SDL_Color* planet_get_color(int index){
-	if(p_color_state==1){
-		return &p_color[index];
+SDL_Color* planet_get_color(Planet *p, int index){
+	if(p->color_state==1){
+		return &p->color[index];
 	}
 	return NULL;
 }
 
-void planet_random_pos(){
-	int width=(int)(pow(2,(p_size+3)));
-	p_x=(rand()%64+width)-(width+(width/2));
-	p_y=(rand()%64+width)-(width+(width/2));
+void planet_random_pos(Planet *p){
+	int width=(int)(pow(2,(p->size+3)));
+	p->x=(rand()%64+width)-(width+(width/2));
+	p->y=(rand()%64+width)-(width+(width/2));
 }
 
-void planet_get_random(){
-	p_ocn=(rand()%P_MAX);
-	p_con=(rand()%(P_MAX+1));
-	p_cap=(rand()%(P_MAX+1));
-	p_cld=(rand()%P_MAX);
+void planet_set_random(Planet *p){
+	p->size=rand()%4;
+	p->ocn=(rand()%P_MAX);
+	p->con=(rand()%(P_MAX+1));
+	p->cap=(rand()%(P_MAX+1));
+	p->cld=(rand()%P_MAX);
 }
 
-void planet_get_default(int p){
-	p_ocn = p;
-	p_con = p;
-	p_cap = p;
-	p_cld = p;
+void planet_set_default(Planet *p, int type){
+	p->speed=1;
+	p->tx1=0;
+	p->tx2=0;
+	p->x=0;
+	p->y=0;
+	p->size=2;
+	p->msk=0;
+	p->color_state=0;
+	p->ocn = type;
+	p->con = type;
+	p->cap = type;
+	p->cld = type;
 }
 
+/*
 void planets_handle_input(SDL_Event event){
 		switch (event.type) {
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym){
 					case SDLK_q:
-						p_ocn++;
-						if(p_ocn>=P_MAX){p_ocn=0;}
+						p->ocn++;
+						if(p->ocn>=P_MAX){p->ocn=0;}
 						break;
 					case SDLK_w:
-						p_con++;
-						if(p_con>=P_MAX+1){p_con=0;}
+						p->con++;
+						if(p->con>=P_MAX+1){p->con=0;}
 						break;
 					case SDLK_e:
-						p_cap++;
-						if(p_cap>=P_MAX+1){p_cap=0;}
+						p->cap++;
+						if(p->cap>=P_MAX+1){p->cap=0;}
 						break;
 					case SDLK_r:
-						p_cld++;
-						if(p_cld>=P_MAX){p_cld=0;}
+						p->cld++;
+						if(p->cld>=P_MAX){p->cld=0;}
 						break;
 					case SDLK_t:
-						p_msk++;
-						if(p_msk>=P_MAX){p_msk=0;}
+						p->msk++;
+						if(p->msk>=P_MAX){p->msk=0;}
 						break;
 					case SDLK_1:
 					case SDLK_KP_1:
@@ -159,28 +158,28 @@ void planets_handle_input(SDL_Event event){
 						planet_random_pos();
 						break;
 					case SDLK_a:
-						if(p_speed<10){p_speed+=0.2;}
+						if(p->speed<10){p->speed+=0.2;}
 						break;
 					case SDLK_d:
-						if(p_speed>-10){p_speed-=0.2;}
+						if(p->speed>-10){p->speed-=0.2;}
 						break;
 					case SDLK_s:
-						p_size++;
-						p_x=0; p_y=0;
-						if(p_size>4){p_size=0;}
+						p->size++;
+						p->x=0; p->y=0;
+						if(p->size>4){p->size=0;}
 						break;
 				}
 			break;
 			case SDL_MOUSEWHEEL:
 				if(event.wheel.y<0){
-					p_size++;
-					p_x=0; p_y=0;
-					if(p_size>4){p_size=4;}
+					p->size++;
+					p->x=0; p->y=0;
+					if(p->size>4){p->size=4;}
 				}
 				if(event.wheel.y>0){
-					p_size--;
-					p_x=0; p_y=0;
-					if(p_size<0){p_size=0;}
+					p->size--;
+					p->x=0; p->y=0;
+					if(p->size<0){p->size=0;}
 				}
 			case SDL_MOUSEBUTTONDOWN:
 				switch(event.button.button){
@@ -188,11 +187,11 @@ void planets_handle_input(SDL_Event event){
 						planet_get_random();
 						break;
 					case SDL_BUTTON_RIGHT:
-						if(p_color_state==0){p_color_state=1;}else{p_color_state=0;}
+						if(p->color_state==0){p->color_state=1;}else{p->color_state=0;}
 						for(int i=0;i<4;i++){
-							p_color[i].r=(rand()%(255));
-							p_color[i].g=(rand()%(255));
-							p_color[i].b=(rand()%(255));
+							p->color[i].r=(rand()%(255));
+							p->color[i].g=(rand()%(255));
+							p->color[i].b=(rand()%(255));
 						}
 						break;
 				}
@@ -200,4 +199,4 @@ void planets_handle_input(SDL_Event event){
 		}
 	}
 
-
+*/

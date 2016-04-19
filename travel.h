@@ -23,6 +23,7 @@ typedef struct Travel_Node
 	int is_inhabited;
 	int connectedNode1;
 	int connectedNode2;
+	struct Planet *p;
 } Travel_Node;
 
 SDL_Texture *t_stars1;

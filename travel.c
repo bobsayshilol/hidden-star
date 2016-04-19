@@ -34,6 +34,7 @@ void generate_starmap()
 	for (int i = 0; i < TRAVEL_MAX_NODES; i ++)
 	{
 		Travel_Node *t = malloc(sizeof(Travel_Node));
+		Planet *p = malloc(sizeof(Planet));
 		//todo: unclump
 		//todo: panning
 		t->x = rand() % 60;
@@ -42,6 +43,9 @@ void generate_starmap()
 		t->is_inhabited = rand() % 2;
 		t->connectedNode1 = -1;
 		t->connectedNode2 = -1;
+		t->p=p;
+		planet_set_default(t->p, t->faction);
+		planet_set_random(t->p);
 		if (t->is_inhabited > 0)
 		{
 			inhabited_planet_count++;
@@ -139,6 +143,7 @@ int travel_go(int destination)
 	{
 		printf("Found habited planet! %d\n", cn->faction);
 		comms_set_faction(cn->faction);
+		planet_setup();
 		comms_setup();
 	}
 	return 0;

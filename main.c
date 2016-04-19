@@ -314,7 +314,7 @@ void draw_scene(){
 			}
 			break;
 		case SCENE_PLANET_GEN:
-			planet_draw();
+//			planet_draw();
 			break;
 		case SCENE_COMBAT:
 			combat_draw();
@@ -389,7 +389,7 @@ void main_input(SDL_Event event){
 		case SCENE_INTRO:
 			break;
 		case SCENE_PLANET_GEN:
-			planets_handle_input(event);
+//			planets_handle_input(event);
 			break;
 		case SCENE_COMBAT:
 			combat_handle_input(event);
