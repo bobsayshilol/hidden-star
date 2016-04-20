@@ -366,7 +366,7 @@ void save_screenshot()
 	static char date_string[20];
 	time_t timestamp;
 	time(&timestamp);
-	if (strftime(date_string, 20, "%Y-%m-%d_%H-%M-%S", localtime(&timestamp)))
+	if (strftime(date_string, 20, "_%Y-%m-%d_%H-%M-%S", localtime(&timestamp)))
 	{
 		strcat(screenshot_name, date_string);
 		strcat(screenshot_name, shot_count);
