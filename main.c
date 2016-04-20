@@ -117,23 +117,15 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 		index=((int)wrapped_text[i]);
 		if (text[i] == ' ')
 		{
-			printf("Found space at %d, line length is %d\n", i, line_width);
 			last_space = i;
 			last_space_distance = 0;
 			continue;
 		}
 		if (line_width + fonts[index].a >= 62)
 		{
-			printf("Busted over width at %d (line length %d)\n", i, line_width + fonts[index].a, strlen(text));
-			//must wrap
 			if (last_space >= 0)
 			{
-				printf("Newline at %d to avoid length of %d (total %d)\n", last_space, line_width + fonts[index].a, strlen(wrapped_text));
 				wrapped_text[last_space] = '\n';
-			}
-			else
-			{
-				printf("Wrapping borked. Last space was never set?\n");
 			}
 			line_width = last_space_distance;
 		}
