@@ -103,25 +103,25 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 	}
 }
 
-int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
+char * wrap_text(char *text, int max_width)
+{
 	int index;
 	int last_space = -1;
 	int last_space_distance = 0;
 	int line_width = 0;
-	char wrapped_text[strlen(text)];
+	char *wrapped_text = malloc(strlen(text) + 1);
+	strcpy(wrapped_text, text);
 
-	for (int i = 0; i < strlen(text); i++)
+	for (int i = 0; i < strlen(wrapped_text); i++)
 	{
-		wrapped_text[i] = text[i];
-
 		index=((int)wrapped_text[i]);
-		if (text[i] == ' ')
+		if (wrapped_text[i] == ' ')
 		{
 			last_space = i;
 			last_space_distance = 0;
 			continue;
 		}
-		if (line_width + fonts[index].a >= 60)
+		if (line_width + fonts[index].a >= max_width - 3)
 		{
 			if (last_space >= 0)
 			{
@@ -129,12 +129,15 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 			}
 			line_width = last_space_distance;
 		}
-
 		line_width += fonts[index].a;
 		last_space_distance += fonts[index].a; 
 	}
+	return wrapped_text;
+}
 
 
+int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
+	int index;
 	int count=0;
 	int offset_y = 0;
 	int offset_x = 0;
@@ -142,7 +145,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 	SDL_Rect drect;
 	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
-		if (wrapped_text[i] == '\n')
+		if (text[i] == '\n')
 		{
 			offset_x = 0;
 			offset_y += 6;
@@ -153,7 +156,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 			count=(rand()%3)+1;
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
-		index=((int)wrapped_text[i]);
+		index=((int)text[i]);
 		srect.x = fonts[index].x;
 		srect.y = fonts[index].y;
 		srect.w = fonts[index].a;
@@ -389,6 +392,7 @@ int menu_quit()
 	SDL_Event e;
 	e.type = SDL_QUIT;
 	SDL_PushEvent(&e);
+	return 0;
 }
 
 void main_input(SDL_Event event){
