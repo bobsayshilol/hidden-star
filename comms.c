@@ -63,37 +63,37 @@ void comms_load_npc_text()
 	Comms_NPCDialogue *npcd;
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "Greetings (@)";
+	npcd->text = wrap_text("Greetings (@) asdkljafdsj dsakj", 64);
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_GREETING, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You want to fight? We fight ($)";
+	npcd->text = wrap_text("You want to fight? We fight ($)", 64);
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_DEFEND, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "We are glad you embrace fight willingly";
+	npcd->text = wrap_text("We are glad you embrace fight willingly", 64);
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_ACCEPT, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text ="You get away.for today.";
+	npcd->text = wrap_text("You get away.for today.", 64);
 	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_FLEE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You are too pitiful to fight";
+	npcd->text = wrap_text("You are too pitiful to fight", 64);
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_PLEAD, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "No trade";
+	npcd->text = wrap_text("No trade", 64);
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	//npcd->next_state = COMMS_STATE_ENTER_TRADE;
@@ -101,25 +101,25 @@ void comms_load_npc_text()
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "Good, let's trade";
+	npcd->text = wrap_text("Good, let's trade", 64);
 	npcd->next_state = COMMS_STATE_ENTER_TRADE;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE_ACCEPT, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "No trade? oh well";
+	npcd->text = wrap_text("No trade? oh well", 64);
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE_DECLINE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You want info? we have none.";
+	npcd->text = wrap_text("You want info? we have none.", 64);
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_INFO, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "Goodbye (&)";
+	npcd->text = wrap_text("Goodbye (&)", 64);
 	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_FAREWELL, npcd);
