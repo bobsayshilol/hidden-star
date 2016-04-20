@@ -104,34 +104,45 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 }
 
 int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
-/*
+	int index;
 	int last_space = -1;
 	int last_space_distance = 0;
 	int line_width = 0;
+	char wrapped_text[strlen(text)];
 
 	for (int i = 0; i < strlen(text); i++)
 	{
+		wrapped_text[i] = text[i];
+
+		index=((int)wrapped_text[i]);
 		if (text[i] == ' ')
 		{
-			last_space = text[i];
+			printf("Found space at %d, line length is %d\n", i, line_width);
+			last_space = i;
 			last_space_distance = 0;
 			continue;
 		}
-		if (line_width + font[0][text[i]].a > 62)
+		if (line_width + fonts[index].a >= 62)
 		{
+			printf("Busted over width at %d (line length %d)\n", i, line_width + fonts[index].a, strlen(text));
 			//must wrap
-			text[last_space] = '\n';
+			if (last_space >= 0)
+			{
+				printf("Newline at %d to avoid length of %d (total %d)\n", last_space, line_width + fonts[index].a, strlen(wrapped_text));
+				wrapped_text[last_space] = '\n';
+			}
+			else
+			{
+				printf("Wrapping borked. Last space was never set?\n");
+			}
 			line_width = last_space_distance;
 		}
 
-		if (last_space_distance > 0)
-		{
-			line_width += font[0][text[i]].a;
-		}
-		last_space_distance += font[0][text[i]].a; 
+		line_width += fonts[index].a;
+		last_space_distance += fonts[index].a; 
 	}
-*/
-	int index;
+
+
 	int count=0;
 	int offset_y = 0;
 	int offset_x = 0;
@@ -139,7 +150,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 	SDL_Rect drect;
 	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
-		if (text[i] == '\n')
+		if (wrapped_text[i] == '\n')
 		{
 			offset_x = 0;
 			offset_y += 6;
@@ -150,7 +161,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 			count=(rand()%3)+1;
 			SDL_SetTextureColorMod(font[count], 0, 96, 0);
 		}
-		index=((int)text[i]);
+		index=((int)wrapped_text[i]);
 		srect.x = fonts[index].x;
 		srect.y = fonts[index].y;
 		srect.w = fonts[index].a;
