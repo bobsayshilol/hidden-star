@@ -121,7 +121,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 			last_space_distance = 0;
 			continue;
 		}
-		if (line_width + fonts[index].a >= 62)
+		if (line_width + fonts[index].a >= 60)
 		{
 			if (last_space >= 0)
 			{
