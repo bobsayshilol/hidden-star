@@ -69,25 +69,25 @@ void comms_load_npc_text()
 	vector_set(&comms_npc_text, COMMS_NPC_GREETING, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You want to fight?\nWe fight ($)";
+	npcd->text = "You want to fight? We fight ($)";
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_DEFEND, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "We are glad you\nembrace fight\nwillingly";
+	npcd->text = "We are glad you embrace fight willingly";
 	npcd->next_state = COMMS_STATE_ENTER_COMBAT;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_ACCEPT, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text ="You get away.\nfor today.";
+	npcd->text ="You get away.for today.";
 	npcd->next_state = COMMS_STATE_ENTER_TRAVEL;
 	npcd->next_state_index = -1;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_FLEE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You are too pitiful\nto fight";
+	npcd->text = "You are too pitiful to fight";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_ATTACK_PLEAD, npcd);
@@ -113,7 +113,7 @@ void comms_load_npc_text()
 	vector_set(&comms_npc_text, COMMS_NPC_TRADE_DECLINE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
-	npcd->text = "You want info?\nwe have none.";
+	npcd->text = "You want info? we have none.";
 	npcd->next_state = COMMS_STATE_PLAYER_CHOICE;
 	npcd->next_state_index = COMMS_PLAYER_CHOICE_MAIN;
 	vector_set(&comms_npc_text, COMMS_NPC_INFO, npcd);
