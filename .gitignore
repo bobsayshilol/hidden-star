@@ -46,3 +46,6 @@ install_manifest.txt
 
 #Text editor backup files
 *~
+
+#CSV editor lockfiles
+.~*
