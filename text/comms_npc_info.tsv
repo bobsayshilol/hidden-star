@@ -1,0 +1,32 @@
+FACTION_SNEEB	TONE_NEUTRAL	We are unable to assist you with information.
+FACTION_KRULL	TONE_NEUTRAL	Data. We have none to share.
+FACTION_PLINK	TONE_NEUTRAL	It asks for what we will not share.
+FACTION_NONE	TONE_NEUTRAL	Got nothing for you.
+FACTION_SNEEB	TONE_AGGRESSIVE	Your request is presumptuous.
+FACTION_SNEEB	TONE_AGGRESSIVE	We have nothing to say.
+FACTION_SNEEB	TONE_AGGRESSIVE	We would never share information with you.
+FACTION_KRULL	TONE_AGGRESSIVE	Information. You will not receive it.
+FACTION_KRULL	TONE_AGGRESSIVE	Your request. We ignore it.
+FACTION_KRULL	TONE_AGGRESSIVE	This conversation. It goes nowhere.
+FACTION_PLINK	TONE_AGGRESSIVE	It thinks it can ask us questions.
+FACTION_PLINK	TONE_AGGRESSIVE	Why does it waste our time?
+FACTION_PLINK	TONE_AGGRESSIVE	It will get nothing.
+FACTION_NONE	TONE_AGGRESSIVE	Got nothing to say to the likes of you.
+FACTION_NONE	TONE_AGGRESSIVE	You won't get anything from us.
+FACTION_NONE	TONE_AGGRESSIVE	Don't make me laugh.
+FACTION_SNEEB	TONE_HAPPY	If we can assist you in any way, we will.
+FACTION_SNEEB	TONE_HAPPY	We would be glad to discuss.
+FACTION_SNEEB	TONE_HAPPY	What do you seek knowledge of?
+FACTION_SNEEB	TONE_HAPPY	Our databanks are open to you.
+FACTION_KRULL	TONE_HAPPY	Your discussion. We long to hear it.
+FACTION_KRULL	TONE_HAPPY	Your request. We accept.
+FACTION_KRULL	TONE_HAPPY	Our data. We are happy to share.
+FACTION_KRULL	TONE_HAPPY	Our knowledge. It is yours.
+FACTION_PLINK	TONE_HAPPY	We are happy to hear its requests.
+FACTION_PLINK	TONE_HAPPY	We are glad to share our words.
+FACTION_PLINK	TONE_HAPPY	We anticipate its discussion.
+FACTION_PLINK	TONE_HAPPY	We are eager to hear its requests.
+FACTION_NONE	TONE_HAPPY	What're you after?
+FACTION_NONE	TONE_HAPPY	For you, anything.
+FACTION_NONE	TONE_HAPPY	Sure thing.
+FACTION_NONE	TONE_HAPPY	Happy to share.

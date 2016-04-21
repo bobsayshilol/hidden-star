@@ -1,0 +1,12 @@
+FACTION_SNEEB	TONE_NEUTRAL	Very well, let us do combat.
+FACTION_KRULL	TONE_NEUTRAL	This aggression. It will be met.
+FACTION_PLINK	TONE_NEUTRAL	It wants to fight us? We will fight.
+FACTION_NONE	TONE_NEUTRAL	So be it.
+FACTION_SNEEB	TONE_AGGRESSIVE	We shall destroy you and dishonour your memory.
+FACTION_KRULL	TONE_AGGRESSIVE	Your ship. We will enjoy distryong it.
+FACTION_PLINK	TONE_AGGRESSIVE	We will crush it to dust.
+FACTION_NONE	TONE_AGGRESSIVE	Destroying you will be a pleasure.
+FACTION_SNEEB	TONE_HAPPY	Please, this benefits noone.
+FACTION_KRULL	TONE_HAPPY	This aggression. It is unnecessary.
+FACTION_PLINK	TONE_HAPPY	It wants to destroy us. But why?
+FACTION_NONE	TONE_HAPPY	Can't we just be friends?

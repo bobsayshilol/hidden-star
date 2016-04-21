@@ -1,0 +1,39 @@
+FACTION_SNEEB	TONE_NEUTRAL	We bid you farewell.
+FACTION_KRULL	TONE_NEUTRAL	Our purposes. They part here.
+FACTION_PLINK	TONE_NEUTRAL	Its words have been heard.
+FACTION_NONE	TONE_NEUTRAL	Over and out.
+FACTION_NONE	TONE_NEUTRAL	Bye.
+FACTION_NONE	TONE_NEUTRAL	Adios.
+FACTION_NONE	TONE_NEUTRAL	Transmission ended.
+FACTION_SNEEB	TONE_AGGRESSIVE	Communication terminated.
+FACTION_SNEEB	TONE_AGGRESSIVE	Conversation over.
+FACTION_SNEEB	TONE_AGGRESSIVE	It is time for you to leave.
+FACTION_SNEEB	TONE_AGGRESSIVE	Finally.
+FACTION_KRULL	TONE_AGGRESSIVE	Your absence. We celebrate it.
+FACTION_KRULL	TONE_AGGRESSIVE	This conversation. We are glad it's over.
+FACTION_KRULL	TONE_AGGRESSIVE	Your ship. May it never come back.
+FACTION_KRULL	TONE_AGGRESSIVE	Your purpose. May it be twisted and unfulfilled.
+FACTION_PLINK	TONE_AGGRESSIVE	We are happy that it speaks no more.
+FACTION_PLINK	TONE_AGGRESSIVE	It is lucky we let it live.
+FACTION_PLINK	TONE_AGGRESSIVE	It leaves us alone, or dies.
+FACTION_PLINK	TONE_AGGRESSIVE	We rejoice, it leaves.
+FACTION_NONE	TONE_AGGRESSIVE	Get out of here.
+FACTION_NONE	TONE_AGGRESSIVE	Good riddance.
+FACTION_NONE	TONE_AGGRESSIVE	So sick of hearing your voice.
+FACTION_NONE	TONE_AGGRESSIVE	Get lost.
+FACTION_SNEEB	TONE_HAPPY	May your travels be illuminating.
+FACTION_SNEEB	TONE_HAPPY	Seek knowledge in peace.
+FACTION_SNEEB	TONE_HAPPY	We look forward to our next meeting.
+FACTION_SNEEB	TONE_HAPPY	Goodbyeness.
+FACTION_KRULL	TONE_HAPPY	This conversation. We have enjoyed it.
+FACTION_KRULL	TONE_HAPPY	Your travels. May they be gratifying.
+FACTION_KRULL	TONE_HAPPY	Your friendship. We are glad for it.
+FACTION_KRULL	TONE_HAPPY	Your purpose. May it be straight and fulfilling.
+FACTION_PLINK	TONE_HAPPY	It leaves knowing we are friends.
+FACTION_PLINK	TONE_HAPPY	We are thankful for its words.
+FACTION_PLINK	TONE_HAPPY	We hope to see it again.
+FACTION_PLINK	TONE_HAPPY	We are sad, it leaves.
+FACTION_NONE	TONE_HAPPY	Catch you later.
+FACTION_NONE	TONE_HAPPY	Have a good one.
+FACTION_NONE	TONE_HAPPY	Look after yourself.
+FACTION_NONE	TONE_HAPPY	Stay safe.

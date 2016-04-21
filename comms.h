@@ -28,6 +28,11 @@ int comms_draw_count;
 #define COMMS_NPC_ATTACK_FLEE 8
 #define COMMS_NPC_ATTACK_PLEAD 9
 
+#define COMMS_TONE_UNKNOWN 0
+#define COMMS_TONE_NEUTRAL 1
+#define COMMS_TONE_AGGRESSIVE 2
+#define COMMS_TONE_HAPPY 3
+
 
 typedef struct Comms_NPCDialogue
 {
@@ -52,8 +57,11 @@ SDL_Texture *portrait_background;
 SDL_Texture *portrait_image;
 SDL_Texture *subject;
 
+char *comms_npc_line_files[10];
+
 Vector comms_player_choices;
-Vector comms_npc_text;
+Vector comms_current_npc_lines;
+Vector comms_npc_lines;
 int current_npc_text;
 int current_player_choice;
 int selected_player_choice;
@@ -74,7 +82,10 @@ int comms_faction;
 
 int comms_setup();
 void comms_set_faction(int f);
-void comms_load_npc_text();
+void prepare_npc_lists();
+void prepare_line_lists(Vector comms_id[4][4]);
+void load_default_npc_lines(Vector **line_type, char *fname, int next_state, int next_state_index);
+void comms_set_current_npc_lines();
 void comms_load_player_choices();
 void comms_setup_intro();
 void comms_setup_player_choices();

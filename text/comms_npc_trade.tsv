@@ -1,0 +1,32 @@
+FACTION_SNEEB	TONE_NEUTRAL	We are uncomfortable trading with you at this time.
+FACTION_KRULL	TONE_NEUTRAL	This trade. It can not happen.
+FACTION_PLINK	TONE_NEUTRAL	We can not trade with it.
+FACTION_NONE	TONE_NEUTRAL	Stores are closed.
+FACTION_SNEEB	TONE_AGGRESSIVE	We have no interest in trading with you.
+FACTION_SNEEB	TONE_AGGRESSIVE	You have nothing to offer to us.
+FACTION_SNEEB	TONE_AGGRESSIVE	We would never open our stores to you.
+FACTION_KRULL	TONE_AGGRESSIVE	Our goods. They are not for you.
+FACTION_KRULL	TONE_AGGRESSIVE	Your goods. We are not interested.
+FACTION_KRULL	TONE_AGGRESSIVE	This trade. It will not happen.
+FACTION_PLINK	TONE_AGGRESSIVE	It thinks it can trade with us.
+FACTION_PLINK	TONE_AGGRESSIVE	Why does it waste our time?
+FACTION_PLINK	TONE_AGGRESSIVE	It will get nothing.
+FACTION_NONE	TONE_AGGRESSIVE	Not happening.
+FACTION_NONE	TONE_AGGRESSIVE	You won't get anything from us.
+FACTION_NONE	TONE_AGGRESSIVE	Don't make me laugh.
+FACTION_SNEEB	TONE_HAPPY	If we can assist you in any way, we will.
+FACTION_SNEEB	TONE_HAPPY	We would be glad to trade.
+FACTION_SNEEB	TONE_HAPPY	What equipment or cargo can we provide you with?
+FACTION_SNEEB	TONE_HAPPY	Our stores are open to you.
+FACTION_KRULL	TONE_HAPPY	Our goods. You may browse.
+FACTION_KRULL	TONE_HAPPY	Your goods. We are interested in them.
+FACTION_KRULL	TONE_HAPPY	This trade. It is agreeable.
+FACTION_KRULL	TONE_HAPPY	We are happy to trade with it.
+FACTION_PLINK	TONE_HAPPY	Its trades are always welcome.
+FACTION_PLINK	TONE_HAPPY	We are glad to offer our things.
+FACTION_PLINK	TONE_HAPPY	It asks to trade. We trade!
+FACTION_PLINK	TONE_HAPPY	We are eager to see its things.
+FACTION_NONE	TONE_HAPPY	What d'you need?
+FACTION_NONE	TONE_HAPPY	For you, anything.
+FACTION_NONE	TONE_HAPPY	Sure thing.
+FACTION_NONE	TONE_HAPPY	Happy to trade.
