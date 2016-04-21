@@ -35,13 +35,17 @@ typedef struct GUI_Button
 	int (*action)(int v);
 } GUI_Button;
 
-GUI_Button g_button_list[20];
+GUI_Button g_button_list[64];
 SDL_Color g_button_text_colour[2][3];
 int button_count;
 int current_button;
 int g_blink;
 SDL_Texture *g_button_bg[2][3];
 SDL_Texture *g_button_cap[2][3];
+SDL_Texture *g_card_N;
+SDL_Texture *g_card_E;
+SDL_Texture *g_card_S;
+SDL_Texture *g_card_W;
 
 int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
 int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);

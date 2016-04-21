@@ -396,6 +396,10 @@ int gui_setup()
 	printf("Loading gui...\n");
 	button_count = 0;
 	current_button = -1;
+	g_card_N=Load_tex("sprites/directional_card.png");
+	g_card_E=Load_tex("sprites/directional_card_right.png");
+	g_card_S=Load_tex("sprites/directional_card.png");
+	g_card_W=Load_tex("sprites/directional_card_right.png");
 
 	SDL_Texture *trans;
 	trans = Load_tex("sprites/gui/trans1x1.png");

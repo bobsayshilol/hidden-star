@@ -17,7 +17,8 @@ int travel_setup()
 	t_node_current = Load_tex("sprites/starmap/starmap_star_active.png");
 	SDL_QueryTexture(t_node, NULL, NULL, &half_node_sprite, NULL);
 	half_node_sprite /= 2;
-
+	t_sectorX=0;
+	t_sectorY=0;
 	update_travel_icons();
 
 
@@ -37,8 +38,8 @@ void generate_starmap()
 		Planet *p = malloc(sizeof(Planet));
 		//todo: unclump
 		//todo: panning
-		t->x = rand() % 60;
-		t->y = rand() % 60;
+		t->x = (rand() % 504) + 4;
+		t->y = (rand() % 504) + 4;
 		t->faction = rand() % 4;
 		t->is_inhabited = rand() % 2;
 		t->connectedNode1 = -1;
@@ -108,25 +109,60 @@ void generate_starmap()
 	current_node = 0;
 }
 
+int travel_move_sector(int direction){
+	switch(direction){
+		case 1:
+			t_sectorY-=64;
+			break;
+		case 2:
+			t_sectorX+=64;
+			break;
+		case 3:
+			t_sectorY+=64;
+			break;
+		case 4:
+			t_sectorX-=64;
+			break;
+	}
+	if(t_sectorX<0){t_sectorX=0;}
+	if(t_sectorY<0){t_sectorY=0;}
+	if(t_sectorX>448){t_sectorX=448;}
+	if(t_sectorX>448){t_sectorY=448;}
+	update_travel_icons();
+}
+
 void update_travel_icons()
 {
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(&node_list, current_node);
-
+	if(t_sectorY>0){
+		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 1);
+	}
+	if(t_sectorX<448){
+		gui_add_sprite_button(g_card_E, 59, 29, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 2);
+	}
+	if(t_sectorY<448){
+		gui_add_sprite_button(g_card_S, 29, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 3);
+	}
+	if(t_sectorX>0){
+		gui_add_sprite_button(g_card_W, 0, 30, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 4);
+	}
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
 		Travel_Node *t = (Travel_Node *)vector_get(&node_list, i);
-		SDL_Texture* tex = t_node;
-		int state = BUTTON_STATE_DISABLED;
-		if (current_node == i)
-		{
-			tex = t_node_current;
+		if(t->x >= t_sectorX && t->x < t_sectorX+64 && t->y >= t_sectorY && t->y < t_sectorY+64){
+			SDL_Texture* tex = t_node;
+			int state = BUTTON_STATE_DISABLED;
+			if (current_node == i)
+			{
+				tex = t_node_current;
+			}
+			if (i == cn->connectedNode1 || i == cn->connectedNode2)
+			{
+				state = BUTTON_STATE_ENABLED;
+			}
+			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_MENU, -1, &travel_go, i);
 		}
-		if (i == cn->connectedNode1 || i == cn->connectedNode2)
-		{
-			state = BUTTON_STATE_ENABLED;
-		}
-		gui_add_sprite_button(tex, t->x - half_node_sprite, t->y - half_node_sprite, -1,  state, BUTTON_STYLE_MENU, -1, &travel_go, i);
 	}
 	update_button_state(current_node, BUTTON_STATE_SELECTED);
 }
@@ -169,7 +205,7 @@ void travel_draw()
 			}
 			Travel_Node *c1 = (Travel_Node *)vector_get(&node_list, t->connectedNode1);
 			SDL_SetRenderDrawColor(main_renderer, a, a, a, 1);
-			SDL_RenderDrawLine(main_renderer, t->x, t->y, c1->x, c1->y);
+			SDL_RenderDrawLine(main_renderer, t->x-t_sectorX, t->y-t_sectorY, c1->x-t_sectorX, c1->y-t_sectorY);
 		}
 		if (t->connectedNode2 > -1)
 		{
@@ -180,7 +216,7 @@ void travel_draw()
 			}
 			Travel_Node *c2 = (Travel_Node *)vector_get(&node_list, t->connectedNode2);
 			SDL_SetRenderDrawColor(main_renderer, a, a, a, 1);
-			SDL_RenderDrawLine(main_renderer, t->x, t->y, c2->x, c2->y);
+			SDL_RenderDrawLine(main_renderer, t->x-t_sectorX, t->y-t_sectorY, c2->x-t_sectorX, c2->y-t_sectorY);
 		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 	}

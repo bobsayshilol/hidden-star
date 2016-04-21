@@ -7,7 +7,7 @@
 #define TRAVEL_STATE_MAP 0
 #define TRAVEL_STATE_TRAVEL 1
 
-#define TRAVEL_MAX_NODES 10
+#define TRAVEL_MAX_NODES 100
 
 #define TRAVEL_FACTION_NONE 0
 #define TRAVEL_FACTION_SNEEB 1
@@ -39,11 +39,14 @@ Vector node_list;
 int current_node;
 int half_node_sprite;
 int inhabited_planet_count;
+int t_sectorX;
+int t_sectorY;
 
+int travel_move_sector(int direction);
 int travel_setup();
 void generate_starmap();
 void update_travel_icons();
-int travel_go();
+int travel_go(int destination);
 void travel_draw();
 
 #endif
