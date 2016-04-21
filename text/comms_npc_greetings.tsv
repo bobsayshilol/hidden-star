@@ -1,48 +1,48 @@
-FACTION_SNEEB,TONE_NEUTRAL,The emissaries of the Sneeb greet you.
-FACTION_SNEEB,TONE_NEUTRAL,Communications frequencies open. 
-FACTION_SNEEB,TONE_NEUTRAL,What are your needs, Human?
-FACTION_SNEEB,TONE_NEUTRAL,Tell us of your purpose.
-FACTION_KRULL,TONE_NEUTRAL,The Krull Empire. It welcomes you.
-FACTION_KRULL,TONE_NEUTRAL,It is time to speak. We will hear you.
-FACTION_KRULL,TONE_NEUTRAL,Your purpose here. We ask of it.
-FACTION_KRULL,TONE_NEUTRAL,Your communication. It is received.
-FACTION_PLINK,TONE_NEUTRAL,This is Plink space here.
-FACTION_PLINK,TONE_NEUTRAL,What does it want?
-FACTION_PLINK,TONE_NEUTRAL,What does it need?
-FACTION_PLINK,TONE_NEUTRAL,It may speak.
-FACTION_NONE,TONE_NEUTRAL,Receiving your transmission.
-FACTION_NONE,TONE_NEUTRAL,Go ahead.
-FACTION_NONE,TONE_NEUTRAL,We read you.
-FACTION_NONE,TONE_NEUTRAL,Comms channel open.
-FACTION_SNEEB,TONE_AGGRESSIVE,Our time is short. State your purpose.
-FACTION_SNEEB,TONE_AGGRESSIVE,This serves no purpose. What do you want?
-FACTION_SNEEB,TONE_AGGRESSIVE,We have no time for you. Be quick.
-FACTION_SNEEB,TONE_AGGRESSIVE,Human. State your needs.
-FACTION_KRULL,TONE_AGGRESSIVE,The Krull. We do not like you.
-FACTION_KRULL,TONE_AGGRESSIVE,Our purpose. Do not distract us from it.
-FACTION_KRULL,TONE_AGGRESSIVE,Your luck. It keeps us from destroying you.
-FACTION_KRULL,TONE_AGGRESSIVE,Your communication. It is unwelcome.
-FACTION_PLINK,TONE_AGGRESSIVE,It bothers us?
-FACTION_PLINK,TONE_AGGRESSIVE,Why does it speak at us?
-FACTION_PLINK,TONE_AGGRESSIVE,We do not want to hear its words.
-FACTION_PLINK,TONE_AGGRESSIVE,It tests our patience.
-FACTION_NONE,TONE_AGGRESSIVE,Make it quick.
-FACTION_NONE,TONE_AGGRESSIVE,Got no time for chit chat.
-FACTION_NONE,TONE_AGGRESSIVE,Don't really want to have this conversation.
-FACTION_NONE,TONE_AGGRESSIVE,Get out of my face.
-FACTION_SNEEB,TONE_HAPPY,We are glad to receive your transmission.
-FACTION_SNEEB,TONE_HAPPY,How may we help you?
-FACTION_SNEEB,TONE_HAPPY,The Sneeb are glad for their allies.
-FACTION_SNEEB,TONE_HAPPY,What do you need, friend?
-FACTION_KRULL,TONE_HAPPY,The Krull Empire. It honours its friends.
-FACTION_KRULL,TONE_HAPPY,Our friend. We are glad to see you.
-FACTION_KRULL,TONE_HAPPY,Our warmest greetings. We offer them.
-FACTION_KRULL,TONE_HAPPY,Your purpose. May we help with it?
-FACTION_PLINK,TONE_HAPPY,We listen to its words (@)
-FACTION_PLINK,TONE_HAPPY,Its presence makes us happy.
-FACTION_PLINK,TONE_HAPPY,We are pleased by its presence.
-FACTION_PLINK,TONE_HAPPY,Can we help it?
-FACTION_NONE,TONE_HAPPY,Hey there.
-FACTION_NONE,TONE_HAPPY,Great to see you.
-FACTION_NONE,TONE_HAPPY,Good to hear a friendly voice.
-FACTION_NONE,TONE_HAPPY,How can we help?
+FACTION_SNEEB	TONE_NEUTRAL	The emissaries of the Sneeb greet you.
+FACTION_SNEEB	TONE_NEUTRAL	Communications frequencies open. 
+FACTION_SNEEB	TONE_NEUTRAL	What are your needs, Human?
+FACTION_SNEEB	TONE_NEUTRAL	Tell us of your purpose.
+FACTION_KRULL	TONE_NEUTRAL	The Krull Empire. It welcomes you.
+FACTION_KRULL	TONE_NEUTRAL	It is time to speak. We will hear you.
+FACTION_KRULL	TONE_NEUTRAL	Your purpose here. We ask of it.
+FACTION_KRULL	TONE_NEUTRAL	Your communication. It is received.
+FACTION_PLINK	TONE_NEUTRAL	This is Plink space here.
+FACTION_PLINK	TONE_NEUTRAL	What does it want?
+FACTION_PLINK	TONE_NEUTRAL	What does it need?
+FACTION_PLINK	TONE_NEUTRAL	It may speak.
+FACTION_NONE	TONE_NEUTRAL	Receiving your transmission.
+FACTION_NONE	TONE_NEUTRAL	Go ahead.
+FACTION_NONE	TONE_NEUTRAL	We read you.
+FACTION_NONE	TONE_NEUTRAL	Comms channel open.
+FACTION_SNEEB	TONE_AGGRESSIVE	Our time is short. State your purpose.
+FACTION_SNEEB	TONE_AGGRESSIVE	This serves no purpose. What do you want?
+FACTION_SNEEB	TONE_AGGRESSIVE	We have no time for you. Be quick.
+FACTION_SNEEB	TONE_AGGRESSIVE	Human. State your needs.
+FACTION_KRULL	TONE_AGGRESSIVE	The Krull. We do not like you.
+FACTION_KRULL	TONE_AGGRESSIVE	Our purpose. Do not distract us from it.
+FACTION_KRULL	TONE_AGGRESSIVE	Your luck. It keeps us from destroying you.
+FACTION_KRULL	TONE_AGGRESSIVE	Your communication. It is unwelcome.
+FACTION_PLINK	TONE_AGGRESSIVE	It bothers us?
+FACTION_PLINK	TONE_AGGRESSIVE	Why does it speak at us?
+FACTION_PLINK	TONE_AGGRESSIVE	We do not want to hear its words.
+FACTION_PLINK	TONE_AGGRESSIVE	It tests our patience.
+FACTION_NONE	TONE_AGGRESSIVE	Make it quick.
+FACTION_NONE	TONE_AGGRESSIVE	Got no time for chit chat.
+FACTION_NONE	TONE_AGGRESSIVE	Don't really want to have this conversation.
+FACTION_NONE	TONE_AGGRESSIVE	Get out of my face.
+FACTION_SNEEB	TONE_HAPPY	We are glad to receive your transmission.
+FACTION_SNEEB	TONE_HAPPY	How may we help you?
+FACTION_SNEEB	TONE_HAPPY	The Sneeb are glad for their allies.
+FACTION_SNEEB	TONE_HAPPY	What do you need, friend
+FACTION_KRULL	TONE_HAPPY	The Krull Empire. It honours its friends.
+FACTION_KRULL	TONE_HAPPY	Our friend. We are glad to see you.
+FACTION_KRULL	TONE_HAPPY	Our warmest greetings. We offer them.
+FACTION_KRULL	TONE_HAPPY	Your purpose. May we help with it?
+FACTION_PLINK	TONE_HAPPY	We listen to its words (@)
+FACTION_PLINK	TONE_HAPPY	Its presence makes us happy.
+FACTION_PLINK	TONE_HAPPY	We are pleased by its presence.
+FACTION_PLINK	TONE_HAPPY	Can we help it?
+FACTION_NONE	TONE_HAPPY	Hey there.
+FACTION_NONE	TONE_HAPPY	Great to see you.
+FACTION_NONE	TONE_HAPPY	Good to hear a friendly voice.
+FACTION_NONE	TONE_HAPPY	How can we help?
