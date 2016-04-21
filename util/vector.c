@@ -15,6 +15,7 @@ int vector_init(Vector *v, int initial_size)
 
 	v->count = 0;
 	v->bounds = initial_size;
+	return 0;
 }
 
 void vector_fill(Vector *v, void *value)
