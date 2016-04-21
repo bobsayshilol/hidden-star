@@ -109,7 +109,7 @@ char * wrap_text(char *text, int max_width)
 	int last_space = -1;
 	int last_space_distance = 0;
 	int line_width = 0;
-	char *wrapped_text = malloc(strlen(text) + 1);
+	char *wrapped_text = malloc(strlen(text) + sizeof(char));
 	strcpy(wrapped_text, text);
 
 	for (int i = 0; i < strlen(wrapped_text); i++)
