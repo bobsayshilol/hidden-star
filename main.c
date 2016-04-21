@@ -121,7 +121,7 @@ char * wrap_text(char *text, int max_width)
 			last_space_distance = 0;
 			continue;
 		}
-		if (line_width + fonts[index].a >= max_width - 3)
+		if (line_width + fonts[index].a >= max_width - 4)
 		{
 			if (last_space >= 0)
 			{
