@@ -496,7 +496,14 @@ int comms_action(int v)
 
 int comms_skip(int v)
 {
-	advance_comms();
+	if (comms_state == COMMS_STATE_NPC_TEXT && comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2)
+	{
+		comms_draw_count = strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2;
+	}
+	else
+	{
+		advance_comms();
+	}
 	return 0;
 }
 
