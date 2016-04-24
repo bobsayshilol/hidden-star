@@ -175,7 +175,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 void draw_number(int x, int y, int num){
 	char s[16];
 	int len=sprintf(s, "%d", num);
-	draw_text(x, y, s, len, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+	draw_text(x, y, s, len, FONT_EARTH, GUI_DEFAULT_COLOR);
 }
 
 void load_fonts(){
@@ -333,11 +333,11 @@ int main_setup(){
 void draw_scene(){
 	switch(main_scene){
 		case SCENE_INTRO:
-			if(intro_draw()==1){
-				//should be main menu
-				gui_draw();
-			}
+			intro_draw();
 			break;
+		case SCENE_MAIN_MENU:
+			intro_draw();
+			gui_draw();
 		case SCENE_PLANET_GEN:
 //			planet_draw();
 			break;
@@ -442,7 +442,13 @@ void main_input(SDL_Event event){
 			gui_update_hover_state(mouseX, mouseY);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			gui_do_button_action_coords(mouseX, mouseY);
+			if (main_scene==SCENE_INTRO){
+				intro_skip();
+				while(SDL_PollEvent(&event)){} //flush event queue
+			}else{
+				gui_do_button_action_coords(mouseX, mouseY);
+			}
+			gui_update_hover_state(mouseX, mouseY);
 			break;
 	}
 
@@ -474,7 +480,6 @@ int main(int argc, char *argv[]){
 
 	intro_setup();
 	gui_setup();
-	generate_starmap();
 	main_menu_setup();
 
 	SDL_Event main_event;

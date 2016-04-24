@@ -15,7 +15,14 @@ int intro_setup(){
 	return 0;
 }
 
-int intro_draw(){
+void intro_skip(){
+	intro_count1=6;
+	intro_count2=4;
+	intro_count3=11;
+	intro_draw();
+}
+
+void intro_draw(){
 	if(intro_count1<6){intro_count1++;}else{if(intro_count2<4){intro_count2++;}}
 	if(intro_count2==4){intro_count3++;}
 	if(intro_count3>5){intro_font=0;}
@@ -24,17 +31,15 @@ int intro_draw(){
 		SDL_RenderCopy(main_renderer, intro_flare, NULL, NULL);
 	}
 	SDL_RenderCopy(main_renderer, intro_bg, NULL, NULL);
-	draw_text(32-((intro_count1*4)), 29, "hidden", intro_count1, intro_font, GUI_TEXT_COLOR_DEFAULT);
-	draw_text(40, 29, "star", intro_count2, intro_font, GUI_TEXT_COLOR_DEFAULT);
+	draw_text(32-((intro_count1*4)), 29, "hidden", intro_count1, intro_font, GUI_DEFAULT_COLOR);
+	draw_text(40, 29, "star", intro_count2, intro_font, GUI_DEFAULT_COLOR);
 	if(intro_count3<=5){
 		draw_number(32, 29, intro_count1);
 		draw_number(36, 29, intro_count2);
 	}
 
 	if(intro_count3>10){
-		return 1;
-	}else{
-		return 0;
+		main_scene=SCENE_MAIN_MENU;
 	}
 }
 

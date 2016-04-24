@@ -19,6 +19,7 @@ int travel_setup()
 	half_node_sprite /= 2;
 	t_sectorX=0;
 	t_sectorY=0;
+	generate_starmap();
 	update_travel_icons();
 
 
@@ -40,6 +41,10 @@ void generate_starmap()
 		//todo: panning
 		t->x = (rand() % 504) + 4;
 		t->y = (rand() % 504) + 4;
+		if(i==0){
+			t_sectorX=round(t->x/64)*64;
+			t_sectorY=round(t->y/64)*64;
+		}
 		t->faction = rand() % 4;
 		t->is_inhabited = rand() % 2;
 		t->connectedNode1 = -1;
@@ -51,6 +56,11 @@ void generate_starmap()
 		{
 			inhabited_planet_count++;
 		}
+		SDL_Color color;
+		color.r=(rand()%128)+128;
+		color.g=(rand()%128)+128;
+		color.b=(rand()%128)+128;
+		t->color=color;
 		vector_add(&node_list, t);
 	}
 
@@ -107,6 +117,7 @@ void generate_starmap()
 		}
 	}
 	current_node = 0;
+
 }
 
 int travel_move_sector(int direction){
@@ -136,16 +147,16 @@ void update_travel_icons()
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(&node_list, current_node);
 	if(t_sectorY>0){
-		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 1);
+		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 1, NOFLIP, GUI_MOVE_BUTTON_COLOR);
 	}
 	if(t_sectorX<448){
-		gui_add_sprite_button(g_card_E, 59, 29, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 2);
+		gui_add_sprite_button(g_card_E, 59, 29, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 2, NOFLIP, GUI_MOVE_BUTTON_COLOR);
 	}
 	if(t_sectorY<448){
-		gui_add_sprite_button(g_card_S, 29, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 3);
+		gui_add_sprite_button(g_card_S, 29, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 3, FLIPV, GUI_MOVE_BUTTON_COLOR);
 	}
 	if(t_sectorX>0){
-		gui_add_sprite_button(g_card_W, 0, 30, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 4);
+		gui_add_sprite_button(g_card_W, 0, 30, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_move_sector, 4, FLIPH, GUI_MOVE_BUTTON_COLOR);
 	}
 	for (int i = 0; i < vector_get_size(&node_list); i++)
 	{
@@ -161,7 +172,7 @@ void update_travel_icons()
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
-			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_MENU, -1, &travel_go, i);
+			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &travel_go, i, NOFLIP, t->color);
 		}
 	}
 	update_button_state(current_node, BUTTON_STATE_SELECTED);

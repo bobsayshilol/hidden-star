@@ -38,6 +38,7 @@ int gui_add_text_button(char* text, int x, int y, int width, int state, int styl
 	b.button_bounds = button_bounds;
 	b.state = state;
 	b.style = style;
+	b.flip = NOFLIP;
 	b.shortcut = shortcut;
 	b.action = action;
 	b.action_value = _action_value;
@@ -47,7 +48,7 @@ int gui_add_text_button(char* text, int x, int y, int width, int state, int styl
 	return button_count - 1;
 }
 
-int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value)
+int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int flip, SDL_Color color)
 {
 	int w, h;
 	SDL_QueryTexture(_sprite, NULL, NULL, &w, &h);
@@ -64,10 +65,6 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 		text_bounds.w = width;
 	}
 	text_bounds.h = 5; //todo: account for wrapped text
-	SDL_Color color; //FIXME should be passed as param?
-	color.r=(rand()%128)+128;
-	color.g=(rand()%128)+128;
-	color.b=(rand()%128)+128;
 
 	SDL_Rect button_bounds;
 	button_bounds.x = x;
@@ -82,6 +79,8 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	b.button_bounds = button_bounds;
 	b.state = state;
 	b.style = style;
+	b.flip = flip;
+
 	b.shortcut = shortcut;
 	b.action = action;
 	b.action_value = _action_value;
@@ -175,23 +174,22 @@ void gui_draw()
 		else
 		{
 			//Draw sprite button
-			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, &g_button_list[i].color);
+			SDL_Color color;
+			color=g_button_list[i].color;
 			if (g_button_list[i].state == BUTTON_STATE_SELECTED)
 			{
-				//TODO: Store the previous draw colour
-//				SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
-//				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
-//				SDL_RenderDrawLine(main_renderer, g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w + 1, g_button_list[i].button_bounds.y - 1, g_button_list[i].button_bounds.x - 1, g_button_list[i].button_bounds.y  + g_button_list[i].button_bounds.w + 1);
-				if(g_blink<4){
-					draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
-					draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				if(g_button_list[i].style==BUTTON_STYLE_GUI){
+					if(g_blink<4){
+						draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_DEFAULT_COLOR);
+						draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_DEFAULT_COLOR);
+					}
+				}else{
+					color=GUI_DEFAULT_COLOR;
 				}
 				g_blink++;
 				if(g_blink>4){g_blink=0;}
-
-				
-//				SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 			}
+			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, g_button_list[i].flip, &color);
 		}
 	}
 }

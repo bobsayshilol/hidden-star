@@ -24,6 +24,7 @@ typedef struct Travel_Node
 	int connectedNode1;
 	int connectedNode2;
 	struct Planet *p;
+	SDL_Color color;
 } Travel_Node;
 
 SDL_Texture *t_stars1;

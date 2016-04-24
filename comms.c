@@ -420,17 +420,17 @@ void comms_draw_intro()
 
 	if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
 	{
-		draw_text(1, 2, comms_intro_text, comms_draw_count / 2, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+		draw_text(1, 2, comms_intro_text, comms_draw_count / 2, FONT_EARTH, GUI_DEFAULT_COLOR);
 		if (comms_draw_count > strlen(comms_intro_text) * 2)
 		{
-			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
 			if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
 			{
-				draw_text(1, 8, subject_name, comms_draw_count / 2 - strlen(comms_intro_text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				draw_text(1, 8, subject_name, comms_draw_count / 2 - strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
 			}
 			else
 			{
-				draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+				draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_DEFAULT_COLOR);
 			}
 		}
 	}
@@ -438,8 +438,8 @@ void comms_draw_intro()
 	{
 		if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2 + 12)
 		{
-			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
-			draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
+			draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_DEFAULT_COLOR);
 		}
 		else
 		{
@@ -468,11 +468,11 @@ void comms_draw_npc_text()
 	main_blit(portrait_image, comms_portrait_pos[0], comms_portrait_pos[1], NOFLIP, NULL);
 	if (comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2)
 	{
-		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, comms_draw_count / 2, FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, comms_draw_count / 2, FONT_EARTH, GUI_DEFAULT_COLOR);
 	}
 	else
 	{
-		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text), FONT_EARTH, GUI_TEXT_COLOR_DEFAULT);
+		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text), FONT_EARTH, GUI_DEFAULT_COLOR);
 	}
 }
 
