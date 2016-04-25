@@ -683,42 +683,42 @@ int combat_setup(){
 		BUTTON_STYLE_GUI, -1, &combat_change_action, 2);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 	//move buttons
-	gui_add_sprite_button(c_diag, 13, 29, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 13, 29, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 7, NOFLIP, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card, 21, 29, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card, 21, 29, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 8, NOFLIP, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 29, 29, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 29, 29, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 9, FLIPH, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card_right, 13, 37, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card_right, 13, 37, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 4, FLIPH, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_mid, 21, 37, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_mid, 21, 37, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 5, NOFLIP, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card_right, 29, 37, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card_right, 29, 37, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 6, NOFLIP, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 13, 45, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 13, 45, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 1, FLIPV, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card, 21, 45, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card, 21, 45, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 2, FLIPV, GUI_MOVE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 29, 45, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 29, 45, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 3, FLIPHV, GUI_MOVE_BUTTON_COLOR);
 	//fire buttons
-	gui_add_sprite_button(c_diag, 34, 8, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 34, 8, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 17, NOFLIP, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card, 42, 8, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card, 42, 8, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 18, NOFLIP, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 50, 8, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 50, 8, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 19, FLIPH, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card_right, 34, 16, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card_right, 34, 16, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 14, FLIPH, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_mid, 42, 16, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_mid, 42, 16, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 15, NOFLIP, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card_right, 50, 16, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card_right, 50, 16, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 16, NOFLIP, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 34, 24, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 34, 24, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 11, FLIPV, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_card, 42, 24, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_card, 42, 24, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 12, FLIPV, GUI_FIRE_BUTTON_COLOR);
-	gui_add_sprite_button(c_diag, 50, 24, -1, BUTTON_STATE_DISABLED, 
+	gui_add_sprite_button(c_diag, 50, 24, -1, BUTTON_STATE_HIDDEN, 
 		BUTTON_STYLE_MENU, -1, &combat_commit_action, 13, FLIPHV, GUI_FIRE_BUTTON_COLOR);
 
 	combat_show(0);
@@ -736,7 +736,7 @@ int combat_commit_action(int action){
 	}
 	c_action=0;
 	for(int i=2;i<20;i++){
-		update_button_state(i, BUTTON_STATE_DISABLED);
+		update_button_state(i, BUTTON_STATE_HIDDEN);
 	}
 	combat_show(c_time_pos);
 	return 0;
@@ -749,12 +749,12 @@ int combat_change_action(int action){
 			update_button_state(i, BUTTON_STATE_ENABLED);
 		}
 		if(action==2){
-			update_button_state(i, BUTTON_STATE_DISABLED);
+			update_button_state(i, BUTTON_STATE_HIDDEN);
 		}
 	}
 	for(int i=11;i<20;i++){
 		if(action==1){
-			update_button_state(i, BUTTON_STATE_DISABLED);
+			update_button_state(i, BUTTON_STATE_HIDDEN);
 		}
 		if(action==2){
 			update_button_state(i, BUTTON_STATE_ENABLED);

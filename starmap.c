@@ -75,13 +75,31 @@ void update_starmap_icons()
 
 			for (int i = 0; i < sizeof(cn->connections) / sizeof(Travel_Node *); ++i)
 			{
-				if (cn->connections[i] == (Travel_Node *)vector_get(starmap, i))
+				if (cn->connections[i] == (Travel_Node *)vector_get(starmap, current_node))
 				{
 					state = BUTTON_STATE_ENABLED;
 				}
 			}
 
-			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, (SDL_Color){255, 255, 255, 255}); //todo set colour based on faction
+			if (cn == (Travel_Node *)vector_get(starmap, current_node))
+			{
+				state = BUTTON_STATE_SELECTED;
+			}
+
+			SDL_Color c = FACTION_COLOR_NONE;
+			if (cn->f == 1)
+			{
+				c = FACTION_COLOR_SNEEB;
+			}
+			else if (cn->f == 2)
+			{
+				c = FACTION_COLOR_KRULL;
+			}
+			else if (cn->f == 3)
+			{
+				c = FACTION_COLOR_PLINK;
+			}
+			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, c);
 		}
 	}
 	update_button_state(current_node, BUTTON_STATE_SELECTED);
@@ -568,7 +586,7 @@ void starmap_draw(Vector *node_list)
 		SDL_SetRenderDrawColor(main_renderer, c.r, c.g, c.b, c.a);
 		int x=n->x - t_sectorX;
 		int y=n->y - t_sectorY;
-
+/*
 		SDL_RenderDrawPoint(main_renderer,  x-1, y);
 		SDL_RenderDrawPoint(main_renderer,  x, y-1);
 		SDL_RenderDrawPoint(main_renderer,  x-1, y-1);
@@ -577,7 +595,7 @@ void starmap_draw(Vector *node_list)
 		SDL_RenderDrawPoint(main_renderer,  x+1, y+1);
 		SDL_RenderDrawPoint(main_renderer,  x, y);
 		SDL_RenderDrawPoint(main_renderer,  x-1, y+1);
-		SDL_RenderDrawPoint(main_renderer,  x+1, y-1);
+		SDL_RenderDrawPoint(main_renderer,  x+1, y-1);*/
 	}
 
 	SDL_SetRenderTarget(main_renderer, NULL);

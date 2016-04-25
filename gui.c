@@ -194,7 +194,7 @@ void gui_draw()
 				g_blink++;
 				if(g_blink>4){g_blink=0;}
 			}
-			if(g_button_list[i].state!=BUTTON_STATE_DISABLED){
+			if(g_button_list[i].state!=BUTTON_STATE_HIDDEN){
 				main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, g_button_list[i].flip, &color);
 			}
 		}
