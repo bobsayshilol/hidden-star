@@ -616,8 +616,8 @@ void generate_starmap(Vector *node_list)
 	defs.max_connection_dist = 75; //something around merge_dist + spread + jitter
 	defs.faction = -1; //-1 gives nodes random factions
 
-	int root_x = defs.bounds / 2;
-	int root_y = defs.bounds / 2;
+	int root_x = defs.bounds / 2 + 32;
+	int root_y = defs.bounds / 2 + 32;
 
 	make_tree(node_list, defs, root_x, root_y);
 
