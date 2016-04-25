@@ -290,8 +290,8 @@ void load_fonts(){
 void main_menu_setup()
 {
 	int default_button;
-/*	default_button = gui_add_text_button("combat", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup, SCENE_COMBAT);
-	gui_add_text_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup, SCENE_PLANET_GEN);
+	default_button = gui_add_text_button("combat test", 0, 18, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup, SCENE_COMBAT);
+/*	gui_add_text_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup, SCENE_PLANET_GEN);
 	gui_add_text_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
 	gui_add_text_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
 	gui_add_text_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
@@ -343,6 +343,7 @@ void draw_scene(){
 			break;
 		case SCENE_COMBAT:
 			combat_draw();
+			gui_draw();
 			break;
 		case SCENE_TRAVEL:
 			travel_draw();
@@ -397,6 +398,7 @@ int menu_quit()
 
 void main_input(SDL_Event event){
 	int mouseX, mouseY;
+	int handled=0;
 	SDL_GetMouseState(&mouseX, &mouseY);
 	mouseX /= main_scale;
 	mouseY /= main_scale;
@@ -446,7 +448,7 @@ void main_input(SDL_Event event){
 				intro_skip();
 				while(SDL_PollEvent(&event)){} //flush event queue
 			}else{
-				gui_do_button_action_coords(mouseX, mouseY);
+				handled=gui_do_button_action_coords(mouseX, mouseY);
 			}
 			gui_update_hover_state(mouseX, mouseY);
 			break;
@@ -459,7 +461,7 @@ void main_input(SDL_Event event){
 //			planets_handle_input(event);
 			break;
 		case SCENE_COMBAT:
-			combat_handle_input(event);
+			if(handled==0){combat_handle_input(event);}
 			break;
 	}
 }

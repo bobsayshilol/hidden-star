@@ -34,6 +34,17 @@ void combat_set_faction(int f)
 	}
 }
 
+void combat_draw_thruster(int x, int y, int thruster){
+		if(thruster==7){main_blit(c_shot2, x+11, y+9, FLIPH, combat_get_color(3));}
+		if(thruster==8){main_blit(c_shot1, x+6, y+8, NOFLIP, combat_get_color(3));}
+		if(thruster==9){main_blit(c_shot2, x, y+9, NOFLIP, combat_get_color(3));}
+		if(thruster==4){main_blit(c_shot3, x+11, y+6, FLIPH, combat_get_color(3));}
+		if(thruster==6){main_blit(c_shot3, x, y+6, NOFLIP, combat_get_color(3));}
+		if(thruster==1){main_blit(c_shot2, x+10, y+3, FLIPHV, combat_get_color(3));}
+		if(thruster==2){main_blit(c_shot1, x+6, y+2, FLIPV, combat_get_color(3));}
+		if(thruster==3){main_blit(c_shot2, x+1, y+3, FLIPV, combat_get_color(3));}
+}
+
 void combat_draw_action_button(int direction, int x, int y, int mask){
 	switch(direction){
 		case 1:
@@ -64,35 +75,6 @@ void combat_draw_action_button(int direction, int x, int y, int mask){
 			main_blit(c_diag, x, y, FLIPH, combat_get_color(mask));
 			break;
 	}
-}
-
-void combat_draw_action_buttons(){
-	int offset=0;
-	int mask=1;
-	if(c_action==2){
-		offset=21;
-		mask=2;
-	}
-	combat_draw_action_button(7, 13+offset, 29-offset, mask);
-	combat_draw_action_button(8, 21+offset, 29-offset, mask);
-	combat_draw_action_button(9, 29+offset, 29-offset, mask);
-	combat_draw_action_button(4, 13+offset, 37-offset, mask);
-	combat_draw_action_button(5, 21+offset, 37-offset, mask);
-	combat_draw_action_button(6, 29+offset, 37-offset, mask);
-	combat_draw_action_button(1, 13+offset, 45-offset, mask);
-	combat_draw_action_button(2, 21+offset, 45-offset, mask);
-	combat_draw_action_button(3, 29+offset, 45-offset, mask);
-}
-
-void combat_draw_thruster(int x, int y, int thruster){
-		if(thruster==7){main_blit(c_shot2, x+11, y+9, FLIPH, combat_get_color(3));}
-		if(thruster==8){main_blit(c_shot1, x+6, y+8, NOFLIP, combat_get_color(3));}
-		if(thruster==9){main_blit(c_shot2, x, y+9, NOFLIP, combat_get_color(3));}
-		if(thruster==4){main_blit(c_shot3, x+11, y+6, FLIPH, combat_get_color(3));}
-		if(thruster==6){main_blit(c_shot3, x, y+6, NOFLIP, combat_get_color(3));}
-		if(thruster==1){main_blit(c_shot2, x+10, y+3, FLIPHV, combat_get_color(3));}
-		if(thruster==2){main_blit(c_shot1, x+6, y+2, FLIPV, combat_get_color(3));}
-		if(thruster==3){main_blit(c_shot2, x+1, y+3, FLIPV, combat_get_color(3));}
 }
 
 SDL_Color* combat_get_color(int index){
@@ -179,8 +161,6 @@ void combat_show(int time_pos){
 	
 	main_blit(c_timerbar, time_pos, 0, NOFLIP, NULL);
 	main_blit(c_hud, 0, 55, NOFLIP, NULL);
-	main_blit(c_movetext, 4, 57, NOFLIP, NULL);
-	main_blit(c_firetext, 44, 57, NOFLIP, NULL);
 
 	if(c_player_dead==0){
 		SDL_SetRenderDrawColor(main_renderer, 0, 100, 0, 255);
@@ -257,14 +237,6 @@ void combat_show(int time_pos){
 		}else{
 			combat_draw_action_button(c_player_move2, 34, 57, 1);
 		}
-	}
-	if(c_action==1){
-		main_blit(c_moveselect, 0, 55, NOFLIP, NULL);
-		combat_draw_action_buttons();
-	}
-	if(c_action==2){
-		main_blit(c_fireselect, 40, 55, NOFLIP, NULL);
-		combat_draw_action_buttons();
 	}
 }
 
@@ -641,6 +613,7 @@ int combat_setup(){
 	printf("loading combat...\n");
 	main_scene=SCENE_COMBAT;
 	frame_skip=0;
+	gui_clear();
 
 	c_player_move1=0;
 	c_player_move2=0;
@@ -682,10 +655,10 @@ int combat_setup(){
 	}
 	c_timerbar = Load_tex("sprites/timerbar.png");
 	c_hud = Load_tex("sprites/combat_hud_bottom.png");
-	c_firetext = Load_tex("sprites/combat_hud_fire.png");
-	c_movetext = Load_tex("sprites/combat_hud_move.png");
-	c_moveselect = Load_tex("sprites/combat_hud_move_highlight.png");
-	c_fireselect = Load_tex("sprites/combat_hud_fire_highlight.png");
+//	c_firetext = Load_tex("sprites/combat_hud_fire.png");
+//	c_movetext = Load_tex("sprites/combat_hud_move.png");
+//	c_moveselect = Load_tex("sprites/combat_hud_move_highlight.png");
+//	c_fireselect = Load_tex("sprites/combat_hud_fire_highlight.png");
 	c_diag = Load_tex("sprites/directional_diag.png");
 	c_card = Load_tex("sprites/directional_card.png");
 	c_card_right = Load_tex("sprites/directional_card_right.png");
@@ -702,10 +675,95 @@ int combat_setup(){
 			c_starY[i]=-64;
 	}
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+
+	int default_button;
+	default_button = gui_add_text_button("move", 2, 55, 0, BUTTON_STATE_ENABLED, 
+		BUTTON_STYLE_GUI, -1, &combat_change_action, 1);
+	default_button = gui_add_text_button("fire", 40, 55, 0, BUTTON_STATE_ENABLED, 
+		BUTTON_STYLE_GUI, -1, &combat_change_action, 2);
+	update_button_state(default_button, BUTTON_STATE_SELECTED);
+	//move buttons
+	gui_add_sprite_button(c_diag, 13, 29, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 7, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card, 21, 29, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 8, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 29, 29, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 9, FLIPH, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card_right, 13, 37, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 4, FLIPH, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_mid, 21, 37, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 5, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card_right, 29, 37, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 6, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 13, 45, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 1, FLIPV, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card, 21, 45, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 2, FLIPV, GUI_MOVE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 29, 45, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 3, FLIPHV, GUI_MOVE_BUTTON_COLOR);
+	//fire buttons
+	gui_add_sprite_button(c_diag, 34, 8, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 17, NOFLIP, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card, 42, 8, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 18, NOFLIP, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 50, 8, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 19, FLIPH, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card_right, 34, 16, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 14, FLIPH, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_mid, 42, 16, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 15, NOFLIP, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card_right, 50, 16, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 16, NOFLIP, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 34, 24, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 11, FLIPV, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_card, 42, 24, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 12, FLIPV, GUI_FIRE_BUTTON_COLOR);
+	gui_add_sprite_button(c_diag, 50, 24, -1, BUTTON_STATE_DISABLED, 
+		BUTTON_STYLE_MENU, -1, &combat_commit_action, 13, FLIPHV, GUI_FIRE_BUTTON_COLOR);
+
 	combat_show(0);
 	return 0;
 }
 
+int combat_commit_action(int action){
+	if(c_player_dead==0 && c_AI_dead==0){
+		if(action>0 && c_player_move1>0 && c_player_move2==0){
+			c_player_move2=action;
+		}
+		if(action>0 && c_player_move1==0){
+			c_player_move1=action;
+		}
+	}
+	c_action=0;
+	for(int i=2;i<20;i++){
+		update_button_state(i, BUTTON_STATE_DISABLED);
+	}
+	combat_show(c_time_pos);
+	return 0;
+}
+
+int combat_change_action(int action){
+	if(c_player_move2!=0){return 0;}
+	for(int i=2;i<11;i++){
+		if(action==1){
+			update_button_state(i, BUTTON_STATE_ENABLED);
+		}
+		if(action==2){
+			update_button_state(i, BUTTON_STATE_DISABLED);
+		}
+	}
+	for(int i=11;i<20;i++){
+		if(action==1){
+			update_button_state(i, BUTTON_STATE_DISABLED);
+		}
+		if(action==2){
+			update_button_state(i, BUTTON_STATE_ENABLED);
+		}
+	}
+	c_action=action;
+	combat_show(c_time_pos);
+	return 0;
+}
 
 void combat_handle_input(SDL_Event event){
 	int direction=0;
@@ -716,11 +774,12 @@ void combat_handle_input(SDL_Event event){
 				switch(event.key.keysym.sym){
 					case SDLK_KP_0:
 					case SDLK_LSHIFT:
-						c_action=1;
-						break;
-					case SDLK_KP_ENTER:
 					case SDLK_SPACE:
-						c_action=2;
+						if(c_action==1){
+							combat_change_action(2);
+						}else{
+							combat_change_action(1);
+						}
 						break;
 					case SDLK_KP_7:
 					case SDLK_q:
@@ -760,72 +819,23 @@ void combat_handle_input(SDL_Event event){
 						break;
 				}
 				if(direction>0 && c_action==2){direction+=10;}
-				if(direction>0){c_action=0;}
+				if(direction>0){
+					combat_commit_action(direction);
+				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				if(c_player_move2==0 && mouseX < (25*main_scale) 
-								   && mouseY > (56*main_scale)){
-					//movebutt on
-						c_action=1;
-				}
-				if(c_player_move2==0 && mouseX > (42*main_scale) 
-								   && mouseY > (56*main_scale)){
-					//firebutt on
-						c_action=2;
-				}
 				if(mouseX > (12*main_scale) && mouseX < (35*main_scale) &&
 				   mouseY > (28*main_scale) && mouseY < (51*main_scale)){
-					if(c_action==1){
-						int xr=round(((mouseX/main_scale)-12)/8);
-						int yr=round(((mouseY/main_scale)-28)/8);
-						if(xr==0 && yr==0){direction=7;}
-						if(xr==1 && yr==0){direction=8;}
-						if(xr==2 && yr==0){direction=9;}
-						if(xr==0 && yr==1){direction=4;}
-						if(xr==1 && yr==1){direction=5;}
-						if(xr==2 && yr==1){direction=6;}
-						if(xr==0 && yr==2){direction=1;}
-						if(xr==1 && yr==2){direction=2;}
-						if(xr==2 && yr==2){direction=3;}
-					}else if(c_action!=1 && c_player_move2==0){
-						//movebutt on
-							c_action=1;
-					}
+					//movebutt on
+					if(c_action!=1){combat_change_action(1);}
 				}
 				if(mouseX > (33*main_scale) && mouseX < (56*main_scale) &&
 				   mouseY > (7*main_scale) && mouseY < (30*main_scale)){
-					if(c_action==2){
-						int xr=round(((mouseX/main_scale)-33)/8);
-						int yr=round(((mouseY/main_scale)-7)/8);
-						if(xr==0 && yr==0){direction=17;}
-						if(xr==1 && yr==0){direction=18;}
-						if(xr==2 && yr==0){direction=19;}
-						if(xr==0 && yr==1){direction=14;}
-						if(xr==1 && yr==1){direction=15;}
-						if(xr==2 && yr==1){direction=16;}
-						if(xr==0 && yr==2){direction=11;}
-						if(xr==1 && yr==2){direction=12;}
-						if(xr==2 && yr==2){direction=13;}
-					}else if(c_action!=2 && c_player_move2==0){
-						//firebutt on
-							c_action=2;
-					}
+					//firebutt on
+					if(c_action!=2){combat_change_action(2);}
 				break;
 			}
 		}
-		if(c_player_dead==0 && c_AI_dead ==0){
-			if(direction>0 && c_player_move1>0 && c_player_move2==0){
-				c_player_move2=direction;
-				c_action=0;
-			}
-			if(direction>0 && c_player_move1==0){
-				c_player_move1=direction;
-				c_action=0;
-			}
-		}else{
-			c_action=0;
-		}
-combat_show(c_time_pos);
 }
 
 

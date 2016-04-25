@@ -58,7 +58,7 @@ int gui_seek_next_button_h(int direction);
 int gui_seek_next_button_v(int direction);
 int gui_update_hover_state(int x, int y);
 void gui_do_button_action();
-void gui_do_button_action_coords(int x, int y);
+int gui_do_button_action_coords(int x, int y);
 void gui_draw();
 void gui_clear();
 int gui_setup();

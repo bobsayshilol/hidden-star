@@ -102,7 +102,9 @@ int update_button_state(int button, int state)
 			update_button_state(current_button, BUTTON_STATE_ENABLED);
 			current_button = button;
 		}
-		//if (state == BUTTON_STATE_DISABLED && button == current_button)
+		if (state == BUTTON_STATE_DISABLED && button == current_button){
+			current_button=-1;
+		}
 		//TODO: Find next available button
 		g_button_list[button].state = state;
 
@@ -114,8 +116,9 @@ int update_button_state(int button, int state)
 	}
 }
 
-void gui_do_button_action_coords(int x, int y)
+int gui_do_button_action_coords(int x, int y)
 {
+	int handled=0;
 	//FIXME: There's a stack of redundancy here that should be cleaned up.
 	//We need to ensure that clicking triggers what's under the cursor regardless of whether keyboard input has moved focus away.
 	gui_update_hover_state(x, y);
@@ -129,11 +132,13 @@ void gui_do_button_action_coords(int x, int y)
 				if (g_button_list[i].state == BUTTON_STATE_SELECTED)
 				{
 					gui_do_button_action();
+					handled=1;
 				}
 				break;
 			}
 		}
 	}
+	return handled;
 }
 
 void gui_do_button_action()
@@ -189,7 +194,9 @@ void gui_draw()
 				g_blink++;
 				if(g_blink>4){g_blink=0;}
 			}
-			main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, g_button_list[i].flip, &color);
+			if(g_button_list[i].state!=BUTTON_STATE_DISABLED){
+				main_blit(g_button_list[i].sprite, g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, g_button_list[i].flip, &color);
+			}
 		}
 	}
 }

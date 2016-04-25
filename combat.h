@@ -57,9 +57,8 @@ SDL_Texture *c_explosion2;
 SDL_Texture *c_miss1;
 
 void combat_animate(SDL_Texture *tex, int x, int y, int frame);
-void combat_draw_action_button(int direction, int x, int y, int mask);
-void combat_draw_action_buttons();
 void combat_draw_thruster(int x, int y, int thruster);
+void combat_draw_action_button(int direction, int x, int y, int mask);
 void combat_draw();
 void combat_set_faction(int f);
 void combat_show(int time_pos);
@@ -68,5 +67,7 @@ void combat_show_fight();
 SDL_Color* combat_get_color(int index);
 void combat_handle_input(SDL_Event event);
 int combat_setup();
+int combat_change_action(int action);
+int combat_commit_action(int action);
 
 #endif
