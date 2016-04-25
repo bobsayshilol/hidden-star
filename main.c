@@ -484,6 +484,8 @@ int main(int argc, char *argv[]){
 	pref_path = SDL_GetPrefPath("HiddenStar", "HiddenStar");
 	screenshot_counter = 0;
 
+	//TODO: This is game specific init stuff - make sure we only do it when starting a new game (and do corresponding stuff when loading)
+	factions_setup();
 	starmap = malloc(sizeof(Vector));
 	vector_init(starmap, 5);
 	generate_starmap(starmap);

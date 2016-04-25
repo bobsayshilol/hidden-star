@@ -1,5 +1,6 @@
 #include "comms.h"
 #include "starmap.h"
+#include "starmap.h"
 
 int comms_setup()
 {
@@ -44,22 +45,35 @@ int comms_setup()
 
 void comms_set_faction(int f)
 {
-	if (f == TRAVEL_FACTION_KRULL)
+	if (f == FACTION_KRULL)
 	{
 		portrait_image = Load_tex("sprites/portraits/krull_1.png");
 		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
 	}
-	else if (f == TRAVEL_FACTION_PLINK)
+	else if (f == FACTION_PLINK)
 	{
 		portrait_image = Load_tex("sprites/portraits/plink_1.png");
 		subject = Load_tex("sprites/ships/ring_ship1_closeup.png");
 	}
-	else if (f == TRAVEL_FACTION_SNEEB)
+	else if (f == FACTION_SNEEB)
 	{
 		portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
 		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
 	}
 	comms_faction = f;
+	comms_tone = COMMS_TONE_UNKNOWN;
+	if (faction_disposition[comms_faction] <= FACTION_THRESHOLD_DISLIKE)
+	{
+		comms_tone = COMMS_TONE_AGGRESSIVE;
+	}
+	else if (faction_disposition[comms_faction] < FACTION_THRESHOLD_LIKE)
+	{
+		comms_tone = COMMS_TONE_NEUTRAL;
+	}
+	else if (faction_disposition[comms_faction] >= FACTION_THRESHOLD_LIKE)
+	{
+		comms_tone = COMMS_TONE_HAPPY;
+	}
 }
 
 void prepare_npc_lists()
@@ -150,18 +164,18 @@ void load_default_npc_lines(Vector **line_type, char *fname, int next_state, int
 			char *text;
 
 			faction_name = strtok(line, "\t");
-			int faction_id = TRAVEL_FACTION_NONE;
+			int faction_id = FACTION_NONE;
 			if (strcmp(faction_name, "FACTION_SNEEB") == 0)
 			{
-				faction_id = TRAVEL_FACTION_SNEEB;
+				faction_id = FACTION_SNEEB;
 			}
 			else if (strcmp(faction_name, "FACTION_KRULL") == 0)
 			{
-				faction_id = TRAVEL_FACTION_KRULL;
+				faction_id = FACTION_KRULL;
 			}
 			else if (strcmp(faction_name, "FACTION_PLINK") == 0)
 			{
-				faction_id = TRAVEL_FACTION_PLINK;
+				faction_id = FACTION_PLINK;
 			}
 
 			tone_name = strtok(NULL, "\t");
@@ -211,14 +225,16 @@ void comms_set_current_npc_lines()
 	Vector ** line_type;
 	int line_count = 0;
 
+	printf("Comms tone %d\n", comms_tone);
+
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_GREETING);
-	line_count = vector_get_size(&line_type[comms_faction][COMMS_TONE_NEUTRAL]);
-	npcd = vector_get(&line_type[comms_faction][COMMS_TONE_NEUTRAL], rand() % line_count);
+	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
+	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_GREETING, npcd);
 
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_DEFEND);
-	line_count = vector_get_size(&line_type[comms_faction][COMMS_TONE_NEUTRAL]);
-	npcd = vector_get(&line_type[comms_faction][COMMS_TONE_NEUTRAL], rand() % line_count);
+	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
+	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_DEFEND, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
@@ -240,8 +256,8 @@ void comms_set_current_npc_lines()
 	vector_set(&comms_current_npc_lines, COMMS_NPC_ATTACK_PLEAD, npcd);
 
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_TRADE);
-	line_count = vector_get_size(&line_type[comms_faction][COMMS_TONE_NEUTRAL]);
-	npcd = vector_get(&line_type[comms_faction][COMMS_TONE_NEUTRAL], rand() % line_count);
+	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
+	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_TRADE, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
@@ -257,13 +273,13 @@ void comms_set_current_npc_lines()
 	vector_set(&comms_current_npc_lines, COMMS_NPC_TRADE_DECLINE, npcd);
 
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_INFO);
-	line_count = vector_get_size(&line_type[comms_faction][COMMS_TONE_NEUTRAL]);
-	npcd = vector_get(&line_type[comms_faction][COMMS_TONE_NEUTRAL], rand() % line_count);
+	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
+	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_INFO, npcd);
 
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_FAREWELL);
-	line_count = vector_get_size(&line_type[comms_faction][COMMS_TONE_NEUTRAL]);
-	npcd = vector_get(&line_type[comms_faction][COMMS_TONE_NEUTRAL], rand() % line_count);
+	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
+	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_FAREWELL, npcd);
 
 	printf("NPC text loaded\n");
@@ -531,11 +547,13 @@ int advance_comms()
 					break;
 				case COMMS_STATE_ENTER_COMBAT:
 					gui_clear();
+					faction_update_disposition(comms_faction, -10); //TODO: This is temp code
 					combat_set_faction(comms_faction);
 					combat_setup(); //exit comms, start combat
 					break;
 				case COMMS_STATE_ENTER_TRAVEL:
 					gui_clear();
+					faction_update_disposition(comms_faction, 5); //TODO: This is temp code
 					starmap_setup(); //exit comms, start travel
 					break;
 				case COMMS_STATE_ENTER_TRADE:

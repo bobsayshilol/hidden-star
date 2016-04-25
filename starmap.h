@@ -5,17 +5,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "util/vector.h"
+#include "factions.h"
 #include "planets.h"
-
-#define FACTION_COLOR_NONE (SDL_Color){255, 255, 255, 255}
-#define FACTION_COLOR_SNEEB (SDL_Color){220, 75, 175, 255}
-#define FACTION_COLOR_KRULL (SDL_Color){75, 185, 60, 255}
-#define FACTION_COLOR_PLINK (SDL_Color){135, 120, 245, 255}
-
-#define TRAVEL_FACTION_NONE 0
-#define TRAVEL_FACTION_SNEEB 1
-#define TRAVEL_FACTION_KRULL 2
-#define TRAVEL_FACTION_PLINK 3
 
 typedef struct Travel_Node NODE;
 

@@ -78,6 +78,7 @@ int comms_text_offset;
 char *subject_name;
 char *comms_intro_text;
 int comms_faction;
+int comms_tone;
 
 
 int comms_setup();

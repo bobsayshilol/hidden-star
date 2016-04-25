@@ -85,21 +85,7 @@ void update_starmap_icons()
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
-
-			SDL_Color c = FACTION_COLOR_NONE;
-			if (t->f == 1)
-			{
-				c = FACTION_COLOR_SNEEB;
-			}
-			else if (t->f == 2)
-			{
-				c = FACTION_COLOR_KRULL;
-			}
-			else if (t->f == 3)
-			{
-				c = FACTION_COLOR_PLINK;
-			}
-			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, c);
+			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, faction_colors[t->f]);
 		}
 	}
 	update_button_state(current_node, BUTTON_STATE_SELECTED);
@@ -570,20 +556,7 @@ void starmap_draw(Vector *node_list)
 	{
 		Travel_Node *n = (Travel_Node *)vector_get(node_list, i);
 
-		SDL_Color c = FACTION_COLOR_NONE;
-		if (n->f == 1)
-		{
-			c = FACTION_COLOR_SNEEB;
-		}
-		else if (n->f == 2)
-		{
-			c = FACTION_COLOR_KRULL;
-		}
-		else if (n->f == 3)
-		{
-			c = FACTION_COLOR_PLINK;
-		}
-		SDL_SetRenderDrawColor(main_renderer, c.r, c.g, c.b, c.a);
+		SDL_SetRenderDrawColor(main_renderer, faction_colors[n->f].r, faction_colors[n->f].g, faction_colors[n->f].b, faction_colors[n->f].a);
 		int x=n->x - t_sectorX;
 		int y=n->y - t_sectorY;
 /*

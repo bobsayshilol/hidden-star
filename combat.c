@@ -1,6 +1,7 @@
 // TODO tab key
 #include "combat.h"
 #include "starmap.h"
+#include "factions.h"
 
 void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 	int w, h;
@@ -20,15 +21,15 @@ void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 
 void combat_set_faction(int f)
 {
-	if (f == TRAVEL_FACTION_SNEEB)
+	if (f == FACTION_SNEEB)
 	{
 		c_baddy1 = Load_tex("sprites/ships/tri2_front.png");
 	}
-	else if (f == TRAVEL_FACTION_KRULL)
+	else if (f == FACTION_KRULL)
 	{
 		c_baddy1 = Load_tex("sprites/ships/tri3_front.png");
 	}
-	else if (f == TRAVEL_FACTION_PLINK)
+	else if (f == FACTION_PLINK)
 	{
 		c_baddy1 = Load_tex("sprites/ships/ring1_front.png");
 	}
