@@ -17,8 +17,6 @@ int starmap_setup()
 	t_node_current = Load_tex("sprites/starmap/starmap_star_active.png");
 	SDL_QueryTexture(t_node, NULL, NULL, &half_node_sprite, NULL);
 	half_node_sprite /= 2;
-	t_sectorX=0;
-	t_sectorY=0;
 
 	update_starmap_icons();
 
@@ -541,6 +539,10 @@ void starmap_draw(Vector *node_list)
 			{
 				SDL_SetRenderDrawColor(main_renderer, 128, 128, 128, 255);
 				cn = n->connections[j];
+				if (n == (Travel_Node *)vector_get(node_list, current_node) || cn == (Travel_Node *)vector_get(node_list, current_node))
+				{
+					SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+				}
 				SDL_RenderDrawLine(main_renderer, n->x-t_sectorX, n->y-t_sectorY, cn->x-t_sectorX, cn->y-t_sectorY);
 			}
 		}
@@ -600,4 +602,8 @@ void generate_starmap(Vector *node_list)
 	int root_y = defs.bounds / 2;
 
 	make_tree(node_list, defs, root_x, root_y);
+
+	current_node = 0;
+	t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
+	t_sectorY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
 }
