@@ -14,7 +14,8 @@
 #include "planets.h"
 #include "combat.h"
 #include "comms.h"
-#include "travel.h"
+//#include "travel.h"
+#include "starmap.h"
 
 #define main_resX 64
 #define main_resY 64
@@ -46,6 +47,7 @@
 #define SCENE_TRAVEL 4
 #define SCENE_TRADE 5
 #define SCENE_PLANET_GEN 6
+#define SCENE_STARMAP 7
 
 
 SDL_Surface *main_screen;
@@ -66,6 +68,7 @@ typedef struct font_map{
 font_map fonts[256];
 char* pref_path;
 int screenshot_counter;
+Vector *starmap;
 
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);

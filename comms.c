@@ -1,5 +1,5 @@
 #include "comms.h"
-#include "travel.h"
+#include "starmap.h"
 
 int comms_setup()
 {
@@ -314,7 +314,7 @@ void comms_load_player_choices()
 
 void comms_setup_intro()
 {
-	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
 	int w=(int)(pow(2,(t->p->size+3)));
 	int h=w;
 	comms_subject_pos[0] = -w;
@@ -346,7 +346,7 @@ void comms_setup_npc_text()
 {
 	comms_state = COMMS_STATE_NPC_TEXT;
 	comms_subject_pos[0] = comms_subject_final_pos;
-	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
 	t->p->x=comms_subject_final_pos;
 	comms_portrait_background_pos[1] = comms_portrait_background_final_pos;
 	gui_clear();
@@ -413,7 +413,7 @@ void comms_draw_intro()
 	}
 //	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
 
-	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
 	t->p->x=comms_subject_pos[0];
 	t->p->y=comms_subject_pos[1];
 	planet_draw(t->p);
@@ -460,7 +460,7 @@ void comms_draw_intro()
 
 void comms_draw_npc_text()
 {
-	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
 	planet_draw(t->p);
 
 //	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
@@ -478,7 +478,7 @@ void comms_draw_npc_text()
 
 void comms_draw_player_choices()
 {
-	Travel_Node *t = (Travel_Node *)vector_get(&node_list, current_node);
+	Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
 	planet_draw(t->p);
 
 //	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
@@ -536,7 +536,7 @@ int advance_comms()
 					break;
 				case COMMS_STATE_ENTER_TRAVEL:
 					gui_clear();
-					travel_setup(); //exit comms, start travel
+					starmap_setup(); //exit comms, start travel
 					break;
 				case COMMS_STATE_ENTER_TRADE:
 					gui_clear();

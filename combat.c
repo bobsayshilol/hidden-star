@@ -1,6 +1,6 @@
 // TODO tab key
 #include "combat.h"
-#include "travel.h"
+#include "starmap.h"
 
 void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 	int w, h;
@@ -113,7 +113,7 @@ void combat_draw(){
 	if (c_AI_dead>0)
 	{
 		//todo: handle reputation implications of the fight
-		travel_setup();
+		starmap_setup();
 	}
 }
 
@@ -160,7 +160,7 @@ void combat_show(int time_pos){
 	}
 	
 	main_blit(c_timerbar, time_pos, 0, NOFLIP, NULL);
-	main_blit(c_hud, 0, 55, NOFLIP, NULL);
+	//main_blit(c_hud, 0, 55, NOFLIP, NULL);
 
 	if(c_player_dead==0){
 		SDL_SetRenderDrawColor(main_renderer, 0, 100, 0, 255);

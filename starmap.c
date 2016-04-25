@@ -1,30 +1,113 @@
-//gcc -std=c99 -g util/vector.c standalone/starmap.c `sdl2-config --cflags`  `sdl2-config --libs`
+#include "starmap.h"
 
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include "../util/vector.h"
-
-#define FACTION_COLOR_NONE (SDL_Color){255, 255, 255, 255}
-#define FACTION_COLOR_SNEEB (SDL_Color){220, 75, 175, 255}
-#define FACTION_COLOR_KRULL (SDL_Color){75, 185, 60, 255}
-#define FACTION_COLOR_PLINK (SDL_Color){135, 120, 245, 255}
-
-SDL_Window * window;
-SDL_Renderer * renderer;
-
-typedef struct Travel_Node NODE;
-
-typedef struct Travel_Node
+int starmap_setup()
 {
-	int depth;
-	int x;
-	int y;
-	int f;
-	struct Planet *p;
-	bool connected;
-	NODE *connections[4];
-} Travel_Node;
+	printf("Loading travel...\n");
+	main_scene = SCENE_STARMAP;
+	frame_skip=0;
+
+	t_stars1 = Load_tex("sprites/stars/stars1_256.png");
+	t_stars2 = Load_tex("sprites/stars/stars2_256.png");
+	t_stars3 = Load_tex("sprites/stars/stars3_256.png");
+	t_stars4 = Load_tex("sprites/stars/stars4_256.png");
+	t_stars5 = Load_tex("sprites/stars/stars5_256.png");
+	t_stars6 = Load_tex("sprites/stars/stars6_256.png");
+
+	t_node = Load_tex("sprites/starmap/starmap_star_inactive.png");
+	t_node_current = Load_tex("sprites/starmap/starmap_star_active.png");
+	SDL_QueryTexture(t_node, NULL, NULL, &half_node_sprite, NULL);
+	half_node_sprite /= 2;
+	t_sectorX=0;
+	t_sectorY=0;
+
+	update_starmap_icons();
+
+	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+	return 0;
+}
+
+int starmap_move_sector(int direction){
+	switch(direction){
+		case 1:
+			t_sectorY-=64;
+			break;
+		case 2:
+			t_sectorX+=64;
+			break;
+		case 3:
+			t_sectorY+=64;
+			break;
+		case 4:
+			t_sectorX-=64;
+			break;
+	}
+	if(t_sectorX<0){t_sectorX=0;}
+	if(t_sectorY<0){t_sectorY=0;}
+	if(t_sectorX>448){t_sectorX=448;}
+	if(t_sectorX>448){t_sectorY=448;}
+	update_starmap_icons();
+}
+
+void update_starmap_icons()
+{
+	gui_clear();
+	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
+	if(t_sectorY>0){
+		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 1, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	}
+	if(t_sectorX<448){
+		gui_add_sprite_button(g_card_E, 59, 29, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 2, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	}
+	if(t_sectorY<448){
+		gui_add_sprite_button(g_card_S, 29, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 3, FLIPV, GUI_MOVE_BUTTON_COLOR);
+	}
+	if(t_sectorX>0){
+		gui_add_sprite_button(g_card_W, 0, 30, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 4, FLIPH, GUI_MOVE_BUTTON_COLOR);
+	}
+	for (int i = 0; i < vector_get_size(starmap); i++)
+	{
+		Travel_Node *t = (Travel_Node *)vector_get(starmap, i);
+		if(t->x >= t_sectorX && t->x < t_sectorX+64 && t->y >= t_sectorY && t->y < t_sectorY+64){
+			SDL_Texture* tex = t_node;
+			int state = BUTTON_STATE_DISABLED;
+			if (current_node == i)
+			{
+				tex = t_node_current;
+			}
+
+			for (int i = 0; i < sizeof(cn->connections) / sizeof(Travel_Node *); ++i)
+			{
+				if (cn->connections[i] == (Travel_Node *)vector_get(starmap, i))
+				{
+					state = BUTTON_STATE_ENABLED;
+				}
+			}
+
+			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, (SDL_Color){255, 255, 255, 255}); //todo set colour based on faction
+		}
+	}
+	update_button_state(current_node, BUTTON_STATE_SELECTED);
+}
+
+int starmap_go(int destination)
+{
+	//get selected button
+	printf("Initiating travel to %d!\n", destination);
+	current_node = destination;
+	update_starmap_icons();
+
+	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
+//	if (cn->is_inhabited)
+	{
+		printf("Found habited planet! %d\n", cn->f);
+		comms_set_faction(cn->f);
+		planet_setup();
+		comms_setup();
+	}
+	return 0;
+}
+
+
 
 void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int direction)
 {
@@ -34,10 +117,6 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	nn->y = (rand() % jitter) + spread;
 	nn->connected = false;
 	nn->f = n->f;
-	Planet *p = malloc(sizeof(Planet));
-	nn->p = p;
-	planet_set_default(nn->p, nn->faction);
-	planet_set_random(nn->p);
 
 	for (int i = 0; i < sizeof(nn->connections) / sizeof(Travel_Node *); ++i)
 	{
@@ -129,6 +208,10 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	{
 		nn->f = rand() % 4;
 	}
+	Planet *p = malloc(sizeof(Planet));
+	nn->p = p;
+	planet_set_default(nn->p, nn->f);
+	planet_set_random(nn->p);
 
 	vector_add(node_list, nn);
 }
@@ -255,7 +338,7 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 	if (!n->connected)
 	{
 		int c[4] = {0};
-		Travel_Node *closeTravel_Nodes[4] = {NULL};
+		Travel_Node *close_node[4] = {NULL};
 
 		//Work out the four closest nodes that have connections available
 		for (int i = 0; i < vector_get_size(node_list); ++i)
@@ -282,10 +365,10 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 						c[1] = c[0];
 						c[0] = d;
 
-						closeTravel_Nodes[3] = closeTravel_Nodes[2];
-						closeTravel_Nodes[2] = closeTravel_Nodes[1];
-						closeTravel_Nodes[1] = closeTravel_Nodes[0];
-						closeTravel_Nodes[0] = on;
+						close_node[3] = close_node[2];
+						close_node[2] = close_node[1];
+						close_node[1] = close_node[0];
+						close_node[0] = on;
 					}
 				}
 				else if ((c[1] == 0 || d < c[1]) && d < max_connection_dist * max_connection_dist)
@@ -296,9 +379,9 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 						c[2] = c[1];
 						c[1] = d;
 
-						closeTravel_Nodes[3] = closeTravel_Nodes[2];
-						closeTravel_Nodes[2] = closeTravel_Nodes[1];
-						closeTravel_Nodes[1] = on;
+						close_node[3] = close_node[2];
+						close_node[2] = close_node[1];
+						close_node[1] = on;
 					}
 				}
 				else if ((c[2] == 0 || d < c[2]) && d < max_connection_dist * max_connection_dist)
@@ -308,8 +391,8 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 						c[3] = c[2];
 						c[2] = d;
 
-						closeTravel_Nodes[3] = closeTravel_Nodes[2];
-						closeTravel_Nodes[2] = on;
+						close_node[3] = close_node[2];
+						close_node[2] = on;
 					}
 				}
 				else if ((c[3] == 0 || d < c[3]) && d < max_connection_dist * max_connection_dist)
@@ -318,38 +401,38 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 					{
 						c[3] = d;
 
-						closeTravel_Nodes[3] = on;
+						close_node[3] = on;
 					}
 				}
 			}
 		}
-		if (closeTravel_Nodes[0] != NULL)
+		if (close_node[0] != NULL)
 		{
-			if (!add_connection(n, closeTravel_Nodes[0]))
+			if (!add_connection(n, close_node[0]))
 			{
 				//We're full up. There's no more we can do here.
 				n->connected = true;
 				return;
 			}
-			else if (closeTravel_Nodes[1] != NULL)
+			else if (close_node[1] != NULL)
 			{
-				if (!add_connection(n, closeTravel_Nodes[1]))
+				if (!add_connection(n, close_node[1]))
 				{
 					//We're full up. There's no more we can do here.
 					n->connected = true;
 					return;
 				}
-				else if (closeTravel_Nodes[2] != NULL)
+				else if (close_node[2] != NULL)
 				{
-					if (!add_connection(n, closeTravel_Nodes[2]))
+					if (!add_connection(n, close_node[2]))
 					{
 						//We're full up. There's no more we can do here.
 						n->connected = true;
 						return;
 					}
-					else if (closeTravel_Nodes[3] != NULL)
+					else if (close_node[3] != NULL)
 					{
-						if (!add_connection(n, closeTravel_Nodes[3]))
+						if (!add_connection(n, close_node[3]))
 						{
 							//We're full up. There's no more we can do here.
 							n->connected = true;
@@ -373,12 +456,12 @@ void configure_connections(Vector *node_list, Travel_Node *n, int max_connection
 	}
 }
 
-void make_tree(Vector *node_list, int max_depth, int merge_dist, int spread, int jitter, int bounds, int max_connection_dist, int root_x, int root_y, int faction)
+void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 {
 	Travel_Node *root = malloc(sizeof(Travel_Node));
 	root->x = root_x;
 	root->y = root_y;
-	root->f = faction;
+	root->f = defs.faction;
 	root->depth = 0;
 	root->connected = false;
 	for (int i = 0; i < sizeof(root->connections) / sizeof(Travel_Node *); ++i)
@@ -387,26 +470,30 @@ void make_tree(Vector *node_list, int max_depth, int merge_dist, int spread, int
 	}
 
 	vector_add(node_list, root);
-	make_child_nodes(node_list, root, max_depth, spread, jitter, merge_dist, bounds, 0);
-	make_child_nodes(node_list, root, max_depth, spread, jitter, merge_dist, bounds, 1);
-	make_child_nodes(node_list, root, max_depth, spread, jitter, merge_dist, bounds, 2);
-	make_child_nodes(node_list, root, max_depth, spread, jitter, merge_dist, bounds, 3);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 0);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 1);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 2);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 3);
 
-	if (faction < 0)
+	if (defs.faction < 0)
 	{
 		root->f = rand() % 4;
 	}
+	Planet *p = malloc(sizeof(Planet));
+	root->p = p;
+	planet_set_default(root->p, root->f);
+	planet_set_random(root->p);
 
 
 	//TODO: There are better breadth-first search strategies
-	for (int i = 0; i <= max_depth; ++i)
+	for (int i = 0; i <= defs.max_depth; ++i)
 	{
 		for (int j = 0; j < vector_get_size(node_list); ++j)
 		{
 			Travel_Node *n = (Travel_Node *)vector_get(node_list, j);
 			if (n->depth == i)
 			{
-				configure_connections(node_list, n, max_connection_dist);
+				configure_connections(node_list, n, defs.max_connection_dist);
 			}
 		}
 	}
@@ -433,8 +520,15 @@ void make_tree(Vector *node_list, int max_depth, int merge_dist, int spread, int
 	}
 }
 
-void draw_starmap(Vector *node_list)
+void starmap_draw(Vector *node_list)
 {
+	SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
+	SDL_RenderClear(main_renderer);
+	SDL_Texture* newtexture = SDL_CreateTexture(main_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, main_resX, main_resY);
+	//Set the new texture as the render target
+	SDL_SetRenderTarget(main_renderer, newtexture);
+	SDL_RenderClear(main_renderer);
+
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
 		//Render connections before nodes so that nodes can be on top
@@ -445,12 +539,12 @@ void draw_starmap(Vector *node_list)
 		{
 			if (n->connections[j] != NULL)
 			{
-				SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+				SDL_SetRenderDrawColor(main_renderer, 128, 128, 128, 255);
 				cn = n->connections[j];
-				SDL_RenderDrawLine(renderer, n->x, n->y, cn->x, cn->y);
+				SDL_RenderDrawLine(main_renderer, n->x, n->y, cn->x, cn->y);
 			}
 		}
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 	}
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
@@ -469,75 +563,39 @@ void draw_starmap(Vector *node_list)
 		{
 			c = FACTION_COLOR_PLINK;
 		}
-		printf("Drawing node for faction %d at %d %d\n", n->f, n->x, n->y);
-		SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
+		SDL_SetRenderDrawColor(main_renderer, c.r, c.g, c.b, c.a);
 
-		SDL_RenderDrawPoint(renderer,  n->x-1, n->y);
-		SDL_RenderDrawPoint(renderer,  n->x, n->y-1);
-		SDL_RenderDrawPoint(renderer,  n->x-1, n->y-1);
-		SDL_RenderDrawPoint(renderer,  n->x+1, n->y);
-		SDL_RenderDrawPoint(renderer,  n->x, n->y+1);
-		SDL_RenderDrawPoint(renderer,  n->x+1, n->y+1);
-		SDL_RenderDrawPoint(renderer,  n->x, n->y);
-		SDL_RenderDrawPoint(renderer,  n->x-1, n->y+1);
-		SDL_RenderDrawPoint(renderer,  n->x+1, n->y-1);
+		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y);
+		SDL_RenderDrawPoint(main_renderer,  n->x, n->y-1);
+		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y-1);
+		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y);
+		SDL_RenderDrawPoint(main_renderer,  n->x, n->y+1);
+		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y+1);
+		SDL_RenderDrawPoint(main_renderer,  n->x, n->y);
+		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y+1);
+		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y-1);
 	}
+
+	SDL_SetRenderTarget(main_renderer, NULL);
+	SDL_RenderCopy(main_renderer, newtexture, NULL, NULL);
 }
 
-int main(int argc, char* argv[])
+void generate_starmap(Vector *node_list)
 {
-	SDL_CreateWindowAndRenderer(640, 640, 0, &window, &renderer);
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest"); // To get nice 'pixely' upscaling
-	//SDL_RenderSetLogicalSize(renderer, 64, 64);
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-	int ticks = SDL_GetTicks();
-	bool running = true;
+	//TODO: We'll need to set this somewhere else, or maybe pass it in?
 	srand(4);
 
+	Travel_NodeDefs defs;
+	defs.merge_dist = 40;
+	defs.max_depth = 3;
+	defs.spread =  20;
+	defs.jitter = 60;
+	defs.bounds = main_resX;
+	defs.max_connection_dist = 150; //something around merge_dist + spread + jitter
+	defs.faction = -1; //-1 gives nodes random factions
 
-	//TREE CREATION CODE START
-	Vector node_list;
-	int merge_dist = 40;
-	int max_depth = 3;
-	int spread =  20;
-	int jitter = 60;
-	int bounds = 640;
-	int root_x = bounds / 2;
-	int root_y = bounds / 2;
-	int max_connection_dist = 150; //something around merge_dist + spread + jitter
-	int faction = -1; //-1 gives nodes random factions
+	int root_x = defs.bounds / 2;
+	int root_y = defs.bounds / 2;
 
-	vector_init(&node_list, 5);
-
-	make_tree(&node_list, max_depth, merge_dist, spread, jitter, bounds, max_connection_dist, root_x, root_y, faction);
-
-	printf("Generated %d nodes.\n", vector_get_size(&node_list));
-
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-
-	draw_starmap(&node_list);
-
-	SDL_RenderPresent(renderer);
-
-	while (running)
-	{
-		//Poll for events to prevent Gnome from thinking we've locked up
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
-		{
-			if (e.type == SDL_QUIT)
-			{
-				running = false;
-				break;
-			}
-		}
-	}
-
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
-	return 0;
+	make_tree(node_list, defs, root_x, root_y);
 }
-
