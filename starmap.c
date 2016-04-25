@@ -541,7 +541,7 @@ void starmap_draw(Vector *node_list)
 			{
 				SDL_SetRenderDrawColor(main_renderer, 128, 128, 128, 255);
 				cn = n->connections[j];
-				SDL_RenderDrawLine(main_renderer, n->x, n->y, cn->x, cn->y);
+				SDL_RenderDrawLine(main_renderer, n->x-t_sectorX, n->y-t_sectorY, cn->x-t_sectorX, cn->y-t_sectorY);
 			}
 		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
@@ -564,16 +564,18 @@ void starmap_draw(Vector *node_list)
 			c = FACTION_COLOR_PLINK;
 		}
 		SDL_SetRenderDrawColor(main_renderer, c.r, c.g, c.b, c.a);
+		int x=n->x - t_sectorX;
+		int y=n->y - t_sectorY;
 
-		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y);
-		SDL_RenderDrawPoint(main_renderer,  n->x, n->y-1);
-		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y-1);
-		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y);
-		SDL_RenderDrawPoint(main_renderer,  n->x, n->y+1);
-		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y+1);
-		SDL_RenderDrawPoint(main_renderer,  n->x, n->y);
-		SDL_RenderDrawPoint(main_renderer,  n->x-1, n->y+1);
-		SDL_RenderDrawPoint(main_renderer,  n->x+1, n->y-1);
+		SDL_RenderDrawPoint(main_renderer,  x-1, y);
+		SDL_RenderDrawPoint(main_renderer,  x, y-1);
+		SDL_RenderDrawPoint(main_renderer,  x-1, y-1);
+		SDL_RenderDrawPoint(main_renderer,  x+1, y);
+		SDL_RenderDrawPoint(main_renderer,  x, y+1);
+		SDL_RenderDrawPoint(main_renderer,  x+1, y+1);
+		SDL_RenderDrawPoint(main_renderer,  x, y);
+		SDL_RenderDrawPoint(main_renderer,  x-1, y+1);
+		SDL_RenderDrawPoint(main_renderer,  x+1, y-1);
 	}
 
 	SDL_SetRenderTarget(main_renderer, NULL);
@@ -590,7 +592,7 @@ void generate_starmap(Vector *node_list)
 	defs.max_depth = 3;
 	defs.spread =  20;
 	defs.jitter = 60;
-	defs.bounds = main_resX;
+	defs.bounds = 512;
 	defs.max_connection_dist = 150; //something around merge_dist + spread + jitter
 	defs.faction = -1; //-1 gives nodes random factions
 
