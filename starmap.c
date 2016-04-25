@@ -83,7 +83,7 @@ void update_starmap_icons()
 
 			if (cn == (Travel_Node *)vector_get(starmap, current_node))
 			{
-				state = BUTTON_STATE_SELECTED;
+				state = BUTTON_STATE_ENABLED;
 			}
 
 			SDL_Color c = FACTION_COLOR_NONE;
@@ -608,12 +608,12 @@ void generate_starmap(Vector *node_list)
 	srand(4);
 
 	Travel_NodeDefs defs;
-	defs.merge_dist = 40;
-	defs.max_depth = 3;
-	defs.spread =  20;
-	defs.jitter = 60;
+	defs.merge_dist = 20;
+	defs.max_depth = 4;
+	defs.spread =  10;
+	defs.jitter = 30;
 	defs.bounds = 512;
-	defs.max_connection_dist = 150; //something around merge_dist + spread + jitter
+	defs.max_connection_dist = 75; //something around merge_dist + spread + jitter
 	defs.faction = -1; //-1 gives nodes random factions
 
 	int root_x = defs.bounds / 2;
