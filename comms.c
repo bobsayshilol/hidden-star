@@ -191,7 +191,7 @@ void load_default_npc_lines(Vector **line_type, char *fname, int next_state, int
 	}
 	else
 	{
-		printf("Error loading %s", fname);
+		printf("Error loading %s\n", fname);
 	}
 }
 
