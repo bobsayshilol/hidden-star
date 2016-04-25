@@ -75,27 +75,27 @@ void update_starmap_icons()
 
 			for (int i = 0; i < sizeof(cn->connections) / sizeof(Travel_Node *); ++i)
 			{
-				if (cn->connections[i] == (Travel_Node *)vector_get(starmap, current_node))
+				if (cn->connections[i] == t)
 				{
 					state = BUTTON_STATE_ENABLED;
 				}
 			}
 
-			if (cn == (Travel_Node *)vector_get(starmap, current_node))
+			if (t == (Travel_Node *)vector_get(starmap, current_node))
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
 
 			SDL_Color c = FACTION_COLOR_NONE;
-			if (cn->f == 1)
+			if (t->f == 1)
 			{
 				c = FACTION_COLOR_SNEEB;
 			}
-			else if (cn->f == 2)
+			else if (t->f == 2)
 			{
 				c = FACTION_COLOR_KRULL;
 			}
-			else if (cn->f == 3)
+			else if (t->f == 3)
 			{
 				c = FACTION_COLOR_PLINK;
 			}
@@ -594,8 +594,8 @@ void starmap_draw(Vector *node_list)
 		SDL_RenderDrawPoint(main_renderer,  x, y+1);
 		SDL_RenderDrawPoint(main_renderer,  x+1, y+1);
 		SDL_RenderDrawPoint(main_renderer,  x, y);
-		SDL_RenderDrawPoint(main_renderer,  x-1, y+1);
-		SDL_RenderDrawPoint(main_renderer,  x+1, y-1);*/
+		SDL_RenderDrawPoint(main_renderer,  x-1, y+1);*/
+		SDL_RenderDrawPoint(main_renderer,  x+3, y-3);
 	}
 
 	SDL_SetRenderTarget(main_renderer, NULL);
@@ -608,10 +608,10 @@ void generate_starmap(Vector *node_list)
 	srand(4);
 
 	Travel_NodeDefs defs;
-	defs.merge_dist = 20;
-	defs.max_depth = 4;
+	defs.merge_dist = 15;
+	defs.max_depth = 7;
 	defs.spread =  10;
-	defs.jitter = 30;
+	defs.jitter = 25;
 	defs.bounds = 512;
 	defs.max_connection_dist = 75; //something around merge_dist + spread + jitter
 	defs.faction = -1; //-1 gives nodes random factions
