@@ -588,7 +588,7 @@ void starmap_draw(Vector *node_list)
 				nn = n->connections[j];
 				if (n == cn || nn == cn)
 				{
-					a = 128;
+					a = 92;
 				}
 				if (n->f == nn->f)
 				{
