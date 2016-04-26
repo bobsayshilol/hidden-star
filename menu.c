@@ -37,7 +37,7 @@ int menu_setup_combat_win(int i)
 	gui_clear();
 	int default_button;
 
-	default_button = gui_add_text_button("Scavenge", 0, 2, 64, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_setup, SCENE_STARMAP);
+	default_button = gui_add_text_button("Scavenge Wreck", 0, 2, 64, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_setup, SCENE_STARMAP);
 	gui_add_text_button("Space Burial", 0, 10, 64, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_setup, SCENE_STARMAP);
 	gui_add_text_button("Continue", 0, 18, 64, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_setup, SCENE_STARMAP);
 
