@@ -58,6 +58,8 @@ SDL_Texture *portrait_image;
 SDL_Texture *subject;
 
 char *comms_npc_line_files[10];
+SDL_Texture *comms_faction_portraits[4];
+SDL_Texture *comms_faction_ship_closeups[4][3];
 
 Vector comms_player_choices;
 Vector comms_current_npc_lines;
@@ -81,7 +83,7 @@ char *comms_intro_text;
 int comms_faction;
 int comms_tone;
 
-
+void comms_init();
 int comms_setup();
 void comms_set_faction(int f);
 void prepare_npc_lists();

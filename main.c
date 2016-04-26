@@ -487,6 +487,7 @@ int main(int argc, char *argv[]){
 
 	starmap = malloc(sizeof(Vector));
 	vector_init(starmap, 5);
+	comms_init();
 
 	intro_setup();
 	gui_setup();

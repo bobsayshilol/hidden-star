@@ -7,7 +7,7 @@ int comms_setup()
 	printf("Loading comms...\n");
 
 	//todo: Passed in subject name, subject, portrait, disposition/bounty/resource need
-	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
+
 	if (portrait_image == NULL)
 	{
 		portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
@@ -18,6 +18,24 @@ int comms_setup()
 		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
 	}
 	subject_name = "from xornax 12";
+
+	main_scene = SCENE_COMMS;
+	frame_skip=0;
+	comms_draw_count = 0;
+
+
+	comms_setup_intro();
+
+	comms_set_current_npc_lines();
+	comms_load_player_choices();
+
+	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+	return 0;
+}
+
+void comms_init()
+{
+	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
 
 	comms_npc_line_files[COMMS_NPC_GREETING] = "text/comms_npc_greetings.tsv";
 	comms_npc_line_files[COMMS_NPC_DEFEND] = "text/comms_npc_defend.tsv";
@@ -30,37 +48,35 @@ int comms_setup()
 	comms_npc_line_files[COMMS_NPC_ATTACK_FLEE] = "text/comms_npc_attack_flee.tsv";
 	comms_npc_line_files[COMMS_NPC_ATTACK_PLEAD] = "text/comms_npc_attack_plea.tsv";
 
-	main_scene = SCENE_COMMS;
-	frame_skip=0;
-	comms_draw_count = 0;
+	comms_faction_portraits[FACTION_KRULL] = Load_tex("sprites/portraits/krull_1.png");
+	comms_faction_portraits[FACTION_PLINK] = Load_tex("sprites/portraits/plink_1.png");
+	comms_faction_portraits[FACTION_SNEEB] = Load_tex("sprites/portraits/sneeb_1.png");
+	comms_faction_portraits[FACTION_NONE] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+
+	comms_faction_ship_closeups[FACTION_KRULL][0] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_KRULL][1] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_KRULL][2] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_PLINK][0] = Load_tex("sprites/ships/ring_ship1_closeup.png");
+	comms_faction_ship_closeups[FACTION_PLINK][1] = Load_tex("sprites/ships/ring_ship2_closeup.png");
+	comms_faction_ship_closeups[FACTION_PLINK][2] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_SNEEB][0] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_SNEEB][1] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_SNEEB][2] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_NONE][0] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_NONE][1] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+	comms_faction_ship_closeups[FACTION_NONE][2] = Load_tex("sprites/gui/comms_subject_placeholder.png");
+
+	printf("Loading NPC text...\n");
+	prepare_npc_lists();
+
 	comms_translation_offset = 8;
-
-	comms_setup_intro();
-
-	comms_set_current_npc_lines();
-	comms_load_player_choices();
-
-	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
-	return 0;
 }
 
 void comms_set_faction(int f)
 {
-	if (f == FACTION_KRULL)
-	{
-		portrait_image = Load_tex("sprites/portraits/krull_1.png");
-		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
-	}
-	else if (f == FACTION_PLINK)
-	{
-		portrait_image = Load_tex("sprites/portraits/plink_1.png");
-		subject = Load_tex("sprites/ships/ring_ship1_closeup.png");
-	}
-	else if (f == FACTION_SNEEB)
-	{
-		portrait_image = Load_tex("sprites/portraits/sneeb_1.png");
-		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
-	}
+	portrait_image = comms_faction_portraits[f];
+	subject = comms_faction_ship_closeups[f][0];
+
 	comms_faction = f;
 	comms_tone = COMMS_TONE_UNKNOWN;
 	if (faction_disposition[comms_faction] <= FACTION_THRESHOLD_DISLIKE)
@@ -214,9 +230,6 @@ void load_default_npc_lines(Vector **line_type, char *fname, int next_state, int
 
 void comms_set_current_npc_lines()
 {
-	printf("Loading NPC text...\n");
-	prepare_npc_lists();
-
 	vector_free(&comms_current_npc_lines);
 	vector_init(&comms_current_npc_lines, 10);
 	vector_fill(&comms_current_npc_lines, NULL);
