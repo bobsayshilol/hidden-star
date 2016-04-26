@@ -627,6 +627,30 @@ void starmap_draw(Vector *node_list)
 	SDL_RenderCopy(main_renderer, newtexture, NULL, NULL);
 }
 
+void clear_node(Travel_Node *n)
+{
+	if (n->p != NULL)
+	{
+		free(n->p);
+	}
+	for (int i = 0; i < sizeof(n->connections) / sizeof(Travel_Node *); ++i)
+	{
+		n->connections[i] = NULL;
+	}
+}
+
+void starmap_clear(Vector *node_list)
+{
+	while (vector_get_size(node_list) > 0)
+	{
+		Travel_Node *n = (Travel_Node *)vector_get(node_list, 0);
+		vector_remove(node_list, 0);
+		clear_node(n);
+		free(n);
+	}
+	printf("Starmap cleared. Size is %d\n", vector_get_size(node_list));
+}
+
 void generate_starmap(Vector *node_list)
 {
 	//TODO: We'll need to set this somewhere else, or maybe pass it in?

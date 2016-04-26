@@ -63,5 +63,6 @@ void make_connections(Vector *node_list, Travel_NodeDefs defs);
 void remove_orphan_nodes(Vector *node_list);
 void starmap_draw(Vector *node_list);
 void generate_starmap();
+void starmap_clear(Vector *node_list);
 
 #endif
