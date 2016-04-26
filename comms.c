@@ -33,6 +33,7 @@ int comms_setup()
 	main_scene = SCENE_COMMS;
 	frame_skip=0;
 	comms_draw_count = 0;
+	comms_translation_offset = 8;
 
 	comms_setup_intro();
 
@@ -287,7 +288,14 @@ void comms_set_current_npc_lines()
 
 void comms_load_player_choices()
 {
-	vector_free_and_free(&comms_player_choices);
+
+	while (vector_get_size(&comms_player_choices) > 0)
+	{
+		Comms_PlayerChoice *pc = (Comms_PlayerChoice *)vector_get(&comms_player_choices, 0);
+		vector_remove(&comms_player_choices, 0);
+		free(pc);
+	}
+
 	vector_init(&comms_player_choices, 3);
 	vector_fill(&comms_player_choices, NULL);
 
@@ -383,19 +391,22 @@ void comms_setup_player_choices()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice0);
+	
+	Comms_PlayerChoice * pc = (Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice);
+	
+	default_button = gui_add_text_button(pc->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice0);
 
-	if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1 != NULL)
+	if (pc->text1 != NULL)
 	{
-		gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice1);
+		gui_add_text_button(pc->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice1);
 
-		if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2 != NULL)
+		if (pc->text2 != NULL)
 		{
-			gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice2);
+			gui_add_text_button(pc->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice2);
 
-			if (((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3 != NULL)
+			if (pc->text3 != NULL)
 			{
-				gui_add_text_button(((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, ((Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice))->choice3);
+				gui_add_text_button(pc->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice3);
 			}
 		}
 	}
@@ -436,17 +447,17 @@ void comms_draw_intro()
 
 	if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
 	{
-		draw_text(1, 2, comms_intro_text, comms_draw_count / 2, FONT_EARTH, GUI_DEFAULT_COLOR);
+		draw_text(1, 2, comms_intro_text, comms_draw_count / 2, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		if (comms_draw_count > strlen(comms_intro_text) * 2)
 		{
-			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
+			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 			if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
 			{
-				draw_text(1, 8, subject_name, comms_draw_count / 2 - strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
+				draw_text(1, 8, subject_name, comms_draw_count / 2 - strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 			}
 			else
 			{
-				draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_DEFAULT_COLOR);
+				draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 			}
 		}
 	}
@@ -454,8 +465,8 @@ void comms_draw_intro()
 	{
 		if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2 + 12)
 		{
-			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, GUI_DEFAULT_COLOR);
-			draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, GUI_DEFAULT_COLOR);
+			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
 		else
 		{
@@ -482,13 +493,14 @@ void comms_draw_npc_text()
 //	main_blit(subject, comms_subject_pos[0], comms_subject_pos[1], NOFLIP, NULL);
 	main_blit(portrait_background, comms_portrait_background_pos[0], comms_portrait_background_pos[1], NOFLIP, NULL);
 	main_blit(portrait_image, comms_portrait_pos[0], comms_portrait_pos[1], NOFLIP, NULL);
-	if (comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2)
+	Comms_NPCDialogue * line = (Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text);
+	if (comms_draw_count < strlen(line->text) * 2)
 	{
-		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, comms_draw_count / 2, FONT_EARTH, GUI_DEFAULT_COLOR);
+		draw_text(1, comms_text_offset, line->text, comms_draw_count / 2, FONT_EARTH, comms_faction, comms_translation_offset, GUI_DEFAULT_COLOR);
 	}
 	else
 	{
-		draw_text(1, comms_text_offset, ((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text, strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text), FONT_EARTH, GUI_DEFAULT_COLOR);
+		draw_text(1, comms_text_offset, line->text, strlen(line->text), FONT_EARTH, comms_faction, comms_translation_offset - (comms_draw_count - strlen(line->text) * 2), GUI_DEFAULT_COLOR);
 	}
 }
 

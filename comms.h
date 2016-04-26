@@ -74,6 +74,7 @@ int comms_subject_final_pos;
 int comms_portrait_pos[2];
 int comms_portrait_final_pos;
 int comms_text_offset;
+int comms_translation_offset;
 
 char *subject_name;
 char *comms_intro_text;

@@ -31,8 +31,8 @@ void intro_draw(){
 		SDL_RenderCopy(main_renderer, intro_flare, NULL, NULL);
 	}
 	SDL_RenderCopy(main_renderer, intro_bg, NULL, NULL);
-	draw_text(32-((intro_count1*4)), 29, "hidden", intro_count1, intro_font, GUI_DEFAULT_COLOR);
-	draw_text(40, 29, "star", intro_count2, intro_font, GUI_DEFAULT_COLOR);
+	draw_text(32-((intro_count1*4)), 29, "hidden", intro_count1, intro_font, -1, -1, GUI_DEFAULT_COLOR);
+	draw_text(40, 29, "star", intro_count2, intro_font, -1, -1, GUI_DEFAULT_COLOR);
 	if(intro_count3<=5){
 		draw_number(32, 29, intro_count1);
 		draw_number(36, 29, intro_count2);

@@ -73,7 +73,7 @@ Vector *starmap;
 
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);
-int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color);
+int draw_text(int x, int y, char *text, int length, int font_set, int font_set2, int translation_offset, SDL_Color color);
 void draw_number(int x, int y, int num);
 void draw_scene();
 void save_screenshot();

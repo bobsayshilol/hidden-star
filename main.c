@@ -136,9 +136,9 @@ char * wrap_text(char *text, int max_width)
 }
 
 
-int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color color){
+int draw_text(int x, int y, char *text, int length, int font_set, int font_set2, int translation_offset, SDL_Color color){
 	int index;
-	int count=0;
+	int count=font_set;
 	int offset_y = 0;
 	int offset_x = 0;
 	SDL_Rect srect;
@@ -152,10 +152,6 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 			continue;
 		}
 
-		if(font_set==FONT_CYCLE){  //cycles font for random effect
-			count=(rand()%3)+1;
-			SDL_SetTextureColorMod(font[count], 0, 96, 0);
-		}
 		index=((int)text[i]);
 		srect.x = fonts[index].x;
 		srect.y = fonts[index].y;
@@ -165,6 +161,16 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 		drect.h = 6;
 		drect.x = x + offset_x;
 		drect.y = y + offset_y;
+
+		if(font_set==FONT_CYCLE){  //cycles font for random effect
+			count=(rand()%3)+1;
+			SDL_SetTextureColorMod(font[count], 0, 96, 0);
+		}
+		else if (i > length - translation_offset)
+		{
+			count = font_set2;
+			SDL_SetTextureColorMod(font[count], color.r - 80, color.g - 80, color.b - 80);
+		}
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
 
 		offset_x += fonts[index].a;
@@ -175,7 +181,7 @@ int draw_text(int x, int y, char *text, int length, int font_set, SDL_Color colo
 void draw_number(int x, int y, int num){
 	char s[16];
 	int len=sprintf(s, "%d", num);
-	draw_text(x, y, s, len, FONT_EARTH, GUI_DEFAULT_COLOR);
+	draw_text(x, y, s, len, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 }
 
 void load_fonts(){

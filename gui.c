@@ -179,7 +179,7 @@ void gui_draw()
 			{
 				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
 			}
-			draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, g_button_text_colour[g_button_list[i].style][g_button_list[i].state]);
+			draw_text(g_button_list[i].text_bounds.x, g_button_list[i].text_bounds.y, g_button_list[i].text, strlen(g_button_list[i].text), FONT_EARTH, -1, -1, g_button_text_colour[g_button_list[i].style][g_button_list[i].state]);
 		}
 		else
 		{
@@ -190,8 +190,8 @@ void gui_draw()
 			{
 				if(g_button_list[i].style==BUTTON_STYLE_GUI){
 					if(g_blink<4){
-						draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, GUI_DEFAULT_COLOR);
-						draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, GUI_DEFAULT_COLOR);
+						draw_text( g_button_list[i].button_bounds.x+7, g_button_list[i].button_bounds.y+1, "]", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+						draw_text( g_button_list[i].button_bounds.x-2, g_button_list[i].button_bounds.y+1, "[", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 					}
 				}else{
 					color=GUI_DEFAULT_COLOR;
