@@ -14,7 +14,12 @@ int gui_add_text_button(char* text, int x, int y, int width, int state, int styl
 	SDL_Rect text_bounds;
 	text_bounds.x = x + BUTTON_MARGIN_HORIZONTAL;
 	text_bounds.y = y + BUTTON_MARGIN_VERTICAL;
-	int w = strlen(text) * 4 - 1;
+	int w = -1; //Pull off space following final character
+	for (int i = 0; i < strlen(text); ++i)
+	{
+		w += fonts[(int)text[i]].a;
+	}
+
 	if (width - BUTTON_MARGIN_HORIZONTAL * 2 <= w)
 	{
 		text_bounds.w = w; //todo: Account for spaces?
@@ -58,13 +63,13 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	text_bounds.y = y;
 	if (width <= w)
 	{
-		text_bounds.w = w; //todo: Account for spaces?
+		text_bounds.w = w;
 	}
 	else
 	{
 		text_bounds.w = width;
 	}
-	text_bounds.h = 5; //todo: account for wrapped text
+	text_bounds.h = 5;
 
 	SDL_Rect button_bounds;
 	button_bounds.x = x;
@@ -393,6 +398,7 @@ int gui_update_hover_state(int x, int y)
 void gui_clear()
 {
 	button_count = 0;
+	current_button = -1;
 	//TODO: Do we want to loop through and clear out the old data? Unless something goes wrong, we should never touch it anyway
 }
 
