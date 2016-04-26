@@ -108,15 +108,37 @@ void vector_resize(Vector *v, int new_size)
 
 void vector_free(Vector *v)
 {
+	if (v->data == NULL)
+	{
+		return;
+	}
+
 	free(v->data);
+	v->count = -1;
 }
 
 void vector_free_and_free(Vector *v)
 {
-	for (int i = 0; i < v->count; i++)
+	if (v->data == NULL)
 	{
-		free(v->data[i]);
-		v->data[i] = NULL;
+		return;
+	}
+
+	if (sizeof(v->data) / sizeof(void *) < v->count)
+	{
+		printf("Error while attempting to free vector contents. Contents not freed.\n");
+	}
+	else
+	{
+		for (int i = 0; i < sizeof(v->data) / sizeof(void *); i++)
+		{
+			if (v->data[i] != NULL)
+			{
+				free(v->data[i]);
+				v->data[i] = NULL;
+			}
+		}
 	}
 	free(v->data);
+	v->count = -1;
 }
