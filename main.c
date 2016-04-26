@@ -374,16 +374,17 @@ void save_screenshot()
 	sprintf(shot_count, "_%03d.png", screenshot_counter);
 	screenshot_counter ++;
 
-	static char date_string[20];
+	static char date_string[21];
 	time_t timestamp;
 	time(&timestamp);
-	if (strftime(date_string, 20, "_%Y-%m-%d_%H-%M-%S", localtime(&timestamp)))
+	if (strftime(date_string, 21, "_%Y-%m-%d_%H-%M-%S", localtime(&timestamp)))
 	{
 		strcat(screenshot_name, date_string);
 		strcat(screenshot_name, shot_count);
 	}
 	else
 	{
+		printf("Unable to add timestamp to screenshot.\n");
 		strcat(screenshot_name, shot_count);
 	}
 	IMG_SavePNG(screen, screenshot_name);
