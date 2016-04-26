@@ -625,6 +625,7 @@ void starmap_draw(Vector *node_list)
 
 	SDL_SetRenderTarget(main_renderer, NULL);
 	SDL_RenderCopy(main_renderer, newtexture, NULL, NULL);
+	SDL_DestroyTexture(newtexture);
 }
 
 void clear_node(Travel_Node *n)

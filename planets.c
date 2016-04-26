@@ -28,12 +28,14 @@ void planet_draw(Planet *p){
 	SDL_RenderReadPixels(main_renderer, NULL, SDL_PIXELFORMAT_RGBA8888, surf->pixels, surf->pitch);
 	SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format,0,0,0));
 	SDL_Texture* newtexture=SDL_CreateTextureFromSurface(main_renderer, surf);
-
+	SDL_FreeSurface(surf);
 
 	SDL_SetRenderTarget(main_renderer, NULL);
 	SDL_RenderClear(main_renderer);
 	main_blit(stars1,0,0, P_MODE0, NULL);
 	main_blit(newtexture,p->x,p->y,P_MODE2, NULL);
+	SDL_DestroyTexture(newtexture);
+	SDL_DestroyTexture(auxtexture);
 	p->tx1+=(int)round(p->speed);
 	p->tx2+=(int)round((p->speed*2));
 	if(p->tx1>width){p->tx1=0;}
