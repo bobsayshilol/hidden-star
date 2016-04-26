@@ -28,6 +28,7 @@ typedef struct Travel_NodeDefs
 	int spread;
 	int jitter;
 	int bounds;
+	int page_bounds;
 	int max_connection_dist; //something around merge_dist + spread + jitter
 	int faction; //-1 gives nodes random factions
 } Travel_NodeDefs;
@@ -52,7 +53,7 @@ int starmap_move_sector(int direction);
 void update_starmap_icons();
 int starmap_go(int destination);
 
-void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int direction);
+void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int page_bounds, int direction);
 int get_line_intersection(Travel_Node *p0, Travel_Node *p1, Travel_Node *p2, Travel_Node *p3);
 bool check_connection(Vector *node_list, Travel_Node *na1, Travel_Node *na2);
 bool add_connection(Travel_Node *local_node, Travel_Node *remote_node);

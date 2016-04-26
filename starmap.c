@@ -111,7 +111,7 @@ int starmap_go(int destination)
 
 
 
-void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int direction)
+void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int page_bounds, int direction)
 {
 	Travel_Node *nn = malloc(sizeof(Travel_Node));
 	nn->depth = n->depth + 1;
@@ -164,6 +164,25 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 		nn->y = 0 + (rand() % jitter);
 	}
 
+	//Avoid pagination bounds
+	if (nn->x % page_bounds < 4)
+	{
+		nn->x += 4;
+	}
+	else if (nn->x % page_bounds > page_bounds - 4)
+	{
+		nn->x -= 4;
+	}
+
+	if (nn->y % page_bounds < 4)
+	{
+		nn->y += 4;
+	}
+	else if (nn->y % page_bounds > page_bounds - 4)
+	{
+		nn->y -= 4;
+	}
+
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
 		Travel_Node *on = (Travel_Node *)vector_get(node_list, i);
@@ -184,24 +203,24 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 		switch (direction)
 		{
 			case 0:
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 0);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 1);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 3);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 0);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 1);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 3);
 				break;
 			case 1:
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 0);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 1);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 2);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 0);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 1);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 2);
 				break;
 			case 2:
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 1);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 2);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 3);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 1);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 2);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 3);
 				break;
 			case 3:
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 0);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 2);
-				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, 3);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 0);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 2);
+				make_child_nodes(node_list, nn, max_depth, spread, jitter, merge_dist, bounds, page_bounds, 3);
 				break;
 		}
 	}
@@ -472,10 +491,10 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 	}
 
 	vector_add(node_list, root);
-	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 0);
-	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 1);
-	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 2);
-	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, 3);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, defs.page_bounds, 0);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, defs.page_bounds, 1);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, defs.page_bounds, 2);
+	make_child_nodes(node_list, root, defs.max_depth, defs.spread, defs.jitter, defs.merge_dist, defs.bounds, defs.page_bounds, 3);
 
 	if (defs.faction < 0)
 	{
@@ -552,7 +571,7 @@ void starmap_draw(Vector *node_list)
 				nn = n->connections[j];
 				if (n == cn || nn == cn)
 				{
-					a = 200;
+					a = 180;
 				}
 				if (n->f == nn->f)
 				{
@@ -602,30 +621,31 @@ void generate_starmap(Vector *node_list)
 	defs.spread =  10;
 	defs.jitter = 25;
 	defs.bounds = 500;
+	defs.page_bounds = 64;
 	defs.max_connection_dist = 75; //something around merge_dist + spread + jitter
 	defs.faction = 1; //-1 gives nodes random factions
 
 	//int root_x = defs.bounds / 2 + 32;
 	//int root_y = defs.bounds / 2 + 32;
 
-	int root_x = 128;
-	int root_y = 128;
+	int root_x = 128 + 32;
+	int root_y = 128 - 32;
 
 	make_tree(node_list, defs, root_x, root_y);
 
 
-	root_x = 128;
-	root_y = 384;
+	root_x = 128 + 32;
+	root_y = 384 - 32;
 	defs.faction = 2; //-1 gives nodes random factions
 	make_tree(node_list, defs, root_x, root_y);
 
-	root_x = 384;
-	root_y = 384;
+	root_x = 384 + 32;
+	root_y = 384 - 32;
 	defs.faction = 3; //-1 gives nodes random factions
 	make_tree(node_list, defs, root_x, root_y);
 
-	root_x = 384;
-	root_y = 128;
+	root_x = 384 + 32;
+	root_y = 128 - 32;
 	defs.faction = 0; //-1 gives nodes random factions
 	make_tree(node_list, defs, root_x, root_y);
 
