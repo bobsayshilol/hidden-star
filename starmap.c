@@ -149,19 +149,19 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	//Clamp to 0 and bounds
 	if (nn->x > bounds)
 	{
-		nn->x = bounds;
+		nn->x = bounds - (rand() % jitter);
 	}
 	else if (nn->x < 0)
 	{
-		nn->x = 0;
+		nn->x = 0 + (rand() % jitter);
 	}
 	if (nn->y > bounds)
 	{
-		nn->y = bounds;
+		nn->y = bounds - (rand() % jitter);
 	}
 	else if (nn->y < 0)
 	{
-		nn->y = 0;
+		nn->y = 0 + (rand() % jitter);
 	}
 
 	for (int i = 0; i < vector_get_size(node_list); ++i)
@@ -485,8 +485,10 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 	root->p = p;
 	planet_set_default(root->p, root->f);
 	planet_set_random(root->p);
+}
 
-
+void make_connections(Vector *node_list, Travel_NodeDefs defs)
+{
 	//TODO: There are better breadth-first search strategies
 	for (int i = 0; i <= defs.max_depth; ++i)
 	{
@@ -499,7 +501,10 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 			}
 		}
 	}
+}
 
+void remove_orphan_nodes(Vector *node_list)
+{
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
 		Travel_Node *n = (Travel_Node *)vector_get(node_list, i);
@@ -547,7 +552,7 @@ void starmap_draw(Vector *node_list)
 				nn = n->connections[j];
 				if (n == cn || nn == cn)
 				{
-					a = 255;
+					a = 200;
 				}
 				if (n->f == nn->f)
 				{
@@ -592,18 +597,40 @@ void generate_starmap(Vector *node_list)
 	srand(4);
 
 	Travel_NodeDefs defs;
-	defs.merge_dist = 15;
+	defs.merge_dist = 20;
 	defs.max_depth = 7;
 	defs.spread =  10;
 	defs.jitter = 25;
-	defs.bounds = 512;
+	defs.bounds = 500;
 	defs.max_connection_dist = 75; //something around merge_dist + spread + jitter
-	defs.faction = -1; //-1 gives nodes random factions
+	defs.faction = 1; //-1 gives nodes random factions
 
-	int root_x = defs.bounds / 2 + 32;
-	int root_y = defs.bounds / 2 + 32;
+	//int root_x = defs.bounds / 2 + 32;
+	//int root_y = defs.bounds / 2 + 32;
+
+	int root_x = 128;
+	int root_y = 128;
 
 	make_tree(node_list, defs, root_x, root_y);
+
+
+	root_x = 128;
+	root_y = 384;
+	defs.faction = 2; //-1 gives nodes random factions
+	make_tree(node_list, defs, root_x, root_y);
+
+	root_x = 384;
+	root_y = 384;
+	defs.faction = 3; //-1 gives nodes random factions
+	make_tree(node_list, defs, root_x, root_y);
+
+	root_x = 384;
+	root_y = 128;
+	defs.faction = 0; //-1 gives nodes random factions
+	make_tree(node_list, defs, root_x, root_y);
+
+	make_connections(node_list, defs);
+	remove_orphan_nodes(node_list);
 
 	current_node = 0;
 	t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;

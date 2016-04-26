@@ -58,6 +58,8 @@ bool check_connection(Vector *node_list, Travel_Node *na1, Travel_Node *na2);
 bool add_connection(Travel_Node *local_node, Travel_Node *remote_node);
 void configure_connections(Vector *node_list, Travel_Node *n, int max_connection_dist);
 void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y);
+void make_connections(Vector *node_list, Travel_NodeDefs defs);
+void remove_orphan_nodes(Vector *node_list);
 void starmap_draw(Vector *node_list);
 void generate_starmap();
 
