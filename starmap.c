@@ -530,24 +530,35 @@ void starmap_draw(Vector *node_list)
 	//Set the new texture as the render target
 	SDL_SetRenderTarget(main_renderer, newtexture);
 	SDL_RenderClear(main_renderer);
+	Travel_Node *cn = (Travel_Node *)vector_get(node_list, current_node);
 
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
 		//Render connections before nodes so that nodes can be on top
 		Travel_Node *n = (Travel_Node *)vector_get(node_list, i);
-		Travel_Node *cn;
+		Travel_Node *nn;
 		
 		for (int j = 0; j < sizeof(n->connections) / sizeof(Travel_Node *); ++j)
 		{
 			if (n->connections[j] != NULL)
 			{
-				SDL_SetRenderDrawColor(main_renderer, 128, 128, 128, 255);
-				cn = n->connections[j];
-				if (n == (Travel_Node *)vector_get(node_list, current_node) || cn == (Travel_Node *)vector_get(node_list, current_node))
+				SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);
+				int a = 64;
+				nn = n->connections[j];
+				if (n == cn || nn == cn)
 				{
-					SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+					a = 255;
 				}
-				SDL_RenderDrawLine(main_renderer, n->x-t_sectorX, n->y-t_sectorY, cn->x-t_sectorX, cn->y-t_sectorY);
+				if (n->f == nn->f)
+				{
+					SDL_SetRenderDrawColor(main_renderer, faction_colors[n->f].r, faction_colors[n->f].g, faction_colors[n->f].b, a);
+				}
+				else
+				{
+					SDL_SetRenderDrawColor(main_renderer, faction_colors[FACTION_NONE].r, faction_colors[FACTION_NONE].g, faction_colors[FACTION_NONE].b, a);
+				}
+				
+				SDL_RenderDrawLine(main_renderer, n->x-t_sectorX, n->y-t_sectorY, nn->x-t_sectorX, nn->y-t_sectorY);
 			}
 		}
 		SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
