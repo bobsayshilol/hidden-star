@@ -26,6 +26,10 @@ int starmap_setup()
 
 int starmap_move_sector(int direction){
 	switch(direction){
+		case 0:
+			t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
+			t_sectorY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
+			break;
 		case 1:
 			t_sectorY-=64;
 			break;
@@ -50,6 +54,7 @@ void update_starmap_icons()
 {
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
+	gui_add_sprite_button(g_card_C, 59, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 0, NOFLIP, GUI_MOVE_BUTTON_COLOR);
 	if(t_sectorY>0){
 		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 1, NOFLIP, GUI_MOVE_BUTTON_COLOR);
 	}
@@ -536,6 +541,18 @@ void starmap_draw(Vector *node_list)
 	SDL_SetRenderTarget(main_renderer, newtexture);
 	SDL_RenderClear(main_renderer);
 	Travel_Node *cn = (Travel_Node *)vector_get(node_list, current_node);
+	if(t_sectorX<256 && t_sectorY<256){
+		main_blit(t_stars1,0-t_sectorX,0-t_sectorY, NOFLIP, NULL);
+	}
+	if(t_sectorX>=256 && t_sectorY<256){
+		main_blit(t_stars1,256-t_sectorX,0-t_sectorY, FLIPH, NULL);
+	}
+	if(t_sectorX<256 && t_sectorY>=256){
+		main_blit(t_stars1,0-t_sectorX,256-t_sectorY, FLIPV, NULL);
+	}
+	if(t_sectorX>=256 && t_sectorY>=256){
+		main_blit(t_stars1,256-t_sectorX,256-t_sectorY, FLIPHV, NULL);
+	}
 
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
