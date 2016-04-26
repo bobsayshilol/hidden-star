@@ -24,29 +24,44 @@ int starmap_setup()
 	return 0;
 }
 
+void starmap_animate(int x, int y){
+}
+
 int starmap_move_sector(int direction){
+	int newX=t_sectorX;
+	int newY=t_sectorY;
+	gui_clear();
 	switch(direction){
 		case 0:
-			t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
-			t_sectorY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
+			newX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
+			newY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
 			break;
 		case 1:
-			t_sectorY-=64;
+			newY-=64;
 			break;
 		case 2:
-			t_sectorX+=64;
+			newX+=64;
 			break;
 		case 3:
-			t_sectorY+=64;
+			newY+=64;
 			break;
 		case 4:
-			t_sectorX-=64;
+			newX-=64;
 			break;
 	}
-	if(t_sectorX<0){t_sectorX=0;}
-	if(t_sectorY<0){t_sectorY=0;}
-	if(t_sectorX>448){t_sectorX=448;}
-	if(t_sectorX>448){t_sectorY=448;}
+	if(newX<0){newX=0;}
+	if(newY<0){newY=0;}
+	if(newX>448){newX=448;}
+	if(newX>448){newY=448;}
+	while(t_sectorX!=newX || t_sectorY!=newY){
+		if(t_sectorX < newX){t_sectorX+=4;}
+		if(t_sectorX > newX){t_sectorX-=4;}
+		if(t_sectorY < newY){t_sectorY+=4;}
+		if(t_sectorY > newY){t_sectorY-=4;}
+		starmap_draw(starmap);
+		SDL_RenderPresent(main_renderer);
+		SDL_Delay(32);
+	}
 	update_starmap_icons();
 }
 
@@ -563,13 +578,13 @@ void starmap_draw(Vector *node_list)
 	if(t_sectorX<256 && t_sectorY<256){
 		main_blit(t_stars1,0-t_sectorX,0-t_sectorY, NOFLIP, NULL);
 	}
-	if(t_sectorX>=256 && t_sectorY<256){
+	if(t_sectorX>=192 && t_sectorY<256){
 		main_blit(t_stars1,256-t_sectorX,0-t_sectorY, FLIPH, NULL);
 	}
-	if(t_sectorX<256 && t_sectorY>=256){
+	if(t_sectorX<256 && t_sectorY>=192){
 		main_blit(t_stars1,0-t_sectorX,256-t_sectorY, FLIPV, NULL);
 	}
-	if(t_sectorX>=256 && t_sectorY>=256){
+	if(t_sectorX>=192 && t_sectorY>=192){
 		main_blit(t_stars1,256-t_sectorX,256-t_sectorY, FLIPHV, NULL);
 	}
 
