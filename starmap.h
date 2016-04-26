@@ -64,5 +64,6 @@ void remove_orphan_nodes(Vector *node_list);
 void starmap_draw(Vector *node_list);
 void generate_starmap();
 void starmap_clear(Vector *node_list);
+int get_node_closest_to(Vector *node_list, int x, int y);
 
 #endif

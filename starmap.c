@@ -652,6 +652,26 @@ void starmap_clear(Vector *node_list)
 	printf("Starmap cleared. Size is %d\n", vector_get_size(node_list));
 }
 
+int get_node_closest_to(Vector *node_list, int x, int y)
+{
+	int closest_node = -1;
+	int closest_x = -1;
+	int closest_y = -1;
+
+	for (int i = 0; i < vector_get_size(node_list); ++i)
+	{
+		Travel_Node *n = (Travel_Node *)vector_get(node_list, i);
+		if ((abs(x - n->x) < closest_x || closest_x < 0) && (abs(y - n->y) < closest_y || closest_y < 0))
+		{
+			closest_x = abs(x - n->x);
+			closest_y = abs(y - n->y);
+			closest_node = i;
+		}
+	}
+
+	return closest_node;
+}
+
 void generate_starmap(Vector *node_list)
 {
 	//TODO: We'll need to set this somewhere else, or maybe pass it in?
@@ -694,7 +714,7 @@ void generate_starmap(Vector *node_list)
 	make_connections(node_list, defs);
 	remove_orphan_nodes(node_list);
 
-	current_node = 0;
+	current_node = get_node_closest_to(starmap, 280, 250);
 	t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
 	t_sectorY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
 }
