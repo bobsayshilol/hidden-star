@@ -584,11 +584,11 @@ void starmap_draw(Vector *node_list)
 			if (n->connections[j] != NULL)
 			{
 				SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND);
-				int a = 64;
+				int a = 32;
 				nn = n->connections[j];
 				if (n == cn || nn == cn)
 				{
-					a = 180;
+					a = 128;
 				}
 				if (n->f == nn->f)
 				{
