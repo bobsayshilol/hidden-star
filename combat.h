@@ -6,6 +6,7 @@
 
 int c_starX[6];
 int c_starY[6];
+int c_over;
 int c_player_move1;
 int c_player_move2;
 int c_player_HP;

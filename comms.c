@@ -559,7 +559,7 @@ int advance_comms()
 				case COMMS_STATE_ENTER_TRADE:
 					gui_clear();
 					intro_setup();
-					main_menu_setup(); //exit comms, start trade
+					menu_setup_main_menu(0); //exit comms, start trade
 					break;
 			}
 			break;

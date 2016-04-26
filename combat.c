@@ -111,10 +111,19 @@ void combat_draw(){
 		c_player_move2=0;
 	}
 	combat_show(c_time_pos);
-	if (c_AI_dead>0)
+	if (c_over == 0)
 	{
-		//todo: handle reputation implications of the fight
-		starmap_setup();
+		if (c_player_dead>3)
+		{
+			menu_setup_combat_lose(0);
+			c_over = 1;
+		}
+		else if (c_AI_dead>3)
+		{
+			//todo: handle reputation implications of the fight
+			menu_setup_combat_win(0);
+			c_over = 1;
+		}
 	}
 }
 
@@ -616,6 +625,7 @@ int combat_setup(){
 	frame_skip=0;
 	gui_clear();
 
+	c_over = 0;
 	c_player_move1=0;
 	c_player_move2=0;
 	c_player_HP=50;

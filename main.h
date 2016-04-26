@@ -11,6 +11,7 @@
 
 #include "gui.h"
 #include "intro.h"
+#include "menu.h"
 #include "planets.h"
 #include "combat.h"
 #include "comms.h"
@@ -81,5 +82,6 @@ void main_input(SDL_Event event);
 int main_setup();
 void main_menu_setup();
 char * wrap_text(char *text, int max_width);
+int init_game(int i);
 
 #endif

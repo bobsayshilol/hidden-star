@@ -287,21 +287,6 @@ void load_fonts(){
 	fonts[32].x= 60; fonts[32].y= 0; fonts[32].a = 2; // space
 }
 
-void main_menu_setup()
-{
-	int default_button;
-	default_button = gui_add_text_button("combat test", 0, 18, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup, SCENE_COMBAT);
-/*	gui_add_text_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup, SCENE_PLANET_GEN);
-	gui_add_text_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
-	gui_add_text_button("travel", 0, 36, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &travel_setup, SCENE_TRAVEL);
-	gui_add_text_button("nav", 0, 44, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &starmap_setup, SCENE_STARMAP);
-	gui_add_text_button("comms", 0, 52, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_setup, SCENE_COMMS);
-*/
-	default_button = gui_add_text_button("new game", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_setup, SCENE_STARMAP);
-	gui_add_text_button("quit", 0, 10, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &menu_quit, 0);
-	update_button_state(default_button, BUTTON_STATE_SELECTED);
-}
-
  /* Init and start */
 int main_setup(){
 	main_scale=8;
@@ -471,6 +456,15 @@ void main_input(SDL_Event event){
 	}
 }
 
+int init_game(int i)
+{
+	//TODO: This is game specific init stuff - make sure we only do it when starting a new game (and do corresponding stuff when loading)
+	factions_setup();
+	starmap_clear(starmap);
+	generate_starmap(starmap);
+	starmap_setup(0);
+}
+
 int main(int argc, char *argv[]){
 	int check_init=main_setup();
 	if(check_init > 0){
@@ -485,15 +479,12 @@ int main(int argc, char *argv[]){
 	pref_path = SDL_GetPrefPath("HiddenStar", "HiddenStar");
 	screenshot_counter = 0;
 
-	//TODO: This is game specific init stuff - make sure we only do it when starting a new game (and do corresponding stuff when loading)
-	factions_setup();
 	starmap = malloc(sizeof(Vector));
 	vector_init(starmap, 5);
-	generate_starmap(starmap);
 
 	intro_setup();
 	gui_setup();
-	main_menu_setup();
+	menu_setup_main_menu(0);
 
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
