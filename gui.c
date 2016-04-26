@@ -102,7 +102,7 @@ int update_button_state(int button, int state)
 			update_button_state(current_button, BUTTON_STATE_ENABLED);
 			current_button = button;
 		}
-		if (state == BUTTON_STATE_DISABLED && button == current_button){
+		if ((state == BUTTON_STATE_HIDDEN || state == BUTTON_STATE_DISABLED) && button == current_button){
 			current_button=-1;
 		}
 		//TODO: Find next available button
@@ -405,6 +405,7 @@ int gui_setup()
 	g_card_E=Load_tex("sprites/directional_card_right.png");
 	g_card_S=Load_tex("sprites/directional_card.png");
 	g_card_W=Load_tex("sprites/directional_card_right.png");
+	g_card_C=Load_tex("sprites/directional_mid.png");
 
 	SDL_Texture *trans;
 	trans = Load_tex("sprites/gui/trans1x1.png");

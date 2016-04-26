@@ -50,6 +50,7 @@ SDL_Texture *g_card_N;
 SDL_Texture *g_card_E;
 SDL_Texture *g_card_S;
 SDL_Texture *g_card_W;
+SDL_Texture *g_card_C;
 
 int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
 int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int flip, SDL_Color color);
