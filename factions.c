@@ -17,7 +17,7 @@ void factions_setup()
 	faction_names[FACTION_KRULL] = "Krull";
 	faction_names[FACTION_PLINK] = "Plink";
 
-	faction_homeworlds[FACTION_NONE] = "Unaligned";
+	faction_homeworlds[FACTION_NONE] = "Sigma Prime 5";
 	faction_homeworlds[FACTION_SNEEB] = "Sox";
 	faction_homeworlds[FACTION_KRULL] = "Krullus";
 	faction_homeworlds[FACTION_PLINK] = "Pi-Pi";
