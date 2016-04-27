@@ -152,7 +152,7 @@ void update_starmap_icons()
 		if(t->x >= t_sectorX && t->x < t_sectorX+64 && t->y >= t_sectorY && t->y < t_sectorY+64){
 			SDL_Texture* tex = t_node;
 			int state = BUTTON_STATE_DISABLED;
-			if (current_node == i)
+			if (current_node == i || t->depth == 0)
 			{
 				tex = t_node_current;
 			}
