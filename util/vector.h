@@ -17,6 +17,7 @@ void *vector_get(Vector *v, int index);
 void vector_set(Vector *v, int index, void *value);
 void vector_remove(Vector *v, int index);
 void vector_resize(Vector *v, int new_size);
+void vector_shuffle(Vector *v);
 void vector_free(Vector *c);
 void vector_free_and_free(Vector *v);
 
