@@ -106,6 +106,16 @@ void vector_resize(Vector *v, int new_size)
 	}
 }
 
+void vector_shuffle(Vector *v)
+{
+	for (int i = 0; i < v->count; i++)
+	{
+		void * temp = v->data[i];
+		int j = i + rand() / (RAND_MAX / (v->count - i) + 1);
+		v->data[i] = v->data[j];
+	}
+}
+
 void vector_free(Vector *v)
 {
 	if (v->data == NULL)
