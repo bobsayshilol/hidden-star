@@ -18,7 +18,11 @@ int comms_setup()
 	{
 		subject = Load_tex("sprites/gui/comms_subject_placeholder.png");
 	}
-	subject_name = "from xornax 12";
+
+	if (comms_intro_text == NULL)
+	{
+		comms_intro_text = ">incoming signal from xornax 12";
+	}
 
 	main_scene = SCENE_COMMS;
 	frame_skip=0;
@@ -71,6 +75,17 @@ void comms_init()
 	prepare_npc_lists();
 
 	comms_translation_offset = 8;
+}
+
+void comms_set_subject_name(char name[])
+{
+	if (comms_intro_text != NULL)
+	{
+		free(comms_intro_text);
+	}
+	comms_intro_text = (char *)malloc(sizeof(char) * (strlen(">incoming signal from ") + strlen(name)));
+	sprintf(comms_intro_text, ">incoming signal from %s", name);
+	comms_intro_text = wrap_text(comms_intro_text, 64);
 }
 
 void comms_set_faction(int f)
@@ -359,7 +374,7 @@ void comms_setup_intro()
 	comms_subject_pos[1] = h = 32 - h / 2;
 	comms_subject_final_pos = 64 - w * 0.75;
 
-	comms_intro_text = ">incoming signal";
+	//comms_intro_text = ">incoming signal from ";
 	SDL_QueryTexture(portrait_background, NULL, NULL, &w, &h);
 	comms_portrait_background_pos[0] = 2;
 	comms_portrait_background_pos[1] = -h;
@@ -462,28 +477,28 @@ void comms_draw_intro()
 	t->p->y=comms_subject_pos[1];
 	planet_draw(t->p);
 
-	if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
+	if (comms_draw_count < (strlen(comms_intro_text)) * 2)
 	{
 		draw_text(1, 2, comms_intro_text, comms_draw_count / 2, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		if (comms_draw_count > strlen(comms_intro_text) * 2)
 		{
 			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-			if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2)
+/*			if (comms_draw_count < (strlen(comms_intro_text)) * 2)
 			{
 				draw_text(1, 8, subject_name, comms_draw_count / 2 - strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 			}
 			else
 			{
 				draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-			}
+			}*/
 		}
 	}
 	else
 	{
-		if (comms_draw_count < (strlen(comms_intro_text) + strlen(subject_name)) * 2 + 12)
+		if (comms_draw_count < (strlen(comms_intro_text)) * 2 + 12)
 		{
 			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-			draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			//draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
 		else
 		{

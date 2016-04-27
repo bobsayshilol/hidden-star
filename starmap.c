@@ -60,7 +60,7 @@ int starmap_move_sector(int direction){
 		if(t_sectorY > newY){t_sectorY-=4;}
 		starmap_draw(starmap);
 		SDL_RenderPresent(main_renderer);
-		SDL_Delay(32);
+		SDL_Delay(20);
 	}
 	update_starmap_icons();
 }
@@ -114,15 +114,17 @@ void update_starmap_icons()
 int starmap_go(int destination)
 {
 	//get selected button
-	printf("Initiating travel to %d!\n", destination);
 	current_node = destination;
 	update_starmap_icons();
 
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
+	printf("Initiating travel to %s!\n", cn->node_name);
+
 //	if (cn->is_inhabited)
 	{
 		printf("Found habited planet! %d\n", cn->f);
 		comms_set_faction(cn->f);
+		comms_set_subject_name(cn->node_name);
 		planet_setup();
 		comms_setup();
 	}
@@ -249,6 +251,7 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	{
 		nn->f = rand() % 4;
 	}
+	sprintf(nn->node_name, "%s %d-%d", faction_names[nn->f], nn->depth, vector_get_size(node_list));
 	Planet *p = malloc(sizeof(Planet));
 	nn->p = p;
 	planet_set_default(nn->p, nn->f);
@@ -520,6 +523,7 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 	{
 		root->f = rand() % 4;
 	}
+	sprintf(root->node_name, "%s", faction_homeworlds[root->f]);
 	Planet *p = malloc(sizeof(Planet));
 	root->p = p;
 	planet_set_default(root->p, root->f);

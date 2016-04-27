@@ -19,6 +19,7 @@ typedef struct Travel_Node
 	struct Planet *p;
 	bool connected;
 	NODE *connections[4];
+	char node_name[250];
 } Travel_Node;
 
 typedef struct Travel_NodeDefs

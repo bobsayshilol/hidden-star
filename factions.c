@@ -12,6 +12,16 @@ void factions_setup()
 	faction_colors[FACTION_KRULL] = FACTION_COLOR_KRULL;
 	faction_colors[FACTION_PLINK] = FACTION_COLOR_PLINK;
 
+	faction_names[FACTION_NONE] = "Unaligned";
+	faction_names[FACTION_SNEEB] = "Sneeb";
+	faction_names[FACTION_KRULL] = "Krull";
+	faction_names[FACTION_PLINK] = "Plink";
+
+	faction_homeworlds[FACTION_NONE] = "Unaligned";
+	faction_homeworlds[FACTION_SNEEB] = "Sox";
+	faction_homeworlds[FACTION_KRULL] = "Krullus";
+	faction_homeworlds[FACTION_PLINK] = "Pi-Pi";
+
 
 }
 

@@ -21,6 +21,8 @@
 
 int faction_disposition[4];
 SDL_Color faction_colors[4];
+char *faction_names[4];
+char *faction_homeworlds[4];
 
 void factions_setup();
 void faction_update_disposition(int faction, int adjustment);

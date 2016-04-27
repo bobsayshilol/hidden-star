@@ -78,13 +78,13 @@ int comms_portrait_final_pos;
 int comms_text_offset;
 int comms_translation_offset;
 
-char *subject_name;
 char *comms_intro_text;
 int comms_faction;
 int comms_tone;
 
 void comms_init();
 int comms_setup();
+void comms_set_subject_name(char name[]);
 void comms_set_faction(int f);
 void prepare_npc_lists();
 void prepare_line_lists(Vector comms_id[4][4]);
