@@ -1,7 +1,7 @@
 #ifndef HS_STARMAP
 #define HS_STARMAP
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "util/vector.h"
