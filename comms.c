@@ -491,7 +491,7 @@ void comms_draw_intro()
 	}
 	else
 	{
-		if (comms_draw_count < (strlen(comms_intro_text)) * 2 + 12)
+		if (comms_draw_count < (strlen(comms_intro_text)) * 2 + 24)
 		{
 			draw_text(1, 2, comms_intro_text, strlen(comms_intro_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 			//draw_text(1, 8, subject_name, strlen(subject_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
@@ -555,6 +555,10 @@ int comms_skip(int v)
 	if (comms_state == COMMS_STATE_NPC_TEXT && comms_draw_count < strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2)
 	{
 		comms_draw_count = strlen(((Comms_NPCDialogue *)vector_get(&comms_current_npc_lines, current_npc_text))->text) * 2;
+	}
+	else if (comms_state == COMMS_STATE_INTRO && comms_draw_count < strlen(comms_intro_text) * 2 + 12)
+	{
+		comms_draw_count = strlen(comms_intro_text) * 2 + 12; //TODO: we should wait for user input after text is shown and do the portrait slide-in as a separate thing maybe?
 	}
 	else
 	{
