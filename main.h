@@ -36,9 +36,9 @@
 #define TWINK6 15
 
 #define FONT_EARTH 0
-#define FONT_KRULL 1
-#define FONT_PLINK 2
-#define FONT_SNEEB 3
+#define FONT_SNEEB 1
+#define FONT_KRULL 2
+#define FONT_PLINK 3
 #define FONT_CYCLE 4
 
 #define SCENE_INTRO 0
