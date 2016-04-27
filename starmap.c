@@ -122,7 +122,7 @@ int starmap_go(int destination)
 
 //	if (cn->is_inhabited)
 	{
-		printf("Found habited planet! %d\n", cn->f);
+		//printf("Found inhabited planet! %d\n", cn->f);
 		comms_set_faction(cn->f);
 		comms_set_subject_name(cn->node_name);
 		planet_setup();
@@ -668,7 +668,6 @@ void starmap_clear(Vector *node_list)
 		clear_node(n);
 		free(n);
 	}
-	printf("Starmap cleared. Size is %d\n", vector_get_size(node_list));
 }
 
 int get_node_closest_to(Vector *node_list, int x, int y)
@@ -691,10 +690,10 @@ int get_node_closest_to(Vector *node_list, int x, int y)
 	return closest_node;
 }
 
-void generate_starmap(Vector *node_list)
+void generate_starmap(Vector *node_list, int seed)
 {
 	//TODO: We'll need to set this somewhere else, or maybe pass it in?
-	srand(4);
+	srand(seed);
 
 	Travel_NodeDefs defs;
 	defs.merge_dist = 20;
@@ -736,4 +735,5 @@ void generate_starmap(Vector *node_list)
 	current_node = get_node_closest_to(starmap, 280, 250);
 	t_sectorX=round(((Travel_Node *)vector_get(starmap, current_node))->x/64)*64;
 	t_sectorY=round(((Travel_Node *)vector_get(starmap, current_node))->y/64)*64;
+	printf("Generated starmap with %d nodes, using a seed of %d\n", vector_get_size(starmap), seed);
 }

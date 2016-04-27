@@ -255,8 +255,6 @@ void comms_set_current_npc_lines()
 	Vector ** line_type;
 	int line_count = 0;
 
-	printf("Comms tone %d\n", comms_tone);
-
 	line_type = (Vector **)vector_get(&comms_npc_lines, COMMS_NPC_GREETING);
 	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
 	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
@@ -311,8 +309,6 @@ void comms_set_current_npc_lines()
 	line_count = vector_get_size(&line_type[comms_faction][comms_tone]);
 	npcd = vector_get(&line_type[comms_faction][comms_tone], rand() % line_count);
 	vector_set(&comms_current_npc_lines, COMMS_NPC_FAREWELL, npcd);
-
-	printf("NPC text loaded\n");
 }
 
 void comms_load_player_choices()

@@ -93,7 +93,7 @@ void vector_remove(Vector *v, int index)
 void vector_resize(Vector *v, int new_size)
 {
 
-	printf("Adjusting vector size from %d to %d.\n", v->bounds, new_size);
+	//printf("Adjusting vector size from %d to %d.\n", v->bounds, new_size);
 	void **new_data = realloc(v->data, sizeof(void *) * new_size);
 	if (new_data)
 	{
