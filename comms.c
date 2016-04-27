@@ -1,6 +1,7 @@
 #include "comms.h"
 #include "starmap.h"
 #include "starmap.h"
+#include <limits.h>
 
 int comms_setup()
 {
@@ -428,7 +429,10 @@ void comms_setup_player_choices()
 
 void comms_draw()
 {
-	comms_draw_count++;
+	if (comms_draw_count < INT_MAX)
+	{
+		comms_draw_count++;
+	}
 	SDL_RenderClear(main_renderer);
 
 	switch (comms_state)
