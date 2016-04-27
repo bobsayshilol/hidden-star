@@ -43,6 +43,9 @@ SDL_Texture *t_stars6;
 SDL_Texture *t_node;
 SDL_Texture *t_node_current;
 
+Vector *star_names;
+
+int current_name;
 int current_node;
 int half_node_sprite;
 int inhabited_planet_count;
@@ -50,6 +53,8 @@ int t_sectorX;
 int t_sectorY;
 
 int starmap_setup();
+void starmap_init();
+void starmap_load_names(char *fname);
 int starmap_move_sector(int direction);
 void update_starmap_icons();
 int starmap_go(int destination);

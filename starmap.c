@@ -24,6 +24,70 @@ int starmap_setup()
 	return 0;
 }
 
+void starmap_init()
+{
+	starmap_load_names("text/star_name_chunks.txt");
+}
+
+void starmap_load_names(char *fname)
+{
+	printf("Loading star names...\n");
+
+	star_names = malloc(sizeof(Vector));
+	vector_init(star_names, 10);
+
+	FILE *f;
+	char line[10];
+	Vector *segments = malloc(sizeof(Vector));
+	vector_init(segments, 10);
+
+	f = fopen(fname, "r");
+	if (f != NULL)
+	{
+		//load line by line
+		while (fgets(line, 10 -1, f) != NULL)
+		{
+			char *s = malloc(sizeof(char) * (strlen(line) + 1));
+			strcpy(s, line);
+			if (s[strlen(s) - 1] == '\n')
+			{
+				s[strlen(s) - 1] = '\0';
+			}
+			vector_add(segments, s);
+		}
+	}
+
+	for (int i = 0; i < vector_get_size(segments); ++i)
+	{
+		for (int j = 0; j < vector_get_size(segments); ++j)
+		{
+			char *name = malloc(sizeof(char) * (strlen((char *)vector_get(segments, i)) + strlen((char *)vector_get(segments, j)) + 1));
+			name[0] = '\0';
+			strcat(name, (char *)vector_get(segments, i));
+			strcat(name, (char *)vector_get(segments, j));
+			vector_add(star_names, name);
+		}
+	}
+	for (int i = 0; i < vector_get_size(segments); ++i)
+	{
+		for (int j = 0; j < vector_get_size(segments); ++j)
+		{
+			for (int k = 0; k < vector_get_size(segments); ++k)
+			{
+				char *name = malloc(sizeof(char) * (strlen((char *)vector_get(segments, i)) + strlen((char *)vector_get(segments, j)) + strlen((char *)vector_get(segments, k)) + 1));
+				name[0] = '\0';
+				strcat(name, (char *)vector_get(segments, i));
+				strcat(name, (char *)vector_get(segments, j));
+				strcat(name, (char *)vector_get(segments, k));
+				vector_add(star_names, name);
+			}
+		}
+	}
+
+	vector_shuffle(star_names);
+}
+
+
 void starmap_animate(int x, int y){
 }
 
@@ -251,7 +315,7 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	{
 		nn->f = rand() % 4;
 	}
-	sprintf(nn->node_name, "%s %d-%d", faction_names[nn->f], nn->depth, vector_get_size(node_list));
+	sprintf(nn->node_name, "%s %d-%d", (char *)vector_get(star_names, current_name++), nn->depth, vector_get_size(node_list));
 	Planet *p = malloc(sizeof(Planet));
 	nn->p = p;
 	planet_set_default(nn->p, nn->f);
@@ -694,6 +758,8 @@ void generate_starmap(Vector *node_list, int seed)
 {
 	//TODO: We'll need to set this somewhere else, or maybe pass it in?
 	srand(seed);
+
+	current_name = 0;
 
 	Travel_NodeDefs defs;
 	defs.merge_dist = 20;
