@@ -44,6 +44,7 @@ int gui_add_text_button(char* text, int x, int y, int width, int state, int styl
 	b.state = state;
 	b.style = style;
 	b.flip = NOFLIP;
+	b.symbol = -1;
 	b.shortcut = shortcut;
 	b.action = action;
 	b.action_value = _action_value;
@@ -85,11 +86,54 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	b.state = state;
 	b.style = style;
 	b.flip = flip;
-
+	b.symbol = -1;
 	b.shortcut = shortcut;
 	b.action = action;
 	b.action_value = _action_value;
 	b.color = color;
+	g_button_list[button_count] = b;
+	button_count ++;
+
+	return button_count - 1;
+}
+
+int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value)
+{
+	int w = 5;
+	int h = 5;
+
+	SDL_Rect text_bounds;
+	text_bounds.x = x + SYMBOL_MARGIN_HORIZONTAL;
+	text_bounds.y = y + SYMBOL_MARGIN_VERTICAL;
+	if (width - SYMBOL_MARGIN_HORIZONTAL * 2 <= w)
+	{
+		text_bounds.w = w;
+	}
+	else
+	{
+		text_bounds.w = width - SYMBOL_MARGIN_HORIZONTAL * 2;
+	}
+	text_bounds.h = 5;
+
+	SDL_Rect button_bounds;
+	button_bounds.x = x;
+	button_bounds.y = y;
+	button_bounds.w = text_bounds.w + SYMBOL_MARGIN_HORIZONTAL * 2;
+	button_bounds.h = text_bounds.h + SYMBOL_MARGIN_VERTICAL * 2;
+
+	GUI_Button b;
+	b.sprite = NULL;
+	b.symbol = symbol;
+	b.text = "";
+	b.text_bounds = text_bounds;
+	b.button_bounds = button_bounds;
+	b.state = state;
+	b.style = style;
+	b.flip = NOFLIP;
+
+	b.shortcut = shortcut;
+	b.action = action;
+	b.action_value = _action_value;
 	g_button_list[button_count] = b;
 	button_count ++;
 
@@ -163,7 +207,32 @@ void gui_draw()
 {
 	for(int i = 0; i < button_count; i++)
 	{
-		if (g_button_list[i].sprite == NULL)
+		if (g_button_list[i].symbol >= 0)
+		{
+			//Draw symbol button
+			if (g_button_list[i].style == BUTTON_STYLE_GUI)
+			{
+				for (int j = 0; j < g_button_list[i].text_bounds.w - 2; j++)
+				{
+					main_blit(g_button_bg[g_button_list[i].style][g_button_list[i].state], g_button_list[i].text_bounds.x + j, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+				}
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x + g_button_list[i].button_bounds.w - SYMBOL_MARGIN_HORIZONTAL -2, g_button_list[i].button_bounds.y, FLIPH, NULL);
+			}
+			else
+			{
+				main_blit(g_button_cap[g_button_list[i].style][g_button_list[i].state], g_button_list[i].button_bounds.x, g_button_list[i].button_bounds.y, NOFLIP, NULL);
+			}
+			SDL_Color c = g_button_text_colour[g_button_list[i].style][g_button_list[i].state];
+			SDL_Rect srect;
+			srect.x = symbols[g_button_list[i].symbol].x;
+			srect.y = symbols[g_button_list[i].symbol].y;
+			srect.w = 5;
+			srect.h = 5;
+			SDL_SetTextureColorMod(g_symbols, c.r, c.g, c.b);
+			SDL_RenderCopy(main_renderer, g_symbols, &srect, &g_button_list[i].text_bounds);
+		}
+		else if (g_button_list[i].sprite == NULL)
 		{
 			//Draw text button
 			if (g_button_list[i].style == BUTTON_STYLE_GUI)
@@ -437,6 +506,19 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = trans;
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
+
+	g_symbols = Load_tex("sprites/gui/symbols_5x5.png");
+
+	symbols[SYMBOL_CARGO_LIQUID  ].x = 0; symbols[SYMBOL_CARGO_LIQUID  ].y = 0; symbols[SYMBOL_CARGO_LIQUID  ].a= 6;
+	symbols[SYMBOL_CARGO_SOLID   ].x = 6; symbols[SYMBOL_CARGO_SOLID   ].y = 0; symbols[SYMBOL_CARGO_SOLID   ].a= 6;
+	symbols[SYMBOL_CARGO_GAS     ].x =12; symbols[SYMBOL_CARGO_GAS     ].y = 0; symbols[SYMBOL_CARGO_GAS     ].a= 6;
+	symbols[SYMBOL_CARGO_LIFEFORM].x =18; symbols[SYMBOL_CARGO_LIFEFORM].y = 0; symbols[SYMBOL_CARGO_LIFEFORM].a= 6;
+	symbols[SYMBOL_CARGO_TECH    ].x =24; symbols[SYMBOL_CARGO_TECH    ].y = 0; symbols[SYMBOL_CARGO_TECH    ].a= 6;
+	symbols[SYMBOL_CARGO_STRANGE ].x =30; symbols[SYMBOL_CARGO_STRANGE ].y = 0; symbols[SYMBOL_CARGO_STRANGE ].a= 6;
+	symbols[SYMBOL_ARROW_DOWN    ].x = 0; symbols[SYMBOL_ARROW_DOWN    ].y = 6; symbols[SYMBOL_ARROW_DOWN    ].a= 6;
+	symbols[SYMBOL_ARROW_UP      ].x = 6; symbols[SYMBOL_ARROW_UP      ].y = 6; symbols[SYMBOL_ARROW_UP      ].a= 6;
+	symbols[SYMBOL_ARROW_LEFT    ].x =12; symbols[SYMBOL_ARROW_LEFT    ].y = 6; symbols[SYMBOL_ARROW_LEFT    ].a= 6;
+	symbols[SYMBOL_ARROW_RIGHT   ].x =18; symbols[SYMBOL_ARROW_RIGHT   ].y = 6; symbols[SYMBOL_ARROW_RIGHT   ].a= 6;
 
 	g_blink=0;
 	return 0;

@@ -9,6 +9,8 @@
 #define BUTTON_STATE_HIDDEN 3
 #define BUTTON_MARGIN_VERTICAL 2
 #define BUTTON_MARGIN_HORIZONTAL 4
+#define SYMBOL_MARGIN_VERTICAL 2
+#define SYMBOL_MARGIN_HORIZONTAL 2
 
 #define BUTTON_STYLE_GUI 0
 #define BUTTON_STYLE_MENU 1
@@ -17,11 +19,22 @@
 #define GUI_MOVE_BUTTON_COLOR (SDL_Color){74, 142, 255}
 #define GUI_FIRE_BUTTON_COLOR (SDL_Color){255, 0, 0}
 #define GUI_TEXT_COLOR_DISABLED (SDL_Color){20, 20, 20}
-#define GUI_TEXT_COLOR_ENABLED (SDL_Color){20, 20, 20}
+#define GUI_TEXT_COLOR_ENABLED (SDL_Color){40, 40, 40}
 #define GUI_TEXT_COLOR_SELECTED (SDL_Color){255, 255, 255}
 #define MENU_TEXT_COLOR_DISABLED (SDL_Color){80, 80, 80}
 #define MENU_TEXT_COLOR_ENABLED (SDL_Color){150, 150, 150}
 #define MENU_TEXT_COLOR_SELECTED (SDL_Color){255, 255, 255}
+
+#define SYMBOL_ARROW_DOWN 0
+#define SYMBOL_ARROW_UP 1
+#define SYMBOL_ARROW_LEFT 2
+#define SYMBOL_ARROW_RIGHT 3
+#define SYMBOL_CARGO_LIQUID 4
+#define SYMBOL_CARGO_SOLID 5
+#define SYMBOL_CARGO_GAS 6
+#define SYMBOL_CARGO_LIFEFORM 7
+#define SYMBOL_CARGO_TECH 8
+#define SYMBOL_CARGO_STRANGE 9
 
 typedef struct GUI_Button
 {
@@ -33,11 +46,13 @@ typedef struct GUI_Button
 	int style;
 	int flip;
 	int shortcut; //SDLK values?
+	int symbol;
 	int action_value;
 	SDL_Color color;
 	int (*action)(int v);
 } GUI_Button;
 
+font_map symbols[10];
 GUI_Button g_button_list[64];
 SDL_Color g_button_text_colour[2][3];
 int button_count;
@@ -51,9 +66,11 @@ SDL_Texture *g_card_E;
 SDL_Texture *g_card_S;
 SDL_Texture *g_card_W;
 SDL_Texture *g_card_C;
+SDL_Texture *g_symbols;
 
 int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
 int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int flip, SDL_Color color);
+int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
 int update_button_state(int button, int state);
 int gui_cycle_next_button(int direction);
 int gui_seek_next_button_h(int direction);
