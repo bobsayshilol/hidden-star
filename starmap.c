@@ -154,6 +154,7 @@ void update_starmap_icons()
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
 
+	int default_button = -1;
 	for (int i = 0; i < vector_get_size(starmap); i++)
 	{
 		Travel_Node *t = (Travel_Node *)vector_get(starmap, i);
@@ -177,10 +178,14 @@ void update_starmap_icons()
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
-			gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, faction_colors[t->f]);
+			b = gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, faction_colors[t->f]);
+			if (current_node == i)
+			{
+				default_button = b;
+			}
 		}
 	}
-	update_button_state(current_node, BUTTON_STATE_SELECTED);
+	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
 int starmap_go(int destination)
