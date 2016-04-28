@@ -509,16 +509,22 @@ int gui_setup()
 
 	g_symbols = Load_tex("sprites/gui/symbols_5x5.png");
 
-	symbols[SYMBOL_CARGO_LIQUID  ].x = 0; symbols[SYMBOL_CARGO_LIQUID  ].y = 0; symbols[SYMBOL_CARGO_LIQUID  ].a= 6;
-	symbols[SYMBOL_CARGO_SOLID   ].x = 6; symbols[SYMBOL_CARGO_SOLID   ].y = 0; symbols[SYMBOL_CARGO_SOLID   ].a= 6;
-	symbols[SYMBOL_CARGO_GAS     ].x =12; symbols[SYMBOL_CARGO_GAS     ].y = 0; symbols[SYMBOL_CARGO_GAS     ].a= 6;
-	symbols[SYMBOL_CARGO_LIFEFORM].x =18; symbols[SYMBOL_CARGO_LIFEFORM].y = 0; symbols[SYMBOL_CARGO_LIFEFORM].a= 6;
-	symbols[SYMBOL_CARGO_TECH    ].x =24; symbols[SYMBOL_CARGO_TECH    ].y = 0; symbols[SYMBOL_CARGO_TECH    ].a= 6;
-	symbols[SYMBOL_CARGO_STRANGE ].x =30; symbols[SYMBOL_CARGO_STRANGE ].y = 0; symbols[SYMBOL_CARGO_STRANGE ].a= 6;
-	symbols[SYMBOL_ARROW_DOWN    ].x = 0; symbols[SYMBOL_ARROW_DOWN    ].y = 6; symbols[SYMBOL_ARROW_DOWN    ].a= 6;
-	symbols[SYMBOL_ARROW_UP      ].x = 6; symbols[SYMBOL_ARROW_UP      ].y = 6; symbols[SYMBOL_ARROW_UP      ].a= 6;
-	symbols[SYMBOL_ARROW_LEFT    ].x =12; symbols[SYMBOL_ARROW_LEFT    ].y = 6; symbols[SYMBOL_ARROW_LEFT    ].a= 6;
-	symbols[SYMBOL_ARROW_RIGHT   ].x =18; symbols[SYMBOL_ARROW_RIGHT   ].y = 6; symbols[SYMBOL_ARROW_RIGHT   ].a= 6;
+	symbols[SYMBOL_CARGO_LIQUID  ].x = 0; symbols[SYMBOL_CARGO_LIQUID  ].y = 6; symbols[SYMBOL_CARGO_LIQUID  ].a= 6;
+	symbols[SYMBOL_CARGO_SOLID   ].x = 6; symbols[SYMBOL_CARGO_SOLID   ].y = 6; symbols[SYMBOL_CARGO_SOLID   ].a= 6;
+	symbols[SYMBOL_CARGO_GAS     ].x =12; symbols[SYMBOL_CARGO_GAS     ].y = 6; symbols[SYMBOL_CARGO_GAS     ].a= 6;
+	symbols[SYMBOL_CARGO_LIFEFORM].x =18; symbols[SYMBOL_CARGO_LIFEFORM].y = 6; symbols[SYMBOL_CARGO_LIFEFORM].a= 6;
+	symbols[SYMBOL_CARGO_TECH    ].x =24; symbols[SYMBOL_CARGO_TECH    ].y = 6; symbols[SYMBOL_CARGO_TECH    ].a= 6;
+	symbols[SYMBOL_CARGO_STRANGE ].x =30; symbols[SYMBOL_CARGO_STRANGE ].y = 6; symbols[SYMBOL_CARGO_STRANGE ].a= 6;
+	symbols[SYMBOL_ARROW_DOWN    ].x = 0; symbols[SYMBOL_ARROW_DOWN    ].y = 0; symbols[SYMBOL_ARROW_DOWN    ].a= 6;
+	symbols[SYMBOL_ARROW_UP      ].x = 6; symbols[SYMBOL_ARROW_UP      ].y = 0; symbols[SYMBOL_ARROW_UP      ].a= 6;
+	symbols[SYMBOL_ARROW_LEFT    ].x =12; symbols[SYMBOL_ARROW_LEFT    ].y = 0; symbols[SYMBOL_ARROW_LEFT    ].a= 6;
+	symbols[SYMBOL_ARROW_RIGHT   ].x =18; symbols[SYMBOL_ARROW_RIGHT   ].y = 0; symbols[SYMBOL_ARROW_RIGHT   ].a= 6;
+	symbols[SYMBOL_ARROW_OMNI    ].x =24; symbols[SYMBOL_ARROW_OMNI    ].y = 0; symbols[SYMBOL_ARROW_OMNI    ].a= 6;
+	symbols[SYMBOL_ARROW_CENTRE  ].x =30; symbols[SYMBOL_ARROW_CENTRE  ].y = 0; symbols[SYMBOL_ARROW_CENTRE  ].a= 6;
+	symbols[SYMBOL_TRADE         ].x =36; symbols[SYMBOL_TRADE         ].y = 0; symbols[SYMBOL_TRADE         ].a= 6;
+	symbols[SYMBOL_TRAVEL        ].x =42; symbols[SYMBOL_TRAVEL        ].y = 0; symbols[SYMBOL_TRAVEL        ].a= 6;
+	symbols[SYMBOL_COMMS         ].x =48; symbols[SYMBOL_COMMS         ].y = 0; symbols[SYMBOL_COMMS         ].a= 6;
+	symbols[SYMBOL_MENU          ].x =48; symbols[SYMBOL_MENU          ].y = 0; symbols[SYMBOL_MENU          ].a= 6;
 
 	g_blink=0;
 	return 0;
