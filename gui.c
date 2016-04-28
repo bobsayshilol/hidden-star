@@ -367,8 +367,15 @@ int gui_seek_next_button_h(int direction)
 {
 	//direction should be 0 or 1
 	int closest_button = -1;
-	int current_x = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.x;
-	int current_y = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.y;
+
+	int current_x = 0;
+	int current_y = 0;
+	if (current_button >= 0)
+	{
+		current_x = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.x;
+		current_y = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.y;
+	}
+
 	if (direction >= 1)
 	{
 		int closest_x = 64;
@@ -437,8 +444,14 @@ int gui_seek_next_button_v(int direction)
 {
 	//direction should be 0 or 1
 	int closest_button = -1;
-	int current_x = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.x;
-	int current_y = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.y;
+
+	int current_x = 0;
+	int current_y = 0;
+	if (current_button >= 0)
+	{
+		current_x = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.x;
+		current_y = ((GUI_Button *)vector_get(g_button_list, current_button))->button_bounds.y;
+	}
 
 	if (direction >= 1)
 	{
