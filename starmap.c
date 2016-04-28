@@ -133,19 +133,26 @@ void update_starmap_icons()
 {
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
-	gui_add_sprite_button(g_card_C, 59, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 0, NOFLIP, GUI_MOVE_BUTTON_COLOR);
-	if(t_sectorY>0){
-		gui_add_sprite_button(g_card_N, 30, 0, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 1, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+
+	gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0);
+
+	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4);
+	if(t_sectorX<=0){
+		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	if(t_sectorX<448){
-		gui_add_sprite_button(g_card_E, 59, 29, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 2, NOFLIP, GUI_MOVE_BUTTON_COLOR);
+	b = gui_add_symbol_button(SYMBOL_ARROW_UP, 8, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 1);
+	if(t_sectorY<=0){
+		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	if(t_sectorY<448){
-		gui_add_sprite_button(g_card_S, 29, 59, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 3, FLIPV, GUI_MOVE_BUTTON_COLOR);
+	b = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 16, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 3);
+	if(t_sectorY>=448){
+		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	if(t_sectorX>0){
-		gui_add_sprite_button(g_card_W, 0, 30, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_move_sector, 4, FLIPH, GUI_MOVE_BUTTON_COLOR);
+	b = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 24, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 2);
+	if(t_sectorX>=448){
+		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
+
 	for (int i = 0; i < vector_get_size(starmap); i++)
 	{
 		Travel_Node *t = (Travel_Node *)vector_get(starmap, i);

@@ -7,6 +7,7 @@
 #include "util/vector.h"
 #include "factions.h"
 #include "planets.h"
+#include "gui.h"
 
 typedef struct Travel_Node NODE;
 
