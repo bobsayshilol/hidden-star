@@ -83,7 +83,7 @@ void starmap_load_names(char *fname)
 			}
 		}
 	}
-
+	printf("Generated %d star names.\n", vector_get_size(star_names));
 	vector_shuffle(star_names);
 }
 

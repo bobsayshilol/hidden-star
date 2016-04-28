@@ -139,7 +139,6 @@ int draw_text(int x, int y, char *text, int length, int font_set, int font_set2,
 	int offset_x = 0;
 	SDL_Rect srect;
 	SDL_Rect drect;
-	SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 	for(int i=0;i<length;i++){
 		if (text[i] == '\n')
 		{
@@ -166,6 +165,10 @@ int draw_text(int x, int y, char *text, int length, int font_set, int font_set2,
 		{
 			count = font_set2;
 			SDL_SetTextureColorMod(font[count], color.r - 80, color.g - 80, color.b - 80);
+		}
+		else
+		{
+			SDL_SetTextureColorMod(font[count], color.r, color.g, color.b);
 		}
 		SDL_RenderCopy(main_renderer, font[count], &srect, &drect);
 
