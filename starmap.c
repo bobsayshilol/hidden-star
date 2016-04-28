@@ -134,7 +134,7 @@ void update_starmap_icons()
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
 
-	gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0);
+	gui_add_symbol_button(SYMBOL_ARROW_CENTRE, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0);
 
 	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4);
 	if(t_sectorX<=0){
