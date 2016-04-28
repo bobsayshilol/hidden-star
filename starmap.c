@@ -137,21 +137,23 @@ void update_starmap_icons()
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
 
-	gui_add_symbol_button(SYMBOL_ARROW_CENTRE, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_ARROW_CENTRE, 32, 55, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_COMMS, 47, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_MENU, 55, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0, NULL, -1, NULL, -1);
 
-	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4, NULL, -1, NULL, -1);
+	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 55, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4, NULL, -1, NULL, -1);
 	if(t_sectorX<=0){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_UP, 8, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 1, NULL, -1, NULL, -1);
+	b = gui_add_symbol_button(SYMBOL_ARROW_UP, 8, 55, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 1, NULL, -1, NULL, -1);
 	if(t_sectorY<=0){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 16, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 3, NULL, -1, NULL, -1);
+	b = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 16, 55, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 3, NULL, -1, NULL, -1);
 	if(t_sectorY>=448){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 24, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 2, NULL, -1, NULL, -1);
+	b = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 24, 55, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 2, NULL, -1, NULL, -1);
 	if(t_sectorX>=448){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
@@ -280,7 +282,7 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 		nn->y = 0 + (rand() % jitter);
 	}
 
-	//Avoid pagination bounds
+	//Avoid pagination bounds (more on top and bottom for UI)
 	if (nn->x % page_bounds < 4)
 	{
 		nn->x += 4;
@@ -290,28 +292,27 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 		nn->x -= 4;
 	}
 
-	if (nn->y % page_bounds < 4)
+	if (nn->y % page_bounds < 8)
 	{
-		nn->y += 4;
+		nn->y += 8;
 	}
-	else if (nn->y % page_bounds > page_bounds - 4)
+	else if (nn->y % page_bounds > page_bounds - 8)
 	{
-		nn->y -= 4;
+		nn->y -= 8;
 	}
 
 	for (int i = 0; i < vector_get_size(node_list); ++i)
 	{
 		Travel_Node *on = (Travel_Node *)vector_get(node_list, i);
-		if (on != nn)
+		//If this node is too close to any other nodes, destroy it.
+		if ((on->x - nn->x) * (on->x - nn->x) + (on->y - nn->y) * (on->y - nn->y) < merge_dist * merge_dist)
 		{
-			//If this node is too close to any other nodes, destroy it.
-			if ((on->x - nn->x) * (on->x - nn->x) + (on->y - nn->y) * (on->y - nn->y) < merge_dist * merge_dist)
-			{
-				free(nn);
-				return;
-			}
+			free(nn);
+			return;
 		}
 	}
+
+	vector_add(node_list, nn);
 
 	//If we're not too deep, make more nodes
 	if(nn->depth < max_depth)
@@ -341,6 +342,7 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 		}
 	}
 
+	//Do the faction specific stuff after we've made our children so that they can inheret randomness (if set)
 	if (nn->f < 0)
 	{
 		nn->f = rand() % 4;
@@ -350,8 +352,6 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	nn->p = p;
 	planet_set_default(nn->p, nn->f);
 	planet_set_random(nn->p);
-
-	vector_add(node_list, nn);
 }
 
 //yoinked from http://stackoverflow.com/a/14795484
@@ -802,7 +802,7 @@ void generate_starmap(Vector *node_list, int seed)
 
 	Travel_NodeDefs defs;
 	defs.merge_dist = 20;
-	defs.max_depth = 7;
+	defs.max_depth = 5;
 	defs.spread =  10;
 	defs.jitter = 25;
 	defs.bounds = 500;

@@ -609,7 +609,7 @@ int gui_setup()
 	symbols[SYMBOL_TRADE         ].x =36; symbols[SYMBOL_TRADE         ].y = 0; symbols[SYMBOL_TRADE         ].a= 6;
 	symbols[SYMBOL_TRAVEL        ].x =42; symbols[SYMBOL_TRAVEL        ].y = 0; symbols[SYMBOL_TRAVEL        ].a= 6;
 	symbols[SYMBOL_COMMS         ].x =48; symbols[SYMBOL_COMMS         ].y = 0; symbols[SYMBOL_COMMS         ].a= 6;
-	symbols[SYMBOL_MENU          ].x =48; symbols[SYMBOL_MENU          ].y = 0; symbols[SYMBOL_MENU          ].a= 6;
+	symbols[SYMBOL_MENU          ].x =54; symbols[SYMBOL_MENU          ].y = 0; symbols[SYMBOL_MENU          ].a= 6;
 
 	g_blink=0;
 	return 0;

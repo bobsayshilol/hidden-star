@@ -466,7 +466,7 @@ int init_game(int i)
 	//TODO: This is game specific init stuff - make sure we only do it when starting a new game (and do corresponding stuff when loading)
 	factions_setup();
 	starmap_clear(starmap);
-	generate_starmap(starmap, 4); //TODO: Let the user supply a seed, starmap size and start pos?
+	generate_starmap(starmap, 8); //TODO: Let the user supply a seed, starmap size and start pos?
 	starmap_setup(0);
 	return 0;
 }
