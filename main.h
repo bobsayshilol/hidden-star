@@ -71,6 +71,7 @@ char* pref_path;
 int screenshot_counter;
 Vector *starmap;
 
+SDL_Surface* Load_srf(char *filename);
 SDL_Texture* Load_tex(char *filename);
 void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color);
 int draw_text(int x, int y, char *text, int length, int font_set, int font_set2, int translation_offset, SDL_Color color);

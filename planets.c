@@ -1,41 +1,66 @@
 #include "planets.h"
 
+void planet_blit(SDL_Surface *surf, SDL_Surface *src, int x, int y, int w, int mode, SDL_Color *color){
+	SDL_Rect rect;
+	rect.w=w/2;
+	rect.h=w/2;
+	rect.x=x;
+	rect.y=y;
+	if(color){
+		SDL_SetSurfaceColorMod(src, color->r, color->g, color->b);
+	}else{
+		SDL_SetSurfaceColorMod(src, 255, 255, 255);
+	}
+	switch(mode){
+		case P_MODE0:
+			SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_BLEND);
+			break;
+		case P_MODE1:
+			SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_MOD);
+			break;
+	}
+	SDL_BlitSurface(src, NULL, surf, &rect);
+}
+
 void planet_draw(Planet *p){
 	int width=(int)(pow(2,(p->size+3)))*2;
+	SDL_Color *color;
+	SDL_Surface *src;
+	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 
+						0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, 0, 0, 0));
 
-	SDL_Texture* auxtexture = SDL_CreateTexture(main_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width/2, width/2);
-	//Set the new texture as the render target
-	SDL_SetRenderTarget(main_renderer, auxtexture);
-	
-	main_blit(ocean[p->ocn][p->size],p->tx1,0, P_MODE0, planet_get_color(p,0));
-	main_blit(ocean[p->ocn][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,0));
+	planet_blit(surf, ocean[p->ocn][p->size],
+		p->tx1,0, width, P_MODE0, planet_get_color(p,0));
+	planet_blit(surf, ocean[p->ocn][p->size],
+		p->tx1-width,0, width, P_MODE0, planet_get_color(p,0));
 	if(p->con<P_MAX){
-		main_blit(continents[p->con][p->size],p->tx1,0, P_MODE0, planet_get_color(p,1));
-		main_blit(continents[p->con][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,1));
+		planet_blit(surf, continents[p->con][p->size],
+			p->tx1,0, width, P_MODE0, planet_get_color(p,1));
+		planet_blit(surf, continents[p->con][p->size],
+			p->tx1-width,0, width, P_MODE0, planet_get_color(p,1));
 	}
 	if(p->cap<P_MAX){
-		main_blit(caps[p->cap][p->size],p->tx1,0, P_MODE0, planet_get_color(p,2));
-		main_blit(caps[p->cap][p->size],p->tx1-width,0, P_MODE0, planet_get_color(p,2));
+		planet_blit(surf, caps[p->cap][p->size],
+			p->tx1,0, width, P_MODE0, planet_get_color(p,2));
+		planet_blit(surf, caps[p->cap][p->size],
+			p->tx1-width,0, width, P_MODE0, planet_get_color(p,2));
 	}
 	if(p->cld<P_MAX){
-		main_blit(clouds[p->cld][p->size],p->tx2,0, P_MODE0, planet_get_color(p,3));
-		main_blit(clouds[p->cld][p->size],p->tx2-width,0, P_MODE0, planet_get_color(p,3));
+		planet_blit(surf, clouds[p->cld][p->size],
+			p->tx2,0, width, P_MODE0, planet_get_color(p,3));
+		planet_blit(surf, clouds[p->cld][p->size],
+			p->tx2-width,0, width, P_MODE0, planet_get_color(p,3));
 	}
+	planet_blit(surf, planet_mask[p->msk][p->size], 0,0, width, P_MODE1, NULL);
 
-	main_blit(planet_mask[p->msk][p->size],0,0, P_MODE1, NULL);
-
-	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-	SDL_RenderReadPixels(main_renderer, NULL, SDL_PIXELFORMAT_RGBA8888, surf->pixels, surf->pitch);
 	SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format,0,0,0));
-	SDL_Texture* newtexture=SDL_CreateTextureFromSurface(main_renderer, surf);
-	SDL_FreeSurface(surf);
-
-	SDL_SetRenderTarget(main_renderer, NULL);
 	SDL_RenderClear(main_renderer);
-	main_blit(stars1,0,0, P_MODE0, NULL);
-	main_blit(newtexture,p->x,p->y,P_MODE2, NULL);
+	SDL_Texture* newtexture=SDL_CreateTextureFromSurface(main_renderer, surf);
+	main_blit(stars1,0,0, NOFLIP, NULL);
+	main_blit(newtexture,p->x,p->y,NOFLIP, NULL);
+	SDL_FreeSurface(surf);
 	SDL_DestroyTexture(newtexture);
-	SDL_DestroyTexture(auxtexture);
 	p->tx1+=(int)round(p->speed);
 	p->tx2+=(int)round((p->speed*2));
 	if(p->tx1>width){p->tx1=0;}
@@ -56,16 +81,16 @@ int planet_setup(){
 			int size=(int)(pow(2,(j+3)));
 			if(i<P_MAX){
 				sprintf(file,"sprites/planets/caps%d_%d.png",(i+1), size);
-				caps[i][j] = Load_tex(file);
+				caps[i][j] = Load_srf(file);
 				sprintf(file,"sprites/planets/clouds%d_%d.png",(i+1), size);
-				clouds[i][j] = Load_tex(file);
+				clouds[i][j] = Load_srf(file);
 				sprintf(file,"sprites/planets/continents%d_%d.png",(i+1), size);
-				continents[i][j] = Load_tex(file);
+				continents[i][j] = Load_srf(file);
 				sprintf(file,"sprites/planets/ocean%d_%d.png",(i+1), size);
-				ocean[i][j] = Load_tex(file);
+				ocean[i][j] = Load_srf(file);
 			}
 			sprintf(file,"sprites/planets/planet_mask%d_%d.png",(i+1), size);
-			planet_mask[i][j] = Load_tex(file);
+			planet_mask[i][j] = Load_srf(file);
 		}
 	}
 	return 0;

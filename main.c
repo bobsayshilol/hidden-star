@@ -3,6 +3,15 @@
 	#include <windows.h>
 #endif
 
+SDL_Surface* Load_srf(char *filename){
+	SDL_Surface* surface = IMG_Load(filename);
+	if (!surface){
+		printf("Load image error: %s, %s \n",filename, IMG_GetError());
+		exit(0);
+	}
+	return surface;
+}
+
 SDL_Texture* Load_tex(char *filename){
 	SDL_Texture* texture = IMG_LoadTexture(main_renderer, filename);
 	if (!texture){
@@ -27,19 +36,6 @@ void main_blit(SDL_Texture *tex, int x, int y, int mode, SDL_Color *color){
 		SDL_SetTextureColorMod(tex, 255,255,255);
 	}
 	switch(mode){
-		case P_MODE0:
-			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
-			break;
-		case P_MODE1:
-			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
-			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
-			break;
-		case P_MODE2:
-			SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-			flip=SDL_FLIP_VERTICAL;
-			SDL_RenderCopyEx(main_renderer, tex, NULL, &rect, 0, 0, flip);
-			break;
 		case NOFLIP:
 			SDL_RenderCopy(main_renderer, tex, NULL, &rect);
 			break;
