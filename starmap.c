@@ -84,6 +84,8 @@ void starmap_load_names(char *fname)
 		}
 	}
 	printf("Generated %d star names.\n", vector_get_size(star_names));
+	vector_free_and_free(segments);
+	free(segments);
 	vector_shuffle(star_names);
 }
 
@@ -135,21 +137,21 @@ void update_starmap_icons()
 	gui_clear();
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
 
-	gui_add_symbol_button(SYMBOL_ARROW_CENTRE, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0);
+	gui_add_symbol_button(SYMBOL_ARROW_CENTRE, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 0, NULL, -1, NULL, -1);
 
-	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4);
+	int b = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 0, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 4, NULL, -1, NULL, -1);
 	if(t_sectorX<=0){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_UP, 8, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 1);
+	b = gui_add_symbol_button(SYMBOL_ARROW_UP, 8, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 1, NULL, -1, NULL, -1);
 	if(t_sectorY<=0){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 16, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 3);
+	b = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 16, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 3, NULL, -1, NULL, -1);
 	if(t_sectorY>=448){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
-	b = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 24, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 2);
+	b = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 24, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &starmap_move_sector, 2, NULL, -1, NULL, -1);
 	if(t_sectorX>=448){
 		update_button_state(b, BUTTON_STATE_DISABLED);
 	}
@@ -178,7 +180,7 @@ void update_starmap_icons()
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
-			b = gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, NOFLIP, faction_colors[t->f]);
+			b = gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, starmap_update_star_name, i, starmap_update_star_name, -1, NOFLIP, faction_colors[t->f]);
 			if (current_node == i)
 			{
 				default_button = b;
@@ -186,6 +188,21 @@ void update_starmap_icons()
 		}
 	}
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
+}
+
+int starmap_update_star_name(int star)
+{
+	if (star >= 0)
+	{
+		Travel_Node *n = (Travel_Node *)vector_get(starmap, star);
+		current_star = n->node_name;
+	}
+	else
+	{
+		current_star = "";
+	}
+
+	return 0;
 }
 
 int starmap_go(int destination)
@@ -721,6 +738,12 @@ void starmap_draw(Vector *node_list)
 	SDL_SetRenderTarget(main_renderer, NULL);
 	SDL_RenderCopy(main_renderer, newtexture, NULL, NULL);
 	SDL_DestroyTexture(newtexture);
+
+	if (strcmp(current_star, "") != 0)
+	{
+		//printf("Drawing star name...\n");
+		draw_text(1, 2, current_star, strlen(current_star), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	}
 }
 
 void clear_node(Travel_Node *n)

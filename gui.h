@@ -2,6 +2,7 @@
 #define HS_GUI
 
 #include "main.h"
+#include "util/vector.h"
 
 #define BUTTON_STATE_DISABLED 0
 #define BUTTON_STATE_ENABLED 1
@@ -54,14 +55,17 @@ typedef struct GUI_Button
 	int shortcut; //SDLK values?
 	int symbol;
 	int action_value;
+	int hover_value;
+	int hover_out_value;
 	SDL_Color color;
 	int (*action)(int v);
+	int (*hover)(int v);
+	int (*hover_out)(int v);
 } GUI_Button;
 
 font_map symbols[16];
-GUI_Button g_button_list[64];
+Vector *g_button_list;
 SDL_Color g_button_text_colour[2][3];
-int button_count;
 int current_button;
 int g_blink;
 
@@ -74,15 +78,17 @@ SDL_Texture *g_card_W;
 SDL_Texture *g_card_C;
 SDL_Texture *g_symbols;
 
-int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
-int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int flip, SDL_Color color);
-int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value);
+int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value);
+int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value, int flip, SDL_Color color);
+int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value);
 int update_button_state(int button, int state);
 int gui_cycle_next_button(int direction);
 int gui_seek_next_button_h(int direction);
 int gui_seek_next_button_v(int direction);
 int gui_update_hover_state(int x, int y);
 void gui_do_button_action();
+void gui_do_button_hover(GUI_Button *hover_button);
+void gui_do_button_hover_out(GUI_Button *hover_button);
 int gui_do_button_action_coords(int x, int y);
 void gui_draw();
 void gui_clear();

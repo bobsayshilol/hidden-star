@@ -52,12 +52,14 @@ int half_node_sprite;
 int inhabited_planet_count;
 int t_sectorX;
 int t_sectorY;
+char *current_star;
 
 int starmap_setup();
 void starmap_init();
 void starmap_load_names(char *fname);
 int starmap_move_sector(int direction);
 void update_starmap_icons();
+int starmap_update_star_name(int star);
 int starmap_go(int destination);
 
 void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spread, int jitter, int merge_dist, int bounds, int page_bounds, int direction);

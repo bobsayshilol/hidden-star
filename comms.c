@@ -83,7 +83,7 @@ void comms_set_subject_name(char name[])
 	{
 		free(comms_intro_text);
 	}
-	comms_intro_text = (char *)malloc(sizeof(char) * (strlen(">incoming signal from ") + strlen(name)));
+	comms_intro_text = (char *)malloc(sizeof(char) * (strlen(">incoming signal from ") + strlen(name) + 1));
 	sprintf(comms_intro_text, ">incoming signal from %s", name);
 	comms_intro_text = wrap_text(comms_intro_text, 64);
 }
@@ -387,7 +387,7 @@ void comms_setup_intro()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
+	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1, NULL, -1, NULL, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
@@ -401,7 +401,7 @@ void comms_setup_npc_text()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
+	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1, NULL, -1, NULL, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
@@ -419,19 +419,19 @@ void comms_setup_player_choices()
 	
 	Comms_PlayerChoice * pc = (Comms_PlayerChoice *)vector_get(&comms_player_choices, current_player_choice);
 	
-	default_button = gui_add_text_button(pc->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice0);
+	default_button = gui_add_text_button(pc->text0, 0, comms_text_offset - 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice0, NULL, -1, NULL, -1);
 
 	if (pc->text1 != NULL)
 	{
-		gui_add_text_button(pc->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice1);
+		gui_add_text_button(pc->text1, 0, comms_text_offset + 5, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice1, NULL, -1, NULL, -1);
 
 		if (pc->text2 != NULL)
 		{
-			gui_add_text_button(pc->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice2);
+			gui_add_text_button(pc->text2, 0, comms_text_offset + 12, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice2, NULL, -1, NULL, -1);
 
 			if (pc->text3 != NULL)
 			{
-				gui_add_text_button(pc->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice3);
+				gui_add_text_button(pc->text3, 0, comms_text_offset + 19, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_action, pc->choice3, NULL, -1, NULL, -1);
 			}
 		}
 	}
