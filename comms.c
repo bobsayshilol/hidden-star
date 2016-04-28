@@ -387,7 +387,7 @@ void comms_setup_intro()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_text_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
+	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
@@ -401,7 +401,7 @@ void comms_setup_npc_text()
 	gui_clear();
 
 	int default_button;
-	default_button = gui_add_text_button(">", 64 - 11, 64 - 9, 0, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
+	default_button = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 9, 64 - 9, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &comms_skip, -1);
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
 }
 
