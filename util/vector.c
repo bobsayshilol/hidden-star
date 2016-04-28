@@ -113,6 +113,7 @@ void vector_shuffle(Vector *v)
 		void * temp = v->data[i];
 		int j = i + rand() / (RAND_MAX / (v->count - i) + 1);
 		v->data[i] = v->data[j];
+		v->data[j] = temp;
 	}
 }
 
