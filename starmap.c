@@ -345,7 +345,7 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	{
 		nn->f = rand() % 4;
 	}
-	sprintf(nn->node_name, "%s %d-%d", (char *)vector_get(star_names, current_name++), nn->depth, vector_get_size(node_list));
+	sprintf(nn->node_name, "%s %d", (char *)vector_get(star_names, current_name++), nn->depth);
 	Planet *p = malloc(sizeof(Planet));
 	nn->p = p;
 	planet_set_default(nn->p, nn->f);
@@ -741,8 +741,12 @@ void starmap_draw(Vector *node_list)
 
 	if (strcmp(current_star, "") != 0)
 	{
-		//printf("Drawing star name...\n");
-		draw_text(1, 2, current_star, strlen(current_star), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		int w = 0;
+		for (int i = 0; i < strlen(current_star); ++i)
+		{
+			w += fonts[(int)current_star[i]].a;
+		}
+		draw_text((64 - w) / 2, 2, current_star, strlen(current_star), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 }
 
