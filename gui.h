@@ -58,7 +58,7 @@ typedef struct GUI_Button
 	int (*action)(int v);
 } GUI_Button;
 
-font_map symbols[10];
+font_map symbols[16];
 GUI_Button g_button_list[64];
 SDL_Color g_button_text_colour[2][3];
 int button_count;
