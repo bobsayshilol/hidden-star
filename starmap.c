@@ -127,6 +127,7 @@ int starmap_move_sector(int direction){
 		SDL_Delay(20);
 	}
 	update_starmap_icons();
+	return 0;
 }
 
 void update_starmap_icons()
@@ -407,7 +408,6 @@ bool check_connection(Vector *node_list, Travel_Node *na1, Travel_Node *na2)
 				continue;
 			}
 
-			float x, y;
 			if (get_line_intersection(na1, na2, nb1, nb2) == true)
 			{
 				return false;

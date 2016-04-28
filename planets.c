@@ -24,8 +24,6 @@ void planet_blit(SDL_Surface *surf, SDL_Surface *src, int x, int y, int w, int m
 
 void planet_draw(Planet *p){
 	int width=(int)(pow(2,(p->size+3)))*2;
-	SDL_Color *color;
-	SDL_Surface *src;
 	SDL_Surface *surf = SDL_CreateRGBSurface(0, width/2, width/2, 32, 
 						0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, 0, 0, 0));

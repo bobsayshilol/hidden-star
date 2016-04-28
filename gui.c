@@ -113,7 +113,7 @@ int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int st
 	{
 		text_bounds.w = width - SYMBOL_MARGIN_HORIZONTAL * 2;
 	}
-	text_bounds.h = 5;
+	text_bounds.h = h;
 
 	SDL_Rect button_bounds;
 	button_bounds.x = x;
@@ -305,6 +305,7 @@ int gui_cycle_next_button(int direction)
 		}
 	} while(g_button_list[temp].state == BUTTON_STATE_DISABLED); //TODO: What happens if there are no enabled buttons?
 	update_button_state(temp, BUTTON_STATE_SELECTED);
+	return temp;
 }
 
 int gui_seek_next_button_h(int direction)
@@ -373,6 +374,7 @@ int gui_seek_next_button_h(int direction)
 		}
 	}
 	update_button_state(closest_button, BUTTON_STATE_SELECTED);
+	return closest_button;
 }
 
 int gui_seek_next_button_v(int direction)
@@ -442,6 +444,7 @@ int gui_seek_next_button_v(int direction)
 		}
 	}
 	update_button_state(closest_button, BUTTON_STATE_SELECTED);
+	return closest_button;
 }
 
 int gui_update_hover_state(int x, int y)
@@ -456,11 +459,13 @@ int gui_update_hover_state(int x, int y)
 				if (g_button_list[i].state == BUTTON_STATE_ENABLED)
 				{
 					update_button_state(i, BUTTON_STATE_SELECTED);
+					return i;
 				}
-				break;
+				return -1;
 			}
 		}
 	}
+	return -1;
 }
 
 /* Prevents previously declared buttons from displaying */

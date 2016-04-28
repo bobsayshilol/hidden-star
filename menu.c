@@ -57,4 +57,6 @@ int menu_setup_combat_lose(int i)
 	gui_add_text_button("Expire", 0, 55, 64, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &menu_setup_main_menu, SCENE_STARMAP);
 
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
+
+	return 0;
 }

@@ -468,6 +468,7 @@ int init_game(int i)
 	starmap_clear(starmap);
 	generate_starmap(starmap, 4); //TODO: Let the user supply a seed, starmap size and start pos?
 	starmap_setup(0);
+	return 0;
 }
 
 int main(int argc, char *argv[]){
