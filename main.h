@@ -9,6 +9,12 @@
 #include "SDL.h" 
 #include "SDL_image.h"
 
+typedef struct font_map{
+	int x;
+	int y;
+	int a;
+}font_map;
+
 #include "gui.h"
 #include "intro.h"
 #include "menu.h"
@@ -60,11 +66,6 @@ int main_scene;
 int frame_skip;
 
 SDL_Texture *font[4];
-typedef struct font_map{
-	int x;
-	int y;
-	int a;
-}font_map;
 
 font_map fonts[256];
 char* pref_path;
