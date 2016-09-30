@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-#define P_MAX 4
+#define P_MAX 6
 
 
 SDL_Texture *stars1;
