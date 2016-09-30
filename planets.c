@@ -110,8 +110,8 @@ void planet_random_pos(Planet *p){
 void planet_set_random(Planet *p){
 	p->size=rand()%4;
 	p->ocn=(rand()%P_MAX);
-	p->con=(rand()%(P_MAX+1));
-	p->cap=(rand()%(P_MAX+1));
+	p->con=(rand()%P_MAX);
+	p->cap=(rand()%P_MAX);
 	p->cld=(rand()%P_MAX);
 }
 
