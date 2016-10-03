@@ -2,7 +2,7 @@
 <head>
 <script language="Javascript">
 <!--
-var path="../sprites/planets/";
+var path="./planets/";
 var tx1=1;
 var tx2=1;
 var img1;
@@ -26,7 +26,7 @@ var start=0;
 
 function startup(){
 	var table = document.createElement("table");
-	table.setAttribute("width","20%");
+	table.setAttribute("width","80%");
 	table.setAttribute("border", 0);
 	table.setAttribute("cellpadding", 3);
 	table.setAttribute("cellspacing", 1);
@@ -66,7 +66,8 @@ function startup(){
 			td.appendChild(box);
 	   		td.setAttribute("width","5%");
 		    tr.appendChild(td);
-			if(i<2 && j>3){j=7;}
+			if(i==0 && j>4){j=7;}
+			if(i==1 && j>3){j=7;}
 		}
 	}
 }
@@ -84,6 +85,7 @@ if(size==1){size=128;}
 if(size==2){size=64;}
 if(size==3){size=32;}
 if(size==4){size=16;}
+if(size==5){size=8;}
 
 var d = document.getElementById("di");
 while(d.hasChildNodes())
@@ -95,7 +97,7 @@ img1.setAttribute("height",size);
 img1.setAttribute("src",path+"continents"+con+"_"+size+".png");
 img1.style.position = "absolute";
 img1.style.left = tx1;
-img1.style.top = "256";
+img1.style.top = "1";
 
 img2 = document.createElement("img");
 img2.setAttribute("width",size * 2);
@@ -103,7 +105,7 @@ img2.setAttribute("height",size);
 img2.setAttribute("src",path+"caps"+cap+"_"+size+".png");
 img2.style.position = "absolute";
 img2.style.left = tx1;
-img2.style.top = "256";
+img2.style.top = "1";
 
 img3 = document.createElement("img");
 img3.setAttribute("width",size * 2);
@@ -111,7 +113,7 @@ img3.setAttribute("height",size);
 img3.setAttribute("src",path+"clouds"+cld+"_"+size+".png");
 img3.style.position = "absolute";
 img3.style.left = tx2;
-img3.style.top = "256";
+img3.style.top = "1";
 
 img4 = document.createElement("img");
 img4.setAttribute("width",size * 2);
@@ -119,7 +121,7 @@ img4.setAttribute("height",size);
 img4.setAttribute("src",path+"ocean"+oce+"_"+size+".png");
 img4.style.position = "absolute";
 img4.style.left = tx1;
-img4.style.top = "256";
+img4.style.top = "1";
 
 img5 = document.createElement("img");
 img5.setAttribute("width",size * 2);
@@ -127,7 +129,7 @@ img5.setAttribute("height",size);
 img5.setAttribute("src",path+"continents"+con+"_"+size+".png");
 img5.style.position = "absolute";
 img5.style.left = tx1-(size*2);
-img5.style.top = "256";
+img5.style.top = "1";
 
 img6 = document.createElement("img");
 img6.setAttribute("width",size * 2);
@@ -135,7 +137,7 @@ img6.setAttribute("height",size);
 img6.setAttribute("src",path+"caps"+cap+"_"+size+".png");
 img6.style.position = "absolute";
 img6.style.left = tx1-(size*2);
-img6.style.top = "256";
+img6.style.top = "1";
 
 img7 = document.createElement("img");
 img7.setAttribute("width",size * 2);
@@ -143,7 +145,7 @@ img7.setAttribute("height",size);
 img7.setAttribute("src",path+"clouds"+cld+"_"+size+".png");
 img7.style.position = "absolute";
 img7.style.left = tx2-(size*2);
-img7.style.top = "256";
+img7.style.top = "1";
 
 img8 = document.createElement("img");
 img8.setAttribute("width",size * 2);
@@ -151,7 +153,7 @@ img8.setAttribute("height",size);
 img8.setAttribute("src",path+"ocean"+oce+"_"+size+".png");
 img8.style.position = "absolute";
 img8.style.left = tx1-(size*2);
-img8.style.top = "256";
+img8.style.top = "1";
 
 img9 = document.createElement("img");
 img9.setAttribute("width",size);
@@ -159,7 +161,7 @@ img9.setAttribute("height",size);
 img9.setAttribute("src",path+"webmask"+msk+"_128.png");
 img9.style.position = "absolute";
 img9.style.left = "0";
-img9.style.top = "256";
+img9.style.top = "1";
 
 d.appendChild(img4);
 d.appendChild(img8);
@@ -172,7 +174,7 @@ d.appendChild(img7);
 
 d.appendChild(img9);
 
-bl.style = "position:absolute; left:"+(size)+"; top:256; width:512; height:128; background-color:#000000;";
+bl.style = "position:absolute; left:"+(size)+"; top:1; width:512; height:128; background-color:#000000;";
 
 if(start==0){drawit()};
 start=1;
@@ -199,15 +201,16 @@ function drawit(){
 </script>
 </head>
 <body bgcolor="#000000" onload="startup();">
+<div id="di">
+</div>
+<div id="blocker" style="position:absolute; left:256; top:1; width:512; height:128; background-color:#000000;">
+</div>
+<div style="position:absolute; left:1; top:128; width:512">
 <form id="planet">
 </form>
 <form>
 <input type="button" value="draw" onclick="dostuff();"><BR>
 </form>
-<hr>
-<div id="di">
-</div>
-<div id="blocker" style="position:absolute; left:256; top:256; width:512; height:128; background-color:#000000;">
 </div>
 </body>
 </html>
