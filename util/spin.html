@@ -2,28 +2,94 @@
 <head>
 <script language="Javascript">
 <!--
-var path="./planets/";
+var path="../sprites/planets/";
 var tx1=1;
 var tx2=1;
+var img1;
+var img2;
+var img3;
+var img4;
+var img5;
+var img6;
+var img7;
+var img8;
+var img9;
+var size;
+var con;
+var cap;
+var cld;
+var oce;
+var msk;
+var spd=1;
+var bl;
+var start=0;
+
+function startup(){
+	var table = document.createElement("table");
+	table.setAttribute("width","20%");
+	table.setAttribute("border", 0);
+	table.setAttribute("cellpadding", 3);
+	table.setAttribute("cellspacing", 1);
+	var planet = document.getElementById("planet");
+	planet.appendChild(table)
+	var tbody = document.createElement("tbody");
+	table.appendChild(tbody)
+	for(i=0;i<7;i++){
+	    tr = document.createElement("TR");
+    	tbody.appendChild(tr);
+	    var td = document.createElement("TD");
+		var name;
+		if(i==0){name="Size";}
+		if(i==1){name="Mask";}
+		if(i==2){name="Continent";}
+		if(i==3){name="PolarCap";}
+		if(i==4){name="Clouds";}
+		if(i==5){name="Ocean";}
+		if(i==6){name="Speed";}
+	    var f = document.createElement("font");
+		f.setAttribute("color","#FFFFFF");
+	    f.appendChild(document.createTextNode(name));
+		td.appendChild(f);
+   		td.setAttribute("width","10%");
+	    tr.appendChild(td);
+		for(j=1;j<7;j++){
+			var box=document.createElement("INPUT");
+			box.setAttribute("type","radio");
+			box.setAttribute("name", name);
+			box.setAttribute("value",j);
+			if(j==1){box.setAttribute("checked",1);}
+		    var td = document.createElement("TD");
+		    var f = document.createElement("font");
+			f.setAttribute("color","#FFFFFF");
+		    f.appendChild(document.createTextNode(j));
+			td.appendChild(f);
+			td.appendChild(box);
+	   		td.setAttribute("width","5%");
+		    tr.appendChild(td);
+			if(i<2 && j>3){j=7;}
+		}
+	}
+}
 
 function dostuff(){
-var size=document.planet.Size.value;
-var con=document.planet.Con.value;
-var cap=document.planet.Cap.value;
-var cld=document.planet.Cloud.value;
-var oce=document.planet.Ocean.value;
-var bl=document.getElementById("blocker");
-
-tx1=tx1+1;
-tx2=tx2+2;
-if(tx1>(size*2)){tx1=0;}
-if(tx2>(size*2)){tx2=0;}
+ size=planet.Size.value;
+ con=planet.Continent.value;
+ cap=planet.PolarCap.value;
+ cld=planet.Clouds.value;
+ oce=planet.Ocean.value;
+ msk=planet.Mask.value;
+ spd=planet.Speed.value;
+ bl=document.getElementById("blocker");
+if(size==1){size=128;}
+if(size==2){size=64;}
+if(size==3){size=32;}
+if(size==4){size=16;}
 
 var d = document.getElementById("di");
 while(d.hasChildNodes())
 	{d.removeChild(d.childNodes[0]);}
 
-var img1 = document.createElement("img");
+img1 = document.createElement("img");
 img1.setAttribute("width",size * 2);
 img1.setAttribute("height",size);
 img1.setAttribute("src",path+"continents"+con+"_"+size+".png");
@@ -31,7 +97,7 @@ img1.style.position = "absolute";
 img1.style.left = tx1;
 img1.style.top = "256";
 
-var img2 = document.createElement("img");
+img2 = document.createElement("img");
 img2.setAttribute("width",size * 2);
 img2.setAttribute("height",size);
 img2.setAttribute("src",path+"caps"+cap+"_"+size+".png");
@@ -39,7 +105,7 @@ img2.style.position = "absolute";
 img2.style.left = tx1;
 img2.style.top = "256";
 
-var img3 = document.createElement("img");
+img3 = document.createElement("img");
 img3.setAttribute("width",size * 2);
 img3.setAttribute("height",size);
 img3.setAttribute("src",path+"clouds"+cld+"_"+size+".png");
@@ -47,7 +113,7 @@ img3.style.position = "absolute";
 img3.style.left = tx2;
 img3.style.top = "256";
 
-var img4 = document.createElement("img");
+img4 = document.createElement("img");
 img4.setAttribute("width",size * 2);
 img4.setAttribute("height",size);
 img4.setAttribute("src",path+"ocean"+oce+"_"+size+".png");
@@ -55,7 +121,7 @@ img4.style.position = "absolute";
 img4.style.left = tx1;
 img4.style.top = "256";
 
-var img5 = document.createElement("img");
+img5 = document.createElement("img");
 img5.setAttribute("width",size * 2);
 img5.setAttribute("height",size);
 img5.setAttribute("src",path+"continents"+con+"_"+size+".png");
@@ -63,7 +129,7 @@ img5.style.position = "absolute";
 img5.style.left = tx1-(size*2);
 img5.style.top = "256";
 
-var img6 = document.createElement("img");
+img6 = document.createElement("img");
 img6.setAttribute("width",size * 2);
 img6.setAttribute("height",size);
 img6.setAttribute("src",path+"caps"+cap+"_"+size+".png");
@@ -71,7 +137,7 @@ img6.style.position = "absolute";
 img6.style.left = tx1-(size*2);
 img6.style.top = "256";
 
-var img7 = document.createElement("img");
+img7 = document.createElement("img");
 img7.setAttribute("width",size * 2);
 img7.setAttribute("height",size);
 img7.setAttribute("src",path+"clouds"+cld+"_"+size+".png");
@@ -79,7 +145,7 @@ img7.style.position = "absolute";
 img7.style.left = tx2-(size*2);
 img7.style.top = "256";
 
-var img8 = document.createElement("img");
+img8 = document.createElement("img");
 img8.setAttribute("width",size * 2);
 img8.setAttribute("height",size);
 img8.setAttribute("src",path+"ocean"+oce+"_"+size+".png");
@@ -87,10 +153,10 @@ img8.style.position = "absolute";
 img8.style.left = tx1-(size*2);
 img8.style.top = "256";
 
-var img9 = document.createElement("img");
+img9 = document.createElement("img");
 img9.setAttribute("width",size);
 img9.setAttribute("height",size);
-img9.setAttribute("src",path+"planet_mask1_128.png");
+img9.setAttribute("src",path+"webmask"+msk+"_128.png");
 img9.style.position = "absolute";
 img9.style.left = "0";
 img9.style.top = "256";
@@ -108,46 +174,34 @@ d.appendChild(img9);
 
 bl.style = "position:absolute; left:"+(size)+"; top:256; width:512; height:128; background-color:#000000;";
 
-setTimeout('dostuff()', 50);
+if(start==0){drawit()};
+start=1;
+}
+
+function drawit(){
+	tx1=tx1+parseInt(spd);
+	tx2=tx2+(parseInt(spd)*2);
+	if(tx1>(size*2)){tx1=0;}
+	if(tx2>(size*2)){tx2=0;}
+
+	img1.style.left = tx1;
+	img2.style.left = tx1;
+	img3.style.left = tx2;
+	img4.style.left = tx1;
+	img5.style.left = tx1-(size*2);
+	img6.style.left = tx1-(size*2);
+	img7.style.left = tx2-(size*2);
+	img8.style.left = tx1-(size*2);
+	setTimeout('drawit()', 50);
 }
 
 //-->
 </script>
 </head>
-<body bgcolor="#000000">
-<font color="#FFFFFF">
-<form name="planet">
-Size:
-<input type="radio" name="Size" value="128" checked>128
-<input type="radio" name="Size" value="64">64
-<input type="radio" name="Size" value="32">32
-<input type="radio" name="Size" value="16">16
-<input type="radio" name="Size" value="8">8
-<br>
-Continent:
-<input type="radio" name="Con" value="1" checked>1
-<input type="radio" name="Con" value="2">2
-<input type="radio" name="Con" value="3">3
-<input type="radio" name="Con" value="4">4
-<br>
-Polar Cap:
-<input type="radio" name="Cap" value="1" checked>1
-<input type="radio" name="Cap" value="2">2
-<input type="radio" name="Cap" value="3">3
-<input type="radio" name="Cap" value="4">4
-<br>
-Clouds___:
-<input type="radio" name="Cloud" value="1" checked>1
-<input type="radio" name="Cloud" value="2">2
-<input type="radio" name="Cloud" value="3">3
-<input type="radio" name="Cloud" value="4">4
-<br>
-Ocean____:
-<input type="radio" name="Ocean" value="1" checked>1
-<input type="radio" name="Ocean" value="2">2
-<input type="radio" name="Ocean" value="3">3
-<input type="radio" name="Ocean" value="4">4
-<br>
+<body bgcolor="#000000" onload="startup();">
+<form id="planet">
+</form>
+<form>
 <input type="button" value="draw" onclick="dostuff();"><BR>
 </form>
 <hr>
@@ -155,6 +209,5 @@ Ocean____:
 </div>
 <div id="blocker" style="position:absolute; left:256; top:256; width:512; height:128; background-color:#000000;">
 </div>
-</font>
 </body>
 </html>
