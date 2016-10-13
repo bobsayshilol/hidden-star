@@ -543,6 +543,9 @@ int main(int argc, char *argv[]){
 				case SDL_MOUSEMOTION:
 					main_input(main_event);
 					break;
+				case SDL_USEREVENT:
+					userevent_handle(&main_event);
+					break;
 			}
 		}
 
