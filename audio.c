@@ -9,6 +9,11 @@ struct {
 	int loops;
 } scheduled_music;
 
+struct {
+	UserEventCallback fun;
+	void *data;
+} cb_music_finished;
+
 void music_finished_callback();
 void music_finished_callback_real();
 
@@ -100,4 +105,15 @@ void music_finished_callback_real(void *unused) {
 				   scheduled_music.fade_in_ms,
 				   scheduled_music.loops);
 	}
+
+	if(cb_music_finished.fun) {
+		cb_music_finished.fun(cb_music_finished.data);
+	}
+}
+
+int music_set_finished_callback(UserEventCallback function, void *data) {
+	cb_music_finished.fun = function;
+	cb_music_finished.data = data;
+
+	return 0;
 }

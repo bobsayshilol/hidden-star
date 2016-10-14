@@ -7,7 +7,7 @@ typedef enum UserEventType {
     USEREVENT_NUM
 } UserEventType;
 
-
+typedef void (*UserEventCallback)(void *);
 
 void userevent_add(UserEventType t, void *d1, void *d2);
 void userevent_handle(SDL_Event *e);
