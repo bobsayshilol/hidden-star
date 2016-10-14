@@ -3,7 +3,7 @@
 
 int audio_setup() {
 	Mix_Init(MIX_INIT_OGG);
-	if(Mix_OpenAudio(48000, AUDIO_U16LSB, 2, 1024) == -1) {
+	if(Mix_OpenAudio(44100, AUDIO_U16LSB, 2, 1024) == -1) {
 		fprintf(stderr, "Mix_OpenAudio: %s\n", Mix_GetError());
 		return -1;
 	}
