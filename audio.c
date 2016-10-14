@@ -25,6 +25,10 @@ int audio_setup() {
 	}
 
 	Mix_HookMusicFinished(&music_finished_callback);
+
+	music_set_finished_callback(NULL, NULL);
+	music_schedule(NULL, 0, 0);
+
 	return 0;
 }
 
