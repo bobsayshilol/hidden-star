@@ -24,6 +24,7 @@ typedef struct font_map{
 //#include "travel.h"
 #include "starmap.h"
 #include "user_events.h"
+#include "audio.h"
 
 #define main_resX 64
 #define main_resY 64

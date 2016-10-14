@@ -494,6 +494,7 @@ int main(int argc, char *argv[]){
 	intro_setup();
 	gui_setup();
 	menu_setup_main_menu(0);
+	audio_setup();
 
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
@@ -561,6 +562,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	audio_quit();
 	return 0;
 }
 
