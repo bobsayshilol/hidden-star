@@ -104,7 +104,9 @@ void music_finished_callback() {
 
 void music_finished_callback_real(void *unused) {
 	if(scheduled_music.file != NULL) {
-		Mix_FreeMusic(current_music);
+		if(current_music != NULL) {
+			Mix_FreeMusic(current_music);
+		}
 		music_loop(scheduled_music.file,
 				   scheduled_music.fade_in_ms,
 				   scheduled_music.loops);
