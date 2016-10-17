@@ -119,10 +119,15 @@ int music_schedule(char const *file, int fade_in_ms, int loops) {
 	return 0;
 }
 
+
+// Called by SDL when a track has finished playing. Pushes the real
+// callback into the event queue.
 void music_finished_callback() {
 	userevent_add(USEREVENT_CALLBACK, &music_finished_callback_real, NULL);
 }
 
+// Does the actual work. Is not run from inside the SDL callback, so
+// it can use mixer functions.
 void music_finished_callback_real(void *unused) {
 	if(scheduled_music.file != NULL) {
 		if(current_music != NULL) {
@@ -138,6 +143,7 @@ void music_finished_callback_real(void *unused) {
 	}
 }
 
+// Set a custom user callback for when music has finished playing.
 int music_set_finished_callback(UserEventCallback function, void *data) {
 	cb_music_finished.fun = function;
 	cb_music_finished.data = data;
@@ -145,6 +151,8 @@ int music_set_finished_callback(UserEventCallback function, void *data) {
 	return 0;
 }
 
+// Load a new sample into group g. Returns its index or a negative
+// number if an error occurs.
 int audio_load_sample(AudioEffectGroup g, char const *file) {
 	if(audio_groups[g].n == audio_groups[g].n_max) {
 		audio_groups[g].n_max *= 2;
@@ -166,10 +174,12 @@ int audio_load_sample(AudioEffectGroup g, char const *file) {
 	return audio_groups[g].n++;
 }
 
+// Play a sample from a group.
 int audio_play_sample(AudioEffectGroup g, int sample) {
 	return Mix_PlayChannel(-1, audio_groups[g].samples[sample], 0);
 }
 
+// Play a random sample from a group.
 int audio_play_group(AudioEffectGroup g) {
 	if(audio_groups[g].n == 0) {
 		return -1;
