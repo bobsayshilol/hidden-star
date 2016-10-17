@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "audio.h"
 #include "user_events.h"
 
@@ -14,6 +16,12 @@ struct {
 	void *data;
 } cb_music_finished;
 
+struct {
+	size_t n;
+	size_t n_max;
+	Mix_Chunk **samples;
+} audio_groups[AUDIO_GROUP_NUM];
+
 void music_finished_callback();
 void music_finished_callback_real();
 
@@ -24,10 +32,22 @@ int audio_setup() {
 		return -1;
 	}
 
+	// Music stuff
+	
 	Mix_HookMusicFinished(&music_finished_callback);
 
 	music_set_finished_callback(NULL, NULL);
 	music_schedule(NULL, 0, 0);
+
+	// Sound effect stuff
+	
+	for(size_t i = 0; i < AUDIO_GROUP_NUM; i++) {
+		audio_groups[i].n = 0;
+		audio_groups[i].n_max = 10;
+		audio_groups[i].samples = calloc(audio_groups[i].n_max, sizeof(Mix_Chunk *));
+	}
+
+	// Preload all sound effects here?
 
 	return 0;
 }
@@ -122,4 +142,25 @@ int music_set_finished_callback(UserEventCallback function, void *data) {
 	cb_music_finished.data = data;
 
 	return 0;
+}
+
+int audio_load_sample(AudioEffectGroup g, char const *file) {
+	if(audio_groups[g].n == audio_groups[g].n_max) {
+		audio_groups[g].n_max *= 2;
+		void *n = realloc(audio_groups[g].samples,
+						  audio_groups[g].n_max * sizeof(Mix_Chunk *));
+		if(n != NULL) {
+			audio_groups[g].samples = n;
+		} else {
+			return -1;
+		}
+	}
+
+	audio_groups[g].samples[audio_groups[g].n] = Mix_LoadWAV(file);
+
+	if(audio_groups[g].samples[audio_groups[g].n] == NULL) {
+		return -2;
+	}
+
+	return audio_groups[g].n++;
 }
