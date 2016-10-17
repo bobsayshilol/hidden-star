@@ -40,6 +40,7 @@ int audio_setup() {
 	music_schedule(NULL, 0, 0);
 
 	// Sound effect stuff
+	Mix_AllocateChannels(SFX_CHANNELS);
 	
 	for(size_t i = 0; i < AUDIO_GROUP_NUM; i++) {
 		audio_groups[i].n = 0;
@@ -163,4 +164,18 @@ int audio_load_sample(AudioEffectGroup g, char const *file) {
 	}
 
 	return audio_groups[g].n++;
+}
+
+int audio_play_sample(AudioEffectGroup g, int sample) {
+	return Mix_PlayChannel(-1, audio_groups[g].samples[sample], 0);
+}
+
+int audio_play_group(AudioEffectGroup g) {
+	if(audio_groups[g].n == 0) {
+		return -1;
+	}
+
+	// Crappy, unseeded random. Might want to fix this at some
+	// point.
+	return audio_play_sample(g, random() % audio_groups[g].n);
 }
