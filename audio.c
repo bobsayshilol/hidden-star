@@ -119,7 +119,6 @@ int music_schedule(char const *file, int fade_in_ms, int loops) {
 	return 0;
 }
 
-
 // Called by SDL when a track has finished playing. Pushes the real
 // callback into the event queue.
 void music_finished_callback() {
