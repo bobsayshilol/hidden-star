@@ -46,6 +46,7 @@ SDL_Texture *t_node_current;
 
 Vector *star_names;
 
+int seed;
 int current_name;
 int current_node;
 int half_node_sprite;
@@ -71,7 +72,8 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y);
 void make_connections(Vector *node_list, Travel_NodeDefs defs);
 void remove_orphan_nodes(Vector *node_list);
 void starmap_draw(Vector *node_list);
-void generate_starmap(Vector *node_list, int seed);
+void starmap_set_seed(int seed);
+void generate_starmap(Vector *node_list);
 void starmap_clear(Vector *node_list);
 int get_node_closest_to(Vector *node_list, int x, int y);
 

@@ -466,7 +466,8 @@ int init_game(int i)
 	//TODO: This is game specific init stuff - make sure we only do it when starting a new game (and do corresponding stuff when loading)
 	factions_setup();
 	starmap_clear(starmap);
-	generate_starmap(starmap, 8); //TODO: Let the user supply a seed, starmap size and start pos?
+	starmap_set_seed(8);
+	generate_starmap(starmap); //TODO: Let the user supply a seed, starmap size and start pos?
 	starmap_setup(0);
 	return 0;
 }
@@ -493,6 +494,7 @@ int main(int argc, char *argv[]){
 	intro_setup();
 	gui_setup();
 	menu_setup_main_menu(0);
+	audio_setup();
 
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
@@ -542,6 +544,9 @@ int main(int argc, char *argv[]){
 				case SDL_MOUSEMOTION:
 					main_input(main_event);
 					break;
+				case SDL_USEREVENT:
+					userevent_handle(&main_event);
+					break;
 			}
 		}
 
@@ -557,6 +562,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	audio_quit();
 	return 0;
 }
 

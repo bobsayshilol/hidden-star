@@ -75,20 +75,20 @@ int planet_setup(){
 	stars1 = Load_tex("sprites/stars/stars1_256.png");
 	for(int j=0;j<5;j++){
 		char file[128];
-		for(int i=0;i<4;i++){
+		for(int i=0;i<P_MAX;i++){
 			int size=(int)(pow(2,(j+3)));
-			if(i<P_MAX){
-				sprintf(file,"sprites/planets/caps%d_%d.png",(i+1), size);
-				caps[i][j] = Load_srf(file);
-				sprintf(file,"sprites/planets/clouds%d_%d.png",(i+1), size);
-				clouds[i][j] = Load_srf(file);
-				sprintf(file,"sprites/planets/continents%d_%d.png",(i+1), size);
-				continents[i][j] = Load_srf(file);
-				sprintf(file,"sprites/planets/ocean%d_%d.png",(i+1), size);
-				ocean[i][j] = Load_srf(file);
+			sprintf(file,"sprites/planets/caps%d_%d.png",(i+1), size);
+			caps[i][j] = Load_srf(file);
+			sprintf(file,"sprites/planets/clouds%d_%d.png",(i+1), size);
+			clouds[i][j] = Load_srf(file);
+			sprintf(file,"sprites/planets/continents%d_%d.png",(i+1), size);
+			continents[i][j] = Load_srf(file);
+			sprintf(file,"sprites/planets/ocean%d_%d.png",(i+1), size);
+			ocean[i][j] = Load_srf(file);
+			if(i<4){
+				sprintf(file,"sprites/planets/planet_mask%d_%d.png",(i+1), size);
+				planet_mask[i][j] = Load_srf(file);
 			}
-			sprintf(file,"sprites/planets/planet_mask%d_%d.png",(i+1), size);
-			planet_mask[i][j] = Load_srf(file);
 		}
 	}
 	return 0;
@@ -110,8 +110,8 @@ void planet_random_pos(Planet *p){
 void planet_set_random(Planet *p){
 	p->size=rand()%4;
 	p->ocn=(rand()%P_MAX);
-	p->con=(rand()%(P_MAX+1));
-	p->cap=(rand()%(P_MAX+1));
+	p->con=(rand()%P_MAX);
+	p->cap=(rand()%P_MAX);
 	p->cld=(rand()%P_MAX);
 }
 

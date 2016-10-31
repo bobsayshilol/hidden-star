@@ -24,6 +24,11 @@ int starmap_setup()
 	return 0;
 }
 
+void starmap_set_seed(int s)
+{
+	seed = s;
+}
+
 void starmap_init()
 {
 	starmap_load_names("text/star_name_chunks.txt");
@@ -86,6 +91,8 @@ void starmap_load_names(char *fname)
 	printf("Generated %d star names.\n", vector_get_size(star_names));
 	vector_free_and_free(segments);
 	free(segments);
+
+	srand(seed);
 	vector_shuffle(star_names);
 }
 
@@ -793,7 +800,7 @@ int get_node_closest_to(Vector *node_list, int x, int y)
 	return closest_node;
 }
 
-void generate_starmap(Vector *node_list, int seed)
+void generate_starmap(Vector *node_list)
 {
 	//TODO: We'll need to set this somewhere else, or maybe pass it in?
 	srand(seed);
