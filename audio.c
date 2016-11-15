@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "audio.h"
 #include "user_events.h"
 
@@ -14,6 +16,12 @@ struct {
 	void *data;
 } cb_music_finished;
 
+struct {
+	size_t n;
+	size_t n_max;
+	Mix_Chunk **samples;
+} audio_groups[AUDIO_GROUP_NUM];
+
 void music_finished_callback();
 void music_finished_callback_real();
 
@@ -24,10 +32,23 @@ int audio_setup() {
 		return -1;
 	}
 
+	// Music stuff
+	
 	Mix_HookMusicFinished(&music_finished_callback);
 
 	music_set_finished_callback(NULL, NULL);
 	music_schedule(NULL, 0, 0);
+
+	// Sound effect stuff
+	Mix_AllocateChannels(SFX_CHANNELS);
+	
+	for(size_t i = 0; i < AUDIO_GROUP_NUM; i++) {
+		audio_groups[i].n = 0;
+		audio_groups[i].n_max = 10;
+		audio_groups[i].samples = calloc(audio_groups[i].n_max, sizeof(Mix_Chunk *));
+	}
+
+	// Preload all sound effects here?
 
 	return 0;
 }
@@ -98,10 +119,14 @@ int music_schedule(char const *file, int fade_in_ms, int loops) {
 	return 0;
 }
 
+// Called by SDL when a track has finished playing. Pushes the real
+// callback into the event queue.
 void music_finished_callback() {
 	userevent_add(USEREVENT_CALLBACK, &music_finished_callback_real, NULL);
 }
 
+// Does the actual work. Is not run from inside the SDL callback, so
+// it can use mixer functions.
 void music_finished_callback_real(void *unused) {
 	if(scheduled_music.file != NULL) {
 		if(current_music != NULL) {
@@ -117,9 +142,49 @@ void music_finished_callback_real(void *unused) {
 	}
 }
 
+// Set a custom user callback for when music has finished playing.
 int music_set_finished_callback(UserEventCallback function, void *data) {
 	cb_music_finished.fun = function;
 	cb_music_finished.data = data;
 
 	return 0;
+}
+
+// Load a new sample into group g. Returns its index or a negative
+// number if an error occurs.
+int audio_load_sample(AudioEffectGroup g, char const *file) {
+	if(audio_groups[g].n == audio_groups[g].n_max) {
+		audio_groups[g].n_max *= 2;
+		void *n = realloc(audio_groups[g].samples,
+						  audio_groups[g].n_max * sizeof(Mix_Chunk *));
+		if(n != NULL) {
+			audio_groups[g].samples = n;
+		} else {
+			return -1;
+		}
+	}
+
+	audio_groups[g].samples[audio_groups[g].n] = Mix_LoadWAV(file);
+
+	if(audio_groups[g].samples[audio_groups[g].n] == NULL) {
+		return -2;
+	}
+
+	return audio_groups[g].n++;
+}
+
+// Play a sample from a group.
+int audio_play_sample(AudioEffectGroup g, int sample) {
+	return Mix_PlayChannel(-1, audio_groups[g].samples[sample], 0);
+}
+
+// Play a random sample from a group.
+int audio_play_group(AudioEffectGroup g) {
+	if(audio_groups[g].n == 0) {
+		return -1;
+	}
+
+	// Crappy, unseeded random. Might want to fix this at some
+	// point.
+	return audio_play_sample(g, random() % audio_groups[g].n);
 }
