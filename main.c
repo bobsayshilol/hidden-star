@@ -496,6 +496,8 @@ int main(int argc, char *argv[]){
 	menu_setup_main_menu(0);
 	audio_setup();
 
+	music_loop("audio/music/HSOSTDEMOV1.0/plink3_loop.ogg", 0, -1);
+
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
 

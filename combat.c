@@ -21,17 +21,47 @@ void combat_animate(SDL_Texture *tex, int x, int y, int frame){
 
 void combat_set_faction(int f)
 {
+	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
+	music_stop(500);
 	if (f == FACTION_SNEEB)
 	{
 		c_baddy1 = Load_tex("sprites/ships/tri2_front.png");
+		if (rand() % 2 == 0)
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/sneeb3_loop.ogg", 0, -1);
+		}
+		else
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/sneeb4_loop.ogg", 0, -1);
+		}
 	}
 	else if (f == FACTION_KRULL)
 	{
 		c_baddy1 = Load_tex("sprites/ships/tri3_front.png");
+		if (rand() %2 == 0)
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/krull2_loop.ogg", 0, -1);
+		}
+		else
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/krull4_loop.ogg", 0, -1);
+		}
 	}
 	else if (f == FACTION_PLINK)
 	{
 		c_baddy1 = Load_tex("sprites/ships/ring1_front.png");
+		if (rand() % 2 == 0)
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/plink4_loop.ogg", 0, -1);
+		}
+		else
+		{
+			music_schedule("audio/music/HSOSTDEMOV1.0/plink5_loop.ogg", 0, -1);
+		}
+	}
+	else
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/human3_loop.ogg", 0, -1);
 	}
 }
 

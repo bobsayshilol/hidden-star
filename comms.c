@@ -35,6 +35,26 @@ int comms_setup()
 	comms_load_player_choices();
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+
+	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
+	music_stop(500);
+	if (comms_faction == FACTION_SNEEB)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/sneeb2_loop.ogg", 0, -1);
+	}
+	else if (comms_faction == FACTION_PLINK)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/plink2_loop.ogg", 0, -1);
+	}
+	else if (comms_faction == FACTION_KRULL)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/krull3_loop.ogg", 0, -1);
+	}
+	else
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/human1_loop.ogg", 0, -1);
+	}
+
 	return 0;
 }
 

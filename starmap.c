@@ -21,6 +21,27 @@ int starmap_setup()
 	update_starmap_icons();
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
+
+	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
+	music_stop(500);
+	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
+	//if (cn->is_inhabited) //Do we care whether it's inhabited or not?
+	if (cn->f == FACTION_SNEEB)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/sneeb1_loop.ogg", 0, -1);
+	}
+	else if (cn->f == FACTION_PLINK)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/plink1_loop.ogg", 0, -1);
+	}
+	else if (cn->f == FACTION_KRULL)
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/krull1_loop.ogg", 0, -1);
+	}
+	else
+	{
+		music_schedule("audio/music/HSOSTDEMOV1.0/human2_loop.ogg", 0, -1);
+	}
 	return 0;
 }
 
