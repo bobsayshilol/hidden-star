@@ -50,6 +50,9 @@ int audio_setup() {
 
 	// Preload all sound effects here?
 
+
+	//Set initial volume to 80%
+	Mix_VolumeMusic(MIX_MAX_VOLUME - MIX_MAX_VOLUME / 5);
 	return 0;
 }
 
@@ -69,7 +72,10 @@ int music_loop(char const *file, int fade_in_ms, int loops) {
 	}
 
 	current_music = Mix_LoadMUS(file);
-	
+	if (current_music == NULL)
+	{
+		fprintf(stderr, "Mix_LoadMUS: %s\n", Mix_GetError());
+	}
 	if(fade_in_ms) {
 		return Mix_FadeInMusic(current_music, loops, fade_in_ms);
 	} else {
@@ -186,5 +192,5 @@ int audio_play_group(AudioEffectGroup g) {
 
 	// Crappy, unseeded random. Might want to fix this at some
 	// point.
-	return audio_play_sample(g, random() % audio_groups[g].n);
+	return audio_play_sample(g, rand() % audio_groups[g].n);
 }
