@@ -23,46 +23,8 @@ void combat_set_faction(int f)
 {
 	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
 	music_stop(500);
-	if (f == FACTION_SNEEB)
-	{
-		c_baddy1 = Load_tex("sprites/ships/tri2_front.png");
-		if (rand() % 2 == 0)
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/sneeb3_loop.ogg", 0, -1);
-		}
-		else
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/sneeb4_loop.ogg", 0, -1);
-		}
-	}
-	else if (f == FACTION_KRULL)
-	{
-		c_baddy1 = Load_tex("sprites/ships/tri3_front.png");
-		if (rand() %2 == 0)
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/krull2_loop.ogg", 0, -1);
-		}
-		else
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/krull4_loop.ogg", 0, -1);
-		}
-	}
-	else if (f == FACTION_PLINK)
-	{
-		c_baddy1 = Load_tex("sprites/ships/ring1_front.png");
-		if (rand() % 2 == 0)
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/plink4_loop.ogg", 0, -1);
-		}
-		else
-		{
-			music_schedule("audio/music/HSOSTDEMOV1.0/plink5_loop.ogg", 0, -1);
-		}
-	}
-	else
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/human3_loop.ogg", 0, -1);
-	}
+	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_COMBAT][f]);
+	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_COMBAT][f], m), 0, -1);
 }
 
 void combat_draw_thruster(int x, int y, int thruster){
@@ -319,6 +281,14 @@ void combat_show_fight(){
 			s=back;
 			s2=baddy_back;
 			SDL_Delay(100);
+		}
+		if (s > 12)
+		{
+			audio_play_group(AUDIO_GROUP_COMBAT_FIRE);
+		}
+		if (s2 > 12)
+		{
+			audio_play_group(AUDIO_GROUP_COMBAT_FIRE);
 		}
 		for(int i=0;i < 8; i++){ // 8 frames per movement
 			if(s>0){
@@ -587,6 +557,7 @@ void combat_show_fight(){
 			  (s==15 && c_b1_AI[c_AI_round] > 10)){
 				c_player_weapon=10;
 				c_AI_HP-=10;
+				audio_play_group(AUDIO_GROUP_COMBAT_HIT);
 				if(c_AI_HP < 1 ){c_AI_dead=1;}
 			}else{
 				if(c_player_weapon==1){
@@ -599,6 +570,7 @@ void combat_show_fight(){
 			  (s>10 && c_b1_AI[c_AI_round]==15)){
 				c_AI_weapon=10;
 				c_player_HP-=10;
+				audio_play_group(AUDIO_GROUP_COMBAT_HIT);
 				if(c_player_HP < 1 ){c_player_dead=1;}
 			}else{
 				if(c_AI_weapon==1){

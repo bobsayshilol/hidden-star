@@ -26,22 +26,8 @@ int starmap_setup()
 	music_stop(500);
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
 	//if (cn->is_inhabited) //Do we care whether it's inhabited or not?
-	if (cn->f == FACTION_SNEEB)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/sneeb1_loop.ogg", 0, -1);
-	}
-	else if (cn->f == FACTION_PLINK)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/plink1_loop.ogg", 0, -1);
-	}
-	else if (cn->f == FACTION_KRULL)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/krull1_loop.ogg", 0, -1);
-	}
-	else
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/human2_loop.ogg", 0, -1);
-	}
+	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_STARMAP][cn->f]);
+	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_STARMAP][cn->f], m), 0, -1);
 	return 0;
 }
 
@@ -210,7 +196,7 @@ void update_starmap_icons()
 			{
 				state = BUTTON_STATE_ENABLED;
 			}
-			b = gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_GUI, -1, &starmap_go, i, starmap_update_star_name, i, starmap_update_star_name, -1, NOFLIP, faction_colors[t->f]);
+			b = gui_add_sprite_button(tex, (t->x-t_sectorX) - half_node_sprite, (t->y-t_sectorY) - half_node_sprite, -1,  state, BUTTON_STYLE_STARMAP, -1, &starmap_go, i, starmap_update_star_name, i, starmap_update_star_name, -1, NOFLIP, faction_colors[t->f]);
 			if (current_node == i)
 			{
 				default_button = b;

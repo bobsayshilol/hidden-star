@@ -1,6 +1,5 @@
 #include "comms.h"
 #include "starmap.h"
-#include "starmap.h"
 #include <limits.h>
 
 int comms_setup()
@@ -38,22 +37,8 @@ int comms_setup()
 
 	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
 	music_stop(500);
-	if (comms_faction == FACTION_SNEEB)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/sneeb2_loop.ogg", 0, -1);
-	}
-	else if (comms_faction == FACTION_PLINK)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/plink2_loop.ogg", 0, -1);
-	}
-	else if (comms_faction == FACTION_KRULL)
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/krull3_loop.ogg", 0, -1);
-	}
-	else
-	{
-		music_schedule("audio/music/HSOSTDEMOV1.0/human1_loop.ogg", 0, -1);
-	}
+	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_COMMS][comms_faction]);
+	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_COMMS][comms_faction], m), 0, -1);
 
 	return 0;
 }

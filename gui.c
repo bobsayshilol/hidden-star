@@ -165,6 +165,14 @@ int update_button_state(int button, int state)
 			update_button_state(current_button, BUTTON_STATE_ENABLED);
 			current_button = button;
 			gui_do_button_hover(new_button);
+			if (new_button->style == BUTTON_STYLE_STARMAP)
+			{
+				audio_play_group(AUDIO_GROUP_STARMAP_HOVER);
+			}
+			else
+			{
+				audio_play_group(AUDIO_GROUP_BUTTON_HOVER);
+			}
 		}
 		if ((state == BUTTON_STATE_HIDDEN || state == BUTTON_STATE_DISABLED) && button == current_button){
 			current_button=-1;
@@ -213,6 +221,14 @@ void gui_do_button_action()
 		GUI_Button *button = vector_get(g_button_list, current_button);
 		if (button->action != NULL)
 		{
+			if (button->style == BUTTON_STYLE_STARMAP)
+			{
+				audio_play_group(AUDIO_GROUP_STARMAP_ACTIVATE);
+			}
+			else
+			{
+				audio_play_group(AUDIO_GROUP_BUTTON_ACTIVATE);
+			}
 			button->action(button->action_value);
 			//TODO: Handle non-zero returns
 		}
@@ -263,7 +279,7 @@ void gui_draw()
 		if (button->symbol >= 0)
 		{
 			//Draw symbol button
-			if (button->style == BUTTON_STYLE_GUI)
+			if (button->style!=BUTTON_STYLE_MENU)
 			{
 				for (int j = 0; j < button->text_bounds.w - 2; j++)
 				{
@@ -288,7 +304,7 @@ void gui_draw()
 		else if (button->sprite == NULL)
 		{
 			//Draw text button
-			if (button->style == BUTTON_STYLE_GUI)
+			if (button->style!=BUTTON_STYLE_MENU)
 			{
 				for (int j = 0; j < button->text_bounds.w; j++)
 				{
@@ -310,7 +326,7 @@ void gui_draw()
 			color=button->color;
 			if (button->state == BUTTON_STATE_SELECTED)
 			{
-				if(button->style==BUTTON_STYLE_GUI){
+				if(button->style!=BUTTON_STYLE_MENU){
 					if(g_blink<4){
 						draw_text( button->button_bounds.x+7, button->button_bounds.y+1, "]", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 						draw_text( button->button_bounds.x-2, button->button_bounds.y+1, "[", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);

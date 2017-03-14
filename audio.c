@@ -2,6 +2,7 @@
 
 #include "audio.h"
 #include "user_events.h"
+#include "factions.h"
 
 Mix_Music *current_music;
 
@@ -25,6 +26,157 @@ struct {
 void music_finished_callback();
 void music_finished_callback_real();
 
+int music_setup()
+{
+	music_groups = malloc(MUSIC_ROLE_MAX * sizeof(Vector));
+	//set up music group structure
+	for (int i = 0; i < MUSIC_ROLE_MAX; ++i)
+	{
+		//TODO: Longer term, this should be an array of 2D vectors rather than an array of array of vectors
+		music_groups[i] = malloc(4 * sizeof(Vector));
+		for (int j = 0; j < 4; ++j)
+		{
+			vector_init(&music_groups[i][j], 4);
+		}
+	}
+
+	//load files
+	music_read_config(music_groups, "audio/music.tsv");
+	return 1;
+}
+
+
+int music_read_config(Vector **groups, char *fname)
+{
+	FILE *f;
+	char line[4096];
+	f = fopen(fname, "r");
+	Mix_Music *m;
+
+	if (f != NULL)
+	{
+		//load line by line
+		while (fgets(line, 4096 -1, f) != NULL)
+		{
+			char *role;
+			char *faction_name;
+			char *file_path;
+
+			role = strtok(line, "\t");
+			int role_id = MUSIC_ROLE_SPECIAL;
+			if (strcmp(role, "MUSIC_ROLE_COMMS") == 0)
+			{
+				role_id = MUSIC_ROLE_COMMS;
+			}
+			else if (strcmp(role, "MUSIC_ROLE_COMBAT") == 0)
+			{
+				role_id = MUSIC_ROLE_COMBAT;
+			}
+			else if (strcmp(role, "MUSIC_ROLE_STARMAP") == 0)
+			{
+				role_id = MUSIC_ROLE_STARMAP;
+			}
+
+			faction_name = strtok(NULL, "\t");
+			int faction_id = FACTION_NONE;
+			if (role_id != MUSIC_ROLE_SPECIAL)
+			{
+				if (strcmp(faction_name, "FACTION_SNEEB") == 0)
+				{
+					faction_id = FACTION_SNEEB;
+				}
+				else if (strcmp(faction_name, "FACTION_KRULL") == 0)
+				{
+					faction_id = FACTION_KRULL;
+				}
+				else if (strcmp(faction_name, "FACTION_PLINK") == 0)
+				{
+					faction_id = FACTION_PLINK;
+				}
+			}
+			else
+			{
+				faction_id = MUSIC_SPECIAL_MENU;
+				//TODO: This feels kinda ugly, but it allows us to use the same data structures and can be expanded later
+			}
+			file_path = strtok(NULL, "\n");
+			m = Mix_LoadMUS(file_path);
+			if (m == NULL)
+			{
+				fprintf(stderr, "Mix_LoadMUS: %s\n", Mix_GetError());
+				continue;
+			}
+			Mix_FreeMusic(m);
+			char *fp = (char*) malloc(strlen(file_path) + 1);
+			fp[0] = '\0';
+			strcat(fp, file_path);
+			vector_add(&groups[role_id][faction_id], fp);
+		}
+	}
+	else
+	{
+		printf("Error loading music config from %s\n", fname);
+	}
+	return 1;
+}
+
+int audio_read_config(char *fname)
+{
+	FILE *f;
+	char line[4096];
+	f = fopen(fname, "r");
+
+	if (f != NULL)
+	{
+		//load line by line
+		while (fgets(line, 4096 -1, f) != NULL)
+		{
+			char *group;
+			char *file_path;
+
+			group = strtok(line, "\t");
+			int ag = AUDIO_GROUP_BUTTON_HOVER;
+			if (strcmp(group, "AUDIO_GROUP_BUTTON_ACTIVATE") == 0)
+			{
+				ag = AUDIO_GROUP_BUTTON_ACTIVATE;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_BUTTON_ERROR") == 0)
+			{
+				ag = AUDIO_GROUP_BUTTON_ERROR;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_STARMAP_HOVER") == 0)
+			{
+				ag = AUDIO_GROUP_STARMAP_HOVER;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_STARMAP_ACTIVATE") == 0)
+			{
+				ag = AUDIO_GROUP_STARMAP_ACTIVATE;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_COMBAT_FIRE") == 0)
+			{
+				ag = AUDIO_GROUP_COMBAT_FIRE;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_COMBAT_HIT") == 0)
+			{
+				ag = AUDIO_GROUP_COMBAT_HIT;
+			}
+			else if (strcmp(group, "AUDIO_GROUP_COMBAT_DIE") == 0)
+			{
+				ag = AUDIO_GROUP_COMBAT_DIE;
+			}
+			file_path = strtok(NULL, "\n");
+			audio_load_sample(ag, file_path);
+		}
+	}
+	else
+	{
+		printf("Error loading sfx config from %s\n", fname);
+	}
+	return 1;
+}
+
+
+
 int audio_setup() {
 	Mix_Init(MIX_INIT_OGG);
 	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
@@ -33,8 +185,9 @@ int audio_setup() {
 	}
 
 	// Music stuff
-	
 	Mix_HookMusicFinished(&music_finished_callback);
+
+	music_setup();
 
 	music_set_finished_callback(NULL, NULL);
 	music_schedule(NULL, 0, 0);
@@ -49,10 +202,11 @@ int audio_setup() {
 	}
 
 	// Preload all sound effects here?
-
+	audio_read_config("audio/sfx.tsv");
 
 	//Set initial volume to 80%
 	Mix_VolumeMusic(MIX_MAX_VOLUME - MIX_MAX_VOLUME / 5);
+	Mix_Volume(-1, MIX_MAX_VOLUME - MIX_MAX_VOLUME / 5);
 	return 0;
 }
 
@@ -173,6 +327,7 @@ int audio_load_sample(AudioEffectGroup g, char const *file) {
 	audio_groups[g].samples[audio_groups[g].n] = Mix_LoadWAV(file);
 
 	if(audio_groups[g].samples[audio_groups[g].n] == NULL) {
+		fprintf(stderr, "Mix_LoadWAV: %s (%s)\n", Mix_GetError(), file);
 		return -2;
 	}
 
