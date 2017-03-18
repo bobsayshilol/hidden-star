@@ -23,8 +23,7 @@ void combat_set_faction(int f)
 {
 	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
 	music_stop(500);
-	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_COMBAT][f]);
-	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_COMBAT][f], m), 0, -1);
+	music_loop_group(MUSIC_ROLE_COMBAT, f, 0, -1);
 }
 
 void combat_draw_thruster(int x, int y, int thruster){

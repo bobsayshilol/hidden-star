@@ -38,8 +38,8 @@ int music_setup()
 		{
 			vector_init(&music_groups[i][j], 4);
 		}
+		printf("music_groups size %lu, %d %d\n", sizeof(music_groups), MUSIC_ROLE_MAX, i);
 	}
-
 	//load files
 	music_read_config(music_groups, "audio/music.tsv");
 	return 1;
@@ -75,6 +75,10 @@ int music_read_config(Vector **groups, char *fname)
 			else if (strcmp(role, "MUSIC_ROLE_STARMAP") == 0)
 			{
 				role_id = MUSIC_ROLE_STARMAP;
+			}
+			else if (strcmp(role, "MUSIC_ROLE_TRADE") == 0)
+			{
+				role_id = MUSIC_ROLE_TRADE;
 			}
 
 			faction_name = strtok(NULL, "\t");
@@ -234,6 +238,19 @@ int music_loop(char const *file, int fade_in_ms, int loops) {
 		return Mix_FadeInMusic(current_music, loops, fade_in_ms);
 	} else {
 		return Mix_PlayMusic(current_music, loops);
+	}
+}
+
+int music_loop_group(int mgroup, int mrole, int fade_in_ms, int loops)
+{
+	int n = vector_get_size(&music_groups[mgroup][mrole]);
+	if (n > 0)
+	{
+		return music_loop((char*) vector_get(&music_groups[mgroup][mrole], rand() % n), fade_in_ms, loops);
+	}
+	else
+	{
+		return 0;
 	}
 }
 

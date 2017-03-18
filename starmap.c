@@ -22,12 +22,10 @@ int starmap_setup()
 
 	SDL_SetRenderDrawColor(main_renderer, 0x00, 0x00, 0x00, 255);
 
-	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
 	music_stop(500);
 	Travel_Node *cn = (Travel_Node *)vector_get(starmap, current_node);
 	//if (cn->is_inhabited) //Do we care whether it's inhabited or not?
-	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_STARMAP][cn->f]);
-	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_STARMAP][cn->f], m), 0, -1);
+	music_loop_group(MUSIC_ROLE_STARMAP, cn->f, 0, -1);
 	return 0;
 }
 

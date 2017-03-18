@@ -37,8 +37,7 @@ int comms_setup()
 
 	//TODO: Have a global vector of per-mode, per-faction, per-disposition(?) music tracks that we can pull stuff straight out of
 	music_stop(500);
-	int m = rand() % vector_get_size(&music_groups[MUSIC_ROLE_COMMS][comms_faction]);
-	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_COMMS][comms_faction], m), 0, -1);
+	music_loop_group(MUSIC_ROLE_COMMS, comms_faction, 0, -1);
 
 	return 0;
 }

@@ -21,6 +21,8 @@ typedef struct font_map{
 #include "planets.h"
 #include "combat.h"
 #include "comms.h"
+#include "economy.h"
+#include "trade.h"
 //#include "travel.h"
 #include "starmap.h"
 #include "user_events.h"

@@ -12,7 +12,8 @@
 #define MUSIC_ROLE_COMMS	1
 #define MUSIC_ROLE_COMBAT	2
 #define MUSIC_ROLE_STARMAP	3
-#define MUSIC_ROLE_MAX		4
+#define MUSIC_ROLE_TRADE	4
+#define MUSIC_ROLE_MAX		5
 
 #define MUSIC_SPECIAL_MENU 0
 
@@ -37,6 +38,7 @@ int audio_quit();
 int music_setup();
 int music_read_config(Vector **groups, char *fname);
 int music_loop(char const *file, int fade_in_ms, int loops);
+int music_loop_group(int mgroup, int mrole, int fade_in_ms, int loops);
 int music_play(char const *file, int fade_in_ms);
 int music_stop(int fade_in_ms);
 int music_playing();

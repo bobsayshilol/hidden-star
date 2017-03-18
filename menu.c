@@ -22,7 +22,7 @@ int menu_setup_debug_menu(int i)
 	int default_button;
 	default_button = gui_add_text_button("combat", 0, 2, 35, BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &combat_setup, SCENE_COMBAT, NULL, -1, NULL, -1);
 	gui_add_text_button("planets", 0, 10, 35 , BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &planet_setup, SCENE_PLANET_GEN, NULL, -1, NULL, -1);
-	gui_add_text_button("trade", 0, 18, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &starmap_setup, SCENE_TRAVEL, NULL, -1, NULL, -1);
+	gui_add_text_button("trade", 0, 18, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &trade_setup, SCENE_TRADE, NULL, -1, NULL, -1);
 	gui_add_text_button("travel", 0, 36, 35,  BUTTON_STATE_DISABLED, BUTTON_STYLE_MENU, -1, &starmap_setup, SCENE_TRAVEL, NULL, -1, NULL, -1);
 	gui_add_text_button("nav", 0, 44, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &starmap_setup, SCENE_STARMAP, NULL, -1, NULL, -1);
 	gui_add_text_button("comms", 0, 52, 35,  BUTTON_STATE_ENABLED, BUTTON_STYLE_MENU, -1, &comms_setup, SCENE_COMMS, NULL, -1, NULL, -1);

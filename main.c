@@ -339,6 +339,10 @@ void draw_scene(){
 			//travel_draw();
 			gui_draw();
 			break;
+		case SCENE_TRADE:
+			trade_draw();
+			gui_draw();
+			break;
 		case SCENE_STARMAP:
 			starmap_draw(starmap);
 			gui_draw();
@@ -496,7 +500,7 @@ int main(int argc, char *argv[]){
 	menu_setup_main_menu(0);
 	audio_setup();
 
-	music_loop((char*) vector_get(&music_groups[MUSIC_ROLE_SPECIAL][MUSIC_SPECIAL_MENU], 0), 0, -1);
+	music_loop_group(MUSIC_ROLE_SPECIAL, MUSIC_SPECIAL_MENU, 0, -1);
 
 	SDL_Event main_event;
 	while(SDL_PollEvent(&main_event)){} //flush event queue
