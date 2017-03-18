@@ -205,8 +205,8 @@ int audio_setup() {
 	audio_read_config("audio/sfx.tsv");
 
 	//Set initial volume to 80%
-	Mix_VolumeMusic(MIX_MAX_VOLUME - MIX_MAX_VOLUME / 5);
-	Mix_Volume(-1, MIX_MAX_VOLUME - MIX_MAX_VOLUME / 5);
+	Mix_VolumeMusic(MIX_MAX_VOLUME * 0.40);
+	Mix_Volume(-1, MIX_MAX_VOLUME * 0.40);
 	return 0;
 }
 
