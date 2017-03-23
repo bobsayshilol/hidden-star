@@ -10,6 +10,10 @@ int trade_setup()
 	
 	npc_faction = 0;
 	trade_scroll_offset = 0;
+	trade_scroll_size = 10;
+
+	trade_item_button_list = malloc(sizeof(Vector));
+	vector_init(trade_item_button_list, 15);
 
 	trade_setup_gui();
 
@@ -38,22 +42,49 @@ void trade_setup_gui()
 	int default_button;
 	default_button = gui_add_text_button("Back", 64-24, 54, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
 
-	//TODO: combine NPC and player inventories, then loop through and render buttons for each.
-	//TODO: Clip and scroll
-		gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 8, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 28, 8, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 8, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_sell, 0, NULL, -1, NULL, -1);
+	trade_setup_trade_buttons();
 
-		gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 16, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 28, 16, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 16, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_sell, 0, NULL, -1, NULL, -1);
-
-		gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 24, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 28, 24, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
-		gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 24, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_sell, 0, NULL, -1, NULL, -1);
-
+	if (trade_scroll_size > 3 && trade_scroll_offset < trade_scroll_size - 3)
+	{
+		update_button_state(trade_button_scroll_down, BUTTON_STATE_ENABLED);
+		//draw clipped, but unselectable UI?
+	}
 
 	update_button_state(default_button, BUTTON_STATE_SELECTED);
+}
+
+void trade_setup_trade_buttons()
+{
+	//clear any existing known trade buttons
+	printf("trade item button list size %d\n", vector_get_size(trade_item_button_list));
+	while(vector_get_size(trade_item_button_list) > 0)
+	{
+		int *temp = (int *)vector_get(trade_item_button_list, 0);
+		printf("removing button %d\n", *temp);
+		gui_remove_button(*temp);
+		vector_remove(trade_item_button_list, 0);
+		free(temp);
+	}
+
+	//TODO: combine NPC and player inventories, sort, then loop through and render buttons for each.
+	//TODO: Clip and scroll
+	for (int i = 0; i < 3; ++i)
+	{
+		int *temp = (int *)malloc(sizeof(int));
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
+		vector_add(trade_item_button_list, temp);
+		printf("adding button %d\n", *temp);
+
+		temp = (int *)malloc(sizeof(int));
+		*temp = gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 28, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_buy, 0, NULL, -1, NULL, -1);
+		vector_add(trade_item_button_list, temp);
+		printf("adding button %d\n", *temp);
+
+		temp = (int *)malloc(sizeof(int));
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_sell, 0, NULL, -1, NULL, -1);
+		vector_add(trade_item_button_list, temp);
+		printf("adding button %d\n", *temp);
+	}
 }
 
 void trade_draw()
@@ -77,12 +108,50 @@ void trade_draw()
 
 int trade_scroll_up(int v)
 {
+	printf("Scrolling up from %d to ", trade_scroll_offset);
+	if (trade_scroll_offset > 0)
+	{
+		trade_scroll_offset = trade_scroll_offset - 1;
+		trade_setup_trade_buttons();
+		trade_scroll_update_button_states();
+		update_button_state(trade_button_scroll_up, BUTTON_STATE_SELECTED);
+	}
+	printf("%d\n", trade_scroll_offset);
 	return 0;
 }
 
 int trade_scroll_down(int v)
 {
+	printf("Scrolling up from %d to ", trade_scroll_offset);
+	if (trade_scroll_offset < trade_scroll_size - 3)
+	{
+		trade_scroll_offset = trade_scroll_offset + 1;
+		trade_setup_trade_buttons();
+		trade_scroll_update_button_states();
+		update_button_state(trade_button_scroll_down, BUTTON_STATE_SELECTED);
+	}
+	printf("%d\n", trade_scroll_offset);
 	return 0;
+}
+
+void trade_scroll_update_button_states()
+{
+	if (trade_scroll_offset == 0)
+	{
+		update_button_state(trade_button_scroll_up, BUTTON_STATE_DISABLED);
+	}
+	else if (trade_scroll_offset == 1)
+	{
+		update_button_state(trade_button_scroll_up, BUTTON_STATE_ENABLED);
+	}
+	else if (trade_scroll_offset == trade_scroll_size - 3)
+	{
+		update_button_state(trade_button_scroll_down, BUTTON_STATE_DISABLED);
+	}
+	else if (trade_scroll_offset == trade_scroll_size - 4)
+	{
+		update_button_state(trade_button_scroll_down, BUTTON_STATE_ENABLED);
+	}
 }
 
 int trade_query(int v)
