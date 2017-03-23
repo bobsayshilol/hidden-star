@@ -156,6 +156,10 @@ int update_button_state(int button, int state)
 			old_button = (GUI_Button *)vector_get(g_button_list, current_button);
 		}
 		GUI_Button *new_button = (GUI_Button *)vector_get(g_button_list, button);
+		if (new_button == NULL)
+		{
+			return -1;
+		}
 
 		int old_state = new_button->state;
 
@@ -197,6 +201,10 @@ int gui_do_button_action_coords(int x, int y)
 	for(int i = 0; i < vector_get_size(g_button_list); i++)
 	{
 		GUI_Button *button = vector_get(g_button_list, i);
+		if (button == NULL)
+		{
+			continue;
+		}
 		SDL_Rect b = button->button_bounds;
 		if (x > b.x && x < b.x + b.w)
 		{
@@ -219,6 +227,10 @@ void gui_do_button_action()
 	if (current_button > -1 && current_button < vector_get_size(g_button_list))
 	{
 		GUI_Button *button = vector_get(g_button_list, current_button);
+		if (button == NULL)
+		{
+			return;
+		}
 		if (button->action != NULL)
 		{
 			if (button->style == BUTTON_STYLE_STARMAP)
@@ -273,9 +285,13 @@ void gui_do_button_hover_out(GUI_Button *button_hover)
 
 void gui_draw()
 {
-	for(int i = 0; i <  vector_get_size(g_button_list); i++)
+	for(int i = 0; i < vector_get_size(g_button_list); i++)
 	{
 		GUI_Button *button = vector_get(g_button_list, i);
+		if (button == NULL)
+		{
+			continue;
+		}
 		if (button->symbol >= 0)
 		{
 			//Draw symbol button
@@ -374,7 +390,7 @@ int gui_cycle_next_button(int direction)
 			}
 		}
 		button = vector_get(g_button_list, temp);
-	} while(button->state == BUTTON_STATE_DISABLED); //TODO: What happens if there are no enabled buttons?
+	} while(button != NULL && button->state == BUTTON_STATE_DISABLED); //TODO: What happens if there are no enabled buttons?
 	update_button_state(temp, BUTTON_STATE_SELECTED);
 	return temp;
 }
@@ -399,6 +415,10 @@ int gui_seek_next_button_h(int direction)
 		for(int i = 0; i < vector_get_size(g_button_list); i++)
 		{
 			GUI_Button *button = (GUI_Button *)vector_get(g_button_list, i);
+			if (button == NULL)
+			{
+				continue;
+			}
 			if (button->state == BUTTON_STATE_ENABLED)
 			{
 				if (button->button_bounds.x - current_x > 0)
@@ -429,6 +449,10 @@ int gui_seek_next_button_h(int direction)
 		for(int i = 0; i < vector_get_size(g_button_list); i++)
 		{
 			GUI_Button *button = (GUI_Button *)vector_get(g_button_list, i);
+			if (button == NULL)
+			{
+				continue;
+			}
 			if (button->state == BUTTON_STATE_ENABLED)
 			{
 				if (button->button_bounds.x - current_x < 0)
@@ -476,6 +500,10 @@ int gui_seek_next_button_v(int direction)
 		for(int i = 0; i < vector_get_size(g_button_list); i++)
 		{
 			GUI_Button *button = (GUI_Button *)vector_get(g_button_list, i);
+			if (button == NULL)
+			{
+				continue;
+			}
 			if (button->state == BUTTON_STATE_ENABLED)
 			{
 				if (button->button_bounds.y - current_y > 0)
@@ -506,6 +534,10 @@ int gui_seek_next_button_v(int direction)
 		for(int i = 0; i < vector_get_size(g_button_list); i++)
 		{
 			GUI_Button *button = (GUI_Button *)vector_get(g_button_list, i);
+			if (button == NULL)
+			{
+				continue;
+			}
 			if (button->state == BUTTON_STATE_ENABLED)
 			{
 				if (button->button_bounds.y - current_y < 0)
@@ -538,6 +570,10 @@ int gui_update_hover_state(int x, int y)
 	for(int i = 0; i < vector_get_size(g_button_list); i++)
 	{
 		GUI_Button *button = (GUI_Button *)vector_get(g_button_list, i);
+		if (button == NULL)
+		{
+			continue;
+		}
 		SDL_Rect b = button->button_bounds;
 		if (x > b.x && x < b.x + b.w)
 		{
@@ -567,6 +603,15 @@ void gui_clear()
 
 	current_button = -1;
 	//TODO: Do we want to loop through and clear out the old data? Unless something goes wrong, we should never touch it anyway
+}
+
+void gui_remove_button(int button)
+{
+	printf("Start remove\n");
+	GUI_Button *n = (GUI_Button *)vector_get(g_button_list, button);
+	vector_set(g_button_list, button, NULL);
+	free(n);
+	printf("End remove\n");
 }
 
 int gui_setup()

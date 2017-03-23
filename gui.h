@@ -93,6 +93,7 @@ void gui_do_button_hover_out(GUI_Button *hover_button);
 int gui_do_button_action_coords(int x, int y);
 void gui_draw();
 void gui_clear();
+void gui_remove_button(int button);
 int gui_setup();
 
 #endif
