@@ -4,25 +4,45 @@
 #include "main.h"
 #include "util/vector.h"
 
-Trade_Entity player;
-Trade_Entity npc;
+
+typedef struct Trade_Screen_Item
+{
+	int player_qty;
+	int npc_qty;
+	int price_buy;
+	int price_sell;
+	Trade_Item* item;
+} Trade_Screen_Item;
+
+Trade_Entity trade_player;
+Trade_Entity trade_npc;
 int npc_faction;
+Vector* economy_items;
+Vector* trade_items;
+char* trade_item_name;
+int trade_item_buy;
+int trade_item_sell;
 
 int trade_scroll_offset;
 int trade_scroll_size;
 int trade_button_scroll_up;
 int trade_button_scroll_down;
+int trade_button_info;
 Vector* trade_item_button_list;
 
 int trade_setup();
+void trade_build_combined_inventory();
 void trade_set_faction(int f);
 void trade_setup_gui();
 void trade_setup_trade_buttons();
 void trade_draw();
+void trade_draw_item_text();
 
 int trade_scroll_up(int v);
 int trade_scroll_down(int v);
 void trade_scroll_update_button_states();
+int trade_item_hover(int v);
+int trade_item_out(int v);
 int trade_buy(int v);
 int trade_sell(int v);
 int trade_cancel(int v);

@@ -5,6 +5,12 @@
 	//TODO: Also, how does supply impact on supply? If a trade entity receives food, will that increase the likelihood of lifeforms being produced?
 	//TODO: How closely should we track the movement of supply and demand outside of the player's actions?
 
+#define TRADE_ITEM_SOLID		0
+#define TRADE_ITEM_LIQUID	1
+#define TRADE_ITEM_GAS		2
+#define TRADE_ITEM_LIFE		3
+#define TRADE_ITEM_TECH		4
+#define TRADE_ITEM_STRANGE	5
 
 typedef struct Trade_Item
 {
@@ -16,6 +22,12 @@ typedef struct Trade_Item
 	//int stolen_from; TODO: Do we want to track this stuff?
 	//int bought_from; TODO: Do we want to track this stuff?
 } Trade_Item;
+
+typedef struct Trade_Inventory_Item
+{
+	int qty;
+	Trade_Item* item;
+} Trade_Inventory_Item;
 
 typedef struct Trade_Entity
 {
@@ -35,6 +47,5 @@ typedef struct Trade_Entity
 	Vector *items_tech;
 	Vector *items_strange;
 } Trade_Entity;
-
 
 #endif
