@@ -5,23 +5,26 @@
 #include "util/vector.h"
 
 
+#define TRADE_MODE_SELL 0
+#define TRADE_MODE_BUY 1
+
 typedef struct Trade_Screen_Item
 {
 	int player_qty;
 	int npc_qty;
-	int price_buy;
-	int price_sell;
+	int price;
 	Trade_Item* item;
 } Trade_Screen_Item;
 
+int trade_mode;
 Trade_Entity trade_player;
 Trade_Entity trade_npc;
 int npc_faction;
 Vector* economy_items;
 Vector* trade_items;
 char* trade_item_name;
-int trade_item_buy;
-int trade_item_sell;
+int trade_item_price;
+int trade_total;
 
 int trade_scroll_offset;
 int trade_scroll_size;
@@ -41,6 +44,7 @@ void trade_draw_item_text();
 int trade_scroll_up(int v);
 int trade_scroll_down(int v);
 void trade_scroll_update_button_states();
+int trade_update_category(int v);
 int trade_item_hover(int v);
 int trade_item_out(int v);
 int trade_buy(int v);

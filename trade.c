@@ -7,13 +7,15 @@ int trade_setup()
 	printf("Loading trade...\n");
 	main_scene = SCENE_TRADE;
 	frame_skip=0;
-	
+
+	trade_mode = TRADE_MODE_SELL;
+
 	npc_faction = 0;
 	trade_scroll_offset = 0;
 	trade_scroll_size = 0;
 	trade_item_name = "";
-	trade_item_buy = -1;
-	trade_item_sell = -1;
+	trade_item_price = -1;
+	trade_total = 0;
 
 	economy_items = malloc(sizeof(Vector));
 	vector_init(economy_items, 5);
@@ -39,10 +41,38 @@ int trade_setup()
 	vector_add(economy_items, ti);
 
 	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_SOLID;
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Lava";
+	ti->description = "Some very hot rocks.";
+	ti->base_value = 2;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Han Solo";
+	ti->description = "Smuggler, rogue, hero.";
+	ti->base_value = 2;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Toasters";
+	ti->description = "Manufactured on Vexx.";
+	ti->base_value = 2;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
 	ti->name = "BumBum";
 	ti->description = "The qualities of BumBum are unknown, but the Plink prize it highly. What they do with it is also unknown.";
 	ti->base_value = 30;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_STRANGE;
+	ti->name = "Weird Inducer";
+	ti->description = "A strange rotary inducer. It radiates with dark energies.";
+	ti->base_value = 2;
 	vector_add(economy_items, ti);
 
 
@@ -156,48 +186,29 @@ void trade_build_combined_inventory()
 	trade_items = malloc(sizeof(Vector));
 	vector_init(trade_items, 5);
 
-	for (int i = 0; i < vector_get_size(trade_npc.items_solid); ++i)
+	if (trade_mode == TRADE_MODE_BUY)
 	{
-		Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, i);
-		Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
-		tsi->npc_qty = ti->qty;
-		tsi->item = ti->item;
-		tsi->price_buy = tsi->item->base_value + rand() % tsi->item->base_value;
-		tsi->price_sell = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1);
-		if (tsi->price_sell == 0)
+		for (int i = 0; i < vector_get_size(trade_npc.items_solid); ++i)
 		{
-			tsi->price_sell = 1;
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, i);
+			Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
+			tsi->npc_qty = ti->qty;
+			tsi->player_qty = 0;
+			tsi->item = ti->item;
+			tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
+			vector_add(trade_items, tsi);
 		}
-		vector_add(trade_items, tsi);
 	}
-
-	for (int i = 0; i < vector_get_size(trade_player.items_solid); ++i)
+	else //selling
 	{
-		Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_player.items_solid, i);
-		bool found = false;
-		for (int j = 0; j < vector_get_size(trade_items); ++j)
+		for (int i = 0; i < vector_get_size(trade_player.items_solid); ++i)
 		{
-			Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, j);
-			if (ti->item == tsi->item)
-			{
-				found = true;
-				tsi->player_qty = ti->qty;
-				break;
-			}
-		}
-
-		if (!found)
-		{
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, i);
 			Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
 			tsi->npc_qty = 0;
 			tsi->player_qty = ti->qty;
 			tsi->item = ti->item;
-			tsi->price_buy = tsi->item->base_value + rand() % tsi->item->base_value;
-			tsi->price_sell = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1);
-			if (tsi->price_sell == 0)
-			{
-				tsi->price_sell = 1;
-			}
+			tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
 			vector_add(trade_items, tsi);
 		}
 	}
@@ -209,16 +220,37 @@ void trade_set_faction(int f)
 	npc_faction = f;
 }
 
+void trade_set_mode(int m)
+{
+	trade_mode = m;
+}
+
 void trade_setup_gui()
 {
 	gui_clear();
-	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 54, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
-	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 54, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
-	trade_button_info = gui_add_text_button("?", 64-12, 38, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, NULL, -1, NULL, -1);
-	gui_add_text_button("Okay", 64-47, 54, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_SOLID, 0, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_SOLID, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_LIQUID, 10, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_LIQUID, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_GAS, 20, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_GAS, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 30, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_LIFE, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_TECH, 40, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_TECH, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button(SYMBOL_CARGO_STRANGE, 50, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_STRANGE, &trade_update_category, -1, NULL, -1, NULL, -1);
+
+	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
+	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
+	trade_button_info = gui_add_text_button("?", 64-12, 39, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, NULL, -1, NULL, -1);
+	char *confirm_text;
+	if (trade_mode == TRADE_MODE_BUY)
+	{
+		confirm_text = "Buy ";
+	}
+	else
+	{
+		confirm_text = "Sell";
+	}
+	gui_add_text_button(confirm_text, 64-47, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
 
 	int default_button;
-	default_button = gui_add_text_button("Back", 64-24, 54, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
+	default_button = gui_add_text_button("Back", 64-24, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
 
 	trade_setup_trade_buttons();
 
@@ -256,18 +288,42 @@ void trade_setup_trade_buttons()
 		}
 		int *temp = (int *)malloc(sizeof(int));
 		Trade_Inventory_Item* tempII = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, trade_scroll_offset + i);
-		Trade_Item* tempI = tempII->item;
-		printf("adding buttons for %s\n", tempI->name);
+		printf("adding buttons for %s\n", tempII->item->name);
 
-		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 
 		temp = (int *)malloc(sizeof(int));
-		*temp = gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 28, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, 0, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		int item_type = SYMBOL_CARGO_SOLID;
+		if (tempII->item->type == TRADE_ITEM_SOLID)
+		{
+			item_type = SYMBOL_CARGO_SOLID;
+		}
+		else if (tempII->item->type == TRADE_ITEM_LIQUID)
+		{
+			item_type = SYMBOL_CARGO_LIQUID;
+		}
+		else if (tempII->item->type == TRADE_ITEM_GAS)
+		{
+			item_type = SYMBOL_CARGO_GAS;
+		}
+		else if (tempII->item->type == TRADE_ITEM_LIFE)
+		{
+			item_type = SYMBOL_CARGO_LIFEFORM;
+		}
+		else if (tempII->item->type == TRADE_ITEM_TECH)
+		{
+			item_type = SYMBOL_CARGO_TECH;
+		}
+		else if (tempII->item->type == TRADE_ITEM_STRANGE)
+		{
+			item_type = SYMBOL_CARGO_STRANGE;
+		}
+		*temp = gui_add_symbol_button(item_type, 28, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, 0, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 
 		temp = (int *)malloc(sizeof(int));
-		*temp = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 8 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_sell, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_sell, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 	}
 }
@@ -284,38 +340,58 @@ void trade_draw_item_text()
 
 		char player_qty[20];
 		sprintf(player_qty, "%d", temp->player_qty);
-		draw_text(18 - strlen(player_qty) * 4, 10 + 8 * i, player_qty, strlen(player_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(18 - strlen(player_qty) * 4, 18 + 8 * i, player_qty, strlen(player_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
 		char npc_qty[20];
 		sprintf(npc_qty, "%d", temp->npc_qty);
-		draw_text(64 - strlen(npc_qty) * 4, 10 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(64 - strlen(npc_qty) * 4, 18 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 }
 
 void trade_draw()
 {
 	SDL_RenderClear(main_renderer);
-	draw_text(1, 2, "Creds", strlen("Creds"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	char* creds = "34987306";
-	draw_text(64 - strlen(creds) * 4, 2, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+
+	if (trade_mode == TRADE_MODE_BUY)
+	{
+		draw_text(1, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	}
+	else
+	{
+		draw_text(1, 1, "Seller", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	}
+	char creds[11];
+	if (trade_mode == TRADE_MODE_BUY)
+	{
+		sprintf(creds, "%d", trade_player.creds - trade_total);
+	}
+	else
+	{
+		sprintf(creds, "%d", trade_npc.creds - trade_total);
+	}
+	draw_text(64 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
 	if (strlen(trade_item_name) > 0)
 	{
-		draw_text(2, 40, trade_item_name, strlen(trade_item_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(2, 41, trade_item_name, strlen(trade_item_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 
-	if (trade_item_buy >= 0)
-	{
-		char buy_string[20];
-		sprintf(buy_string, "B: %d", trade_item_buy);
-		draw_text(2, 48, buy_string, strlen(buy_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	}
+	char total_string[20];
+	sprintf(total_string, "T: %d", trade_total);
+	draw_text(2, 49, total_string, strlen(total_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
-	if (trade_item_sell >= 0)
+	if (trade_item_price >= 0)
 	{
-		char sell_string[20];
-		sprintf(sell_string, "S: %d", trade_item_sell);
-		draw_text(64 - strlen(sell_string) * 4, 48, sell_string, strlen(sell_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		char cost_string[20];
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			sprintf(cost_string, "B: %d", trade_item_price);
+		}
+		else
+		{
+			sprintf(cost_string, "S: %d", trade_item_price);
+		}
+		draw_text(64 - strlen(cost_string) * 4, 49, cost_string, strlen(cost_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 
 	trade_draw_item_text();
@@ -380,6 +456,12 @@ void trade_scroll_update_button_states()
 	}
 }
 
+int trade_update_category(int v)
+{
+	//TODO
+	return 0;
+}
+
 int trade_item_hover(int v)
 {
 	if (v < 0 || v >= vector_get_size(trade_npc.items_solid))
@@ -388,8 +470,7 @@ int trade_item_hover(int v)
 	}
 	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
 	trade_item_name = tsi->item->name;
-	trade_item_buy = tsi->price_buy;
-	trade_item_sell = tsi->price_sell;
+	trade_item_price = tsi->price;
 	update_button_state(trade_button_info, BUTTON_STATE_ENABLED);
 	return 0;
 }
@@ -397,8 +478,7 @@ int trade_item_hover(int v)
 int trade_item_out(int v)
 {
 	trade_item_name = "";
-	trade_item_buy = -1;
-	trade_item_sell = -1;
+	trade_item_price = -1;
 	update_button_state(trade_button_info, BUTTON_STATE_DISABLED);
 	return 0;
 }
@@ -411,15 +491,36 @@ int trade_query(int v)
 int trade_buy(int v)
 {
 	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
+	bool can_trade = true;
 	if (tsi->npc_qty > 0)
 	{
-		tsi->npc_qty = tsi->npc_qty - 1;
-		tsi->player_qty = tsi->player_qty + 1;
-		//TODO: Check moneys, cargo capacity
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			if (trade_total + tsi->price > trade_player.creds)
+			{
+				can_trade = false;
+			}
+			//TODO: Check moneys, cargo capacity
+		}
 	}
 	else
 	{
-		printf("Can't buy! NPC has none!\n");
+		can_trade = false;
+		printf("None to trade!\n");
+	}
+
+	if (can_trade)
+	{
+		tsi->npc_qty = tsi->npc_qty - 1;
+		tsi->player_qty = tsi->player_qty + 1;
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			trade_total = trade_total + tsi->price;
+		}
+		else
+		{
+			trade_total = trade_total - tsi->price;
+		}
 	}
 
 	return 0;
@@ -428,15 +529,36 @@ int trade_buy(int v)
 int trade_sell(int v)
 {
 	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
+	bool can_trade = true;
 	if (tsi->player_qty > 0)
 	{
-		tsi->npc_qty = tsi->npc_qty + 1;
-		tsi->player_qty = tsi->player_qty - 1;
-		//TODO: Check moneys, cargo capacity
+		if (trade_mode == TRADE_MODE_SELL)
+		{
+			if (trade_total + tsi->price > trade_npc.creds)
+			{
+				can_trade = false;
+			}
+			//TODO: Check moneys, cargo capacity
+		}
 	}
 	else
 	{
-		printf("Can't sell! Player has none!\n");
+		can_trade = false;
+		printf("None to trade!\n");
+	}
+
+	if (can_trade)
+	{
+		tsi->npc_qty = tsi->npc_qty + 1;
+		tsi->player_qty = tsi->player_qty - 1;
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			trade_total = trade_total - tsi->price;
+		}
+		else
+		{
+			trade_total = trade_total + tsi->price;
+		}
 	}
 	return 0;
 }
