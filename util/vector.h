@@ -14,6 +14,7 @@ void vector_fill(Vector *c, void *value);
 int vector_get_size(Vector *v);
 void vector_add(Vector *v, void *value);
 void *vector_get(Vector *v, int index);
+int vector_get_index(Vector *v, void *value);
 void vector_set(Vector *v, int index, void *value);
 void vector_remove(Vector *v, int index);
 void vector_resize(Vector *v, int new_size);

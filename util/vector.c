@@ -33,6 +33,18 @@ int vector_get_size(Vector *v)
 	return v->count;
 }
 
+int vector_get_index(Vector *v, void *value)
+{
+	for (int i = 0; i < v->count; ++i)
+	{
+		if (v->data[i] == value)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 void vector_add(Vector *v, void *value)
 {
 	if (v->count == v->bounds)
