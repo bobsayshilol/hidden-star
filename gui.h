@@ -16,6 +16,8 @@
 #define BUTTON_STYLE_MENU 0
 #define BUTTON_STYLE_GUI 1
 #define BUTTON_STYLE_STARMAP 2
+#define BUTTON_STYLE_TRADE_CATEGORY 3
+#define BUTTON_STYLE_TRADE_CATEGORY_SELECTED 3
 
 #define GUI_DEFAULT_COLOR (SDL_Color){255, 255, 255}
 #define GUI_MOVE_BUTTON_COLOR (SDL_Color){74, 142, 255}
@@ -83,6 +85,7 @@ int gui_add_text_button(char* _text, int x, int y, int width, int state, int sty
 int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value, int flip, SDL_Color color);
 int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value);
 int update_button_state(int button, int state);
+int update_button_style(int button, int style);
 int gui_cycle_next_button(int direction);
 int gui_seek_next_button_h(int direction);
 int gui_seek_next_button_v(int direction);

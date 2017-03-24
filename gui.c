@@ -192,6 +192,25 @@ int update_button_state(int button, int state)
 	}
 }
 
+int update_button_style(int button, int style)
+{
+	if (button > -1 && button < vector_get_size(g_button_list))
+	{
+		GUI_Button *b = (GUI_Button *)vector_get(g_button_list, button);
+		if (b == NULL)
+		{
+			return -1;
+		}
+		int old_style = b->style;
+		b->style = style;
+		return old_style;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 int gui_do_button_action_coords(int x, int y)
 {
 	int handled=0;
