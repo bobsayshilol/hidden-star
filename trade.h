@@ -17,14 +17,15 @@ typedef struct Trade_Screen_Item
 } Trade_Screen_Item;
 
 int trade_mode;
-Trade_Entity trade_player;
-Trade_Entity trade_npc;
+Trade_Entity* trade_player;
+Trade_Entity* trade_npc;
 int npc_faction;
 Vector* economy_items;
 Vector* trade_items;
 char* trade_item_name;
 int trade_item_price;
 int trade_total;
+int trade_category;
 
 int trade_scroll_offset;
 int trade_scroll_size;
@@ -35,6 +36,7 @@ Vector* trade_item_button_list;
 
 int trade_setup();
 void trade_build_combined_inventory();
+void trade_setup_entities(Trade_Entity* te);
 void trade_set_faction(int f);
 void trade_setup_gui();
 void trade_setup_trade_buttons();

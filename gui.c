@@ -37,6 +37,7 @@ int gui_add_text_button(char* text, int x, int y, int width, int state, int styl
 	button_bounds.h = text_bounds.h + BUTTON_MARGIN_VERTICAL * 2;
 
 	GUI_Button *b = malloc(sizeof(GUI_Button));
+	b->font = FONT_EARTH;
 	b->sprite = NULL;
 	b->text = text;
 	b->text_bounds = text_bounds;
@@ -81,6 +82,7 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	button_bounds.h = text_bounds.h;
 
 	GUI_Button *b = malloc(sizeof(GUI_Button));
+	b->font = -1;
 	b->sprite = _sprite;
 	b->text = "";
 	b->text_bounds = text_bounds;
@@ -99,6 +101,20 @@ int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int sta
 	b->color = color;
 	vector_add(g_button_list, b);
 	return vector_get_size(g_button_list) - 1;
+}
+
+int gui_add_symbol_button_mini(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value)
+{
+	int i = gui_add_symbol_button(symbol, x, y, width, state, style, shortcut, action, _action_value, hover, _hover_value, hover_out, _hover_out_value);
+
+	GUI_Button *b = vector_get(g_button_list, i);
+	b->font = GUI_SYMBOLS_MINI;
+	b->text_bounds.w = 3;
+	b->text_bounds.h = 3;
+	b->button_bounds.w = b->text_bounds.w + SYMBOL_MARGIN_HORIZONTAL * 2;
+	b->button_bounds.h = b->text_bounds.h + SYMBOL_MARGIN_VERTICAL * 2;
+
+	return i;
 }
 
 int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value)
@@ -126,6 +142,7 @@ int gui_add_symbol_button(int symbol, int x, int y, int width, int state, int st
 	button_bounds.h = text_bounds.h + SYMBOL_MARGIN_VERTICAL * 2;
 
 	GUI_Button *b = malloc(sizeof(GUI_Button));
+	b->font = GUI_SYMBOLS;
 	b->sprite = NULL;
 	b->symbol = symbol;
 	b->text = "";
@@ -331,10 +348,20 @@ void gui_draw()
 			SDL_Rect srect;
 			srect.x = symbols[button->symbol].x;
 			srect.y = symbols[button->symbol].y;
-			srect.w = 5;
-			srect.h = 5;
-			SDL_SetTextureColorMod(g_symbols, c.r, c.g, c.b);
-			SDL_RenderCopy(main_renderer, g_symbols, &srect, &button->text_bounds);
+			if (button->font == GUI_SYMBOLS)
+			{
+				srect.w = 5;
+				srect.h = 5;
+				SDL_SetTextureColorMod(g_symbols, c.r, c.g, c.b);
+				SDL_RenderCopy(main_renderer, g_symbols, &srect, &button->text_bounds);
+			}
+			else if (button->font == GUI_SYMBOLS_MINI)
+			{
+				srect.w = 3;
+				srect.h = 3;
+				SDL_SetTextureColorMod(g_symbols_mini, c.r, c.g, c.b);
+				SDL_RenderCopy(main_renderer, g_symbols_mini, &srect, &button->text_bounds);
+			}
 		}
 		else if (button->sprite == NULL)
 		{
@@ -352,7 +379,7 @@ void gui_draw()
 			{
 				main_blit(g_button_cap[button->style][button->state], button->button_bounds.x, button->button_bounds.y, NOFLIP, NULL);
 			}
-			draw_text(button->text_bounds.x, button->text_bounds.y, button->text, strlen(button->text), FONT_EARTH, -1, -1, g_button_text_colour[button->style][button->state]);
+			draw_text(button->text_bounds.x, button->text_bounds.y, button->text, strlen(button->text), button->font, -1, -1, g_button_text_colour[button->style][button->state]);
 		}
 		else
 		{
@@ -363,8 +390,8 @@ void gui_draw()
 			{
 				if(button->style!=BUTTON_STYLE_MENU){
 					if(g_blink<4){
-						draw_text( button->button_bounds.x+7, button->button_bounds.y+1, "]", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-						draw_text( button->button_bounds.x-2, button->button_bounds.y+1, "[", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+						draw_text( button->button_bounds.x+7, button->button_bounds.y+1, "]", 1, button->font, -1, -1, GUI_DEFAULT_COLOR);
+						draw_text( button->button_bounds.x-2, button->button_bounds.y+1, "[", 1, button->font, -1, -1, GUI_DEFAULT_COLOR);
 					}
 				}else{
 					color=GUI_DEFAULT_COLOR;
@@ -654,6 +681,14 @@ int gui_setup()
 	g_button_text_colour[BUTTON_STYLE_GUI][BUTTON_STATE_ENABLED] = GUI_TEXT_COLOR_ENABLED;
 	g_button_text_colour[BUTTON_STYLE_GUI][BUTTON_STATE_SELECTED] = GUI_TEXT_COLOR_SELECTED;
 
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_DISABLED] = GUI_TEXT_COLOR_DISABLED;
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_ENABLED] = GUI_TEXT_COLOR_SELECTED;
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_SELECTED] = GUI_TEXT_COLOR_SELECTED;
+
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_DISABLED] = GUI_TEXT_COLOR_DISABLED;
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_ENABLED] = GUI_TEXT_COLOR_ENABLED;
+	g_button_text_colour[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_SELECTED] = GUI_TEXT_COLOR_SELECTED;
+
 	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = MENU_TEXT_COLOR_DISABLED;
 	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = MENU_TEXT_COLOR_ENABLED;
 	g_button_text_colour[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = MENU_TEXT_COLOR_SELECTED;
@@ -665,6 +700,20 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_GUI][BUTTON_STATE_ENABLED] = Load_tex("sprites/gui/button_left.png");
 	g_button_cap[BUTTON_STYLE_GUI][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/button_left_h.png");
 
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_DISABLED] = trans;
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_ENABLED] = trans;
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_SELECTED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_DISABLED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_ENABLED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY_SELECTED][BUTTON_STATE_SELECTED] = trans;
+
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_DISABLED] = trans;
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_ENABLED] = trans;
+	g_button_bg[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_SELECTED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_DISABLED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_ENABLED] = trans;
+	g_button_cap[BUTTON_STYLE_TRADE_CATEGORY][BUTTON_STATE_SELECTED] = trans;
+
 	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_DISABLED] = trans;
 	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
 	g_button_bg[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = trans;
@@ -672,7 +721,11 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
 
+	g_symbols_mini_background = Load_tex("sprites/gui/symbol_background_mini.png");
+	g_symbols_mini_hightlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
+
 	g_symbols = Load_tex("sprites/gui/symbols_5x5.png");
+	g_symbols_mini = Load_tex("sprites/gui/symbols_3x3.png");
 
 	symbols[SYMBOL_CARGO_LIQUID  ].x = 0; symbols[SYMBOL_CARGO_LIQUID  ].y = 6; symbols[SYMBOL_CARGO_LIQUID  ].a= 6;
 	symbols[SYMBOL_CARGO_SOLID   ].x = 6; symbols[SYMBOL_CARGO_SOLID   ].y = 6; symbols[SYMBOL_CARGO_SOLID   ].a= 6;

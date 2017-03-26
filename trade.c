@@ -16,6 +16,7 @@ int trade_setup()
 	trade_item_name = "";
 	trade_item_price = -1;
 	trade_total = 0;
+	trade_category = TRADE_ITEM_SOLID;
 
 	economy_items = malloc(sizeof(Vector));
 	vector_init(economy_items, 5);
@@ -75,98 +76,15 @@ int trade_setup()
 	ti->base_value = 2;
 	vector_add(economy_items, ti);
 
+	trade_npc = malloc(sizeof(Trade_Entity));
+	trade_setup_entities(trade_npc);
 
+	trade_player = malloc(sizeof(Trade_Entity));
+	trade_setup_entities(trade_player);
 
-
-
-	trade_npc.creds = rand() % 2500;
-	trade_npc.limit_solid = 20;
-	trade_npc.limit_liquid = 20;
-	trade_npc.limit_gas = 20;
-	trade_npc.limit_life = 20;
-	trade_npc.limit_tech = 20;
-	trade_npc.limit_strange = 20;
-
-	trade_npc.items_solid = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_solid, 5);
-	trade_npc.items_liquid = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_liquid, 5);
-	trade_npc.items_gas = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_gas, 5);
-	trade_npc.items_life = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_life, 5);
-	trade_npc.items_tech = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_tech, 5);
-	trade_npc.items_strange = malloc(sizeof(Vector));
-	vector_init(trade_npc.items_strange, 5);
-
-	Trade_Inventory_Item* tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 0);
-	vector_add(trade_npc.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 1);
-	vector_add(trade_npc.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 2);
-	vector_add(trade_npc.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 3);
-	vector_add(trade_npc.items_solid, tii);
-
-
-
-	trade_player.creds = rand() % 2500;
-	trade_player.limit_solid = 20;
-	trade_player.limit_liquid = 20;
-	trade_player.limit_gas = 20;
-	trade_player.limit_life = 20;
-	trade_player.limit_tech = 20;
-	trade_player.limit_strange = 20;
-
-	trade_player.items_solid = malloc(sizeof(Vector));
-	vector_init(trade_player.items_solid, 5);
-	trade_player.items_liquid = malloc(sizeof(Vector));
-	vector_init(trade_player.items_liquid, 5);
-	trade_player.items_gas = malloc(sizeof(Vector));
-	vector_init(trade_player.items_gas, 5);
-	trade_player.items_life = malloc(sizeof(Vector));
-	vector_init(trade_player.items_life, 5);
-	trade_player.items_tech = malloc(sizeof(Vector));
-	vector_init(trade_player.items_tech, 5);
-	trade_player.items_strange = malloc(sizeof(Vector));
-	vector_init(trade_player.items_strange, 5);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 0);
-	vector_add(trade_player.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 1);
-	vector_add(trade_player.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 2);
-	vector_add(trade_player.items_solid, tii);
-
-	tii = malloc(sizeof(Trade_Inventory_Item));
-	tii->qty = rand() % 20;
-	tii->item = vector_get(economy_items, 3);
-	printf("tii->item %p\n", tii->item);
-	vector_add(trade_player.items_solid, tii);
-
-
+	trade_items = malloc(sizeof(Vector));
+	vector_init(trade_items, 5);
 	trade_build_combined_inventory();
-
 
 	trade_item_button_list = malloc(sizeof(Vector));
 	vector_init(trade_item_button_list, 15);
@@ -183,34 +101,74 @@ int trade_setup()
 
 void trade_build_combined_inventory()
 {
-	trade_items = malloc(sizeof(Vector));
-	vector_init(trade_items, 5);
+	while (vector_get_size(trade_items) > 0)
+	{
+		Trade_Inventory_Item* ti = (Trade_Inventory_Item *)vector_get(trade_items, 0);
+		vector_remove(trade_items, 0);
+		free(ti);
+	}
 
 	if (trade_mode == TRADE_MODE_BUY)
 	{
-		for (int i = 0; i < vector_get_size(trade_npc.items_solid); ++i)
+		for (int i = 0; i < vector_get_size(trade_npc->cargo_items[trade_category]); ++i)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, i);
-			Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
-			tsi->npc_qty = ti->qty;
-			tsi->player_qty = 0;
-			tsi->item = ti->item;
-			tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
-			vector_add(trade_items, tsi);
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], i);
+			if (ti->qty > 0)
+			{
+				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
+				tsi->npc_qty = ti->qty;
+				tsi->player_qty = 0;
+				tsi->item = ti->item;
+				tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
+				vector_add(trade_items, tsi);
+			}
 		}
 	}
 	else //selling
 	{
-		for (int i = 0; i < vector_get_size(trade_player.items_solid); ++i)
+		for (int i = 0; i < vector_get_size(trade_player->cargo_items[trade_category]); ++i)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, i);
-			Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
-			tsi->npc_qty = 0;
-			tsi->player_qty = ti->qty;
-			tsi->item = ti->item;
-			tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
-			vector_add(trade_items, tsi);
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], i);
+			if (ti->qty > 0)
+			{
+				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
+				tsi->npc_qty = 0;
+				tsi->player_qty = ti->qty;
+				tsi->item = ti->item;
+				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
+				vector_add(trade_items, tsi);
+			}
 		}
+	}
+}
+
+void trade_setup_entities(Trade_Entity* te)
+{
+	te->creds = rand() % 2500;
+
+	//TODO: Initialise cargo_items and cargo_capacities lists
+	te->cargo_capacities = malloc(sizeof(int) * TRADE_ITEM_COUNT);
+	te->cargo_capacities[TRADE_ITEM_SOLID] = 20;
+	te->cargo_capacities[TRADE_ITEM_LIQUID] = 20;
+	te->cargo_capacities[TRADE_ITEM_GAS] = 20;
+	te->cargo_capacities[TRADE_ITEM_LIFE] = 20;
+	te->cargo_capacities[TRADE_ITEM_TECH] = 20;
+	te->cargo_capacities[TRADE_ITEM_STRANGE] = 20;
+
+	te->cargo_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
+	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+	{
+		//FIXME: This malloc should be unnecessary? The space for it is allocated above, and the space for its contents should be allocated in vector_init()
+		te->cargo_items[i] = malloc(sizeof(Vector));
+		vector_init(te->cargo_items[i], 5);
+	}
+	
+	for (int i = 0; i < vector_get_size(economy_items); ++i)
+	{
+		Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
+		tii->qty = rand() % 20;
+		tii->item = vector_get(economy_items, i);
+		vector_add(te->cargo_items[tii->item->type], tii);
 	}
 }
 
@@ -228,12 +186,12 @@ void trade_set_mode(int m)
 void trade_setup_gui()
 {
 	gui_clear();
-	gui_add_symbol_button(SYMBOL_CARGO_SOLID, 0, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_SOLID, &trade_update_category, -1, NULL, -1, NULL, -1);
-	gui_add_symbol_button(SYMBOL_CARGO_LIQUID, 10, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_LIQUID, &trade_update_category, -1, NULL, -1, NULL, -1);
-	gui_add_symbol_button(SYMBOL_CARGO_GAS, 20, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_GAS, &trade_update_category, -1, NULL, -1, NULL, -1);
-	gui_add_symbol_button(SYMBOL_CARGO_LIFEFORM, 30, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_LIFE, &trade_update_category, -1, NULL, -1, NULL, -1);
-	gui_add_symbol_button(SYMBOL_CARGO_TECH, 40, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_TECH, &trade_update_category, -1, NULL, -1, NULL, -1);
-	gui_add_symbol_button(SYMBOL_CARGO_STRANGE, 50, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, TRADE_ITEM_STRANGE, &trade_update_category, -1, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_SOLID, 27, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_SOLID, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_LIQUID, 33, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIQUID, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_GAS, 39, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_GAS, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_LIFEFORM, 45, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIFE, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_TECH, 51, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_TECH, NULL, -1, NULL, -1);
+	gui_add_symbol_button_mini(SYMBOL_CARGO_STRANGE, 57, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_STRANGE, NULL, -1, NULL, -1);
 
 	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
 	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
@@ -266,11 +224,11 @@ void trade_setup_gui()
 void trade_setup_trade_buttons()
 {
 	//clear any existing known trade buttons
-	printf("trade item button list size %d\n", vector_get_size(trade_item_button_list));
+	//printf("trade item button list size %d\n", vector_get_size(trade_item_button_list));
 	while(vector_get_size(trade_item_button_list) > 0)
 	{
 		int *temp = (int *)vector_get(trade_item_button_list, 0);
-		printf("removing button %d\n", *temp);
+		//printf("removing button %d\n", *temp);
 		gui_remove_button(*temp);
 		vector_remove(trade_item_button_list, 0);
 		free(temp);
@@ -287,10 +245,9 @@ void trade_setup_trade_buttons()
 			break;
 		}
 		int *temp = (int *)malloc(sizeof(int));
-		Trade_Inventory_Item* tempII = (Trade_Inventory_Item*)vector_get(trade_npc.items_solid, trade_scroll_offset + i);
-		printf("adding buttons for %s\n", tempII->item->name);
+		Trade_Inventory_Item* tempII = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], trade_scroll_offset + i);
 
-		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 
 		temp = (int *)malloc(sizeof(int));
@@ -319,11 +276,11 @@ void trade_setup_trade_buttons()
 		{
 			item_type = SYMBOL_CARGO_STRANGE;
 		}
-		*temp = gui_add_symbol_button(item_type, 28, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, 0, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		*temp = gui_add_symbol_button(item_type, 28, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, 0, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 
 		temp = (int *)malloc(sizeof(int));
-		*temp = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 16 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_sell, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
+		*temp = gui_add_symbol_button(SYMBOL_ARROW_RIGHT, 64 - 26, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_sell, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 	}
 }
@@ -340,11 +297,11 @@ void trade_draw_item_text()
 
 		char player_qty[20];
 		sprintf(player_qty, "%d", temp->player_qty);
-		draw_text(18 - strlen(player_qty) * 4, 18 + 8 * i, player_qty, strlen(player_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(18 - strlen(player_qty) * 4, 17 + 8 * i, player_qty, strlen(player_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
 		char npc_qty[20];
 		sprintf(npc_qty, "%d", temp->npc_qty);
-		draw_text(64 - strlen(npc_qty) * 4, 18 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(64 - strlen(npc_qty) * 4, 17 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 }
 
@@ -363,11 +320,11 @@ void trade_draw()
 	char creds[11];
 	if (trade_mode == TRADE_MODE_BUY)
 	{
-		sprintf(creds, "%d", trade_player.creds - trade_total);
+		sprintf(creds, "%d", trade_player->creds - trade_total);
 	}
 	else
 	{
-		sprintf(creds, "%d", trade_npc.creds - trade_total);
+		sprintf(creds, "%d", trade_npc->creds - trade_total);
 	}
 	draw_text(64 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
@@ -393,6 +350,16 @@ void trade_draw()
 		}
 		draw_text(64 - strlen(cost_string) * 4, 49, cost_string, strlen(cost_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
+
+	main_blit(g_symbols_mini_background, 27, 7, NOFLIP, &CARGO_COLOR_SOLID);
+	main_blit(g_symbols_mini_background, 33, 7, NOFLIP, &CARGO_COLOR_LIQUID);
+	main_blit(g_symbols_mini_background, 39, 7, NOFLIP, &CARGO_COLOR_GAS);
+	main_blit(g_symbols_mini_background, 45, 7, NOFLIP, &CARGO_COLOR_LIFE);
+	main_blit(g_symbols_mini_background, 51, 7, NOFLIP, &CARGO_COLOR_TECH);
+	main_blit(g_symbols_mini_background, 57, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+
+	g_symbols_mini_background = Load_tex("sprites/gui/symbol_background_mini.png");
+	g_symbols_mini_hightlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
 
 	trade_draw_item_text();
 }
@@ -437,34 +404,36 @@ void trade_scroll_update_button_states()
 	if (trade_scroll_offset == 0)
 	{
 		update_button_state(trade_button_scroll_up, BUTTON_STATE_DISABLED);
-		printf("Disabling up button\n");
+		//printf("Disabling up button\n");
 	}
 	else if (trade_scroll_offset == 1)
 	{
 		update_button_state(trade_button_scroll_up, BUTTON_STATE_ENABLED);
-		printf("Enabling up button\n");
+		//printf("Enabling up button\n");
 	}
 	if (trade_scroll_offset == trade_scroll_size - 3)
 	{
 		update_button_state(trade_button_scroll_down, BUTTON_STATE_DISABLED);
-		printf("Disabling down button\n");
+		//printf("Disabling down button\n");
 	}
 	else if (trade_scroll_offset == trade_scroll_size - 4)
 	{
 		update_button_state(trade_button_scroll_down, BUTTON_STATE_ENABLED);
-		printf("Enabling down button\n");
+		//printf("Enabling down button\n");
 	}
 }
 
 int trade_update_category(int v)
 {
-	//TODO
+	trade_category = v;
+	trade_build_combined_inventory();
+	trade_setup_trade_buttons();
 	return 0;
 }
 
 int trade_item_hover(int v)
 {
-	if (v < 0 || v >= vector_get_size(trade_npc.items_solid))
+	if (v < 0 || v >= vector_get_size(trade_npc->cargo_items[trade_category]))
 	{
 		return -1;
 	}
@@ -496,7 +465,7 @@ int trade_buy(int v)
 	{
 		if (trade_mode == TRADE_MODE_BUY)
 		{
-			if (trade_total + tsi->price > trade_player.creds)
+			if (trade_total + tsi->price > trade_player->creds)
 			{
 				can_trade = false;
 			}
@@ -534,7 +503,7 @@ int trade_sell(int v)
 	{
 		if (trade_mode == TRADE_MODE_SELL)
 		{
-			if (trade_total + tsi->price > trade_npc.creds)
+			if (trade_total + tsi->price > trade_npc->creds)
 			{
 				can_trade = false;
 			}
