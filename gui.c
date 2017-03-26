@@ -653,11 +653,9 @@ void gui_clear()
 
 void gui_remove_button(int button)
 {
-	printf("Start remove\n");
 	GUI_Button *n = (GUI_Button *)vector_get(g_button_list, button);
 	vector_set(g_button_list, button, NULL);
 	free(n);
-	printf("End remove\n");
 }
 
 int gui_setup()
@@ -722,7 +720,7 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
 
 	g_symbols_mini_background = Load_tex("sprites/gui/symbol_background_mini.png");
-	g_symbols_mini_hightlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
+	g_symbols_mini_highlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
 
 	g_symbols = Load_tex("sprites/gui/symbols_5x5.png");
 	g_symbols_mini = Load_tex("sprites/gui/symbols_3x3.png");

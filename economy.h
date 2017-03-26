@@ -33,22 +33,10 @@ typedef struct Trade_Inventory_Item
 typedef struct Trade_Entity
 {
 	int creds;
-	int* cargo_capacities;
-/*	int limit_solid;
-	int limit_liquid;
-	int limit_gas;
-	int limit_life;
-	int limit_tech;
-	int limit_strange;
-*/
+	int* cargo_limits;
+
 	Vector **cargo_items;
-/*	Vector *items_solid;
-	Vector *items_liquid;
-	Vector *items_gas;
-	Vector *items_life;
-	Vector *items_tech;
-	Vector *items_strange;
-*/
+
 } Trade_Entity;
 
 #endif

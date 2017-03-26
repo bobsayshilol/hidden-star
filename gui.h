@@ -96,7 +96,7 @@ SDL_Texture *g_card_C;
 SDL_Texture *g_symbols;
 SDL_Texture *g_symbols_mini;
 SDL_Texture *g_symbols_mini_background;
-SDL_Texture *g_symbols_mini_hightlight;
+SDL_Texture *g_symbols_mini_highlight;
 
 int gui_add_text_button(char* _text, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value);
 int gui_add_sprite_button(SDL_Texture* _sprite, int x, int y, int width, int state, int style, int shortcut, int (*action)(int v), int _action_value, int (*hover)(int v), int _hover_value, int (*hover_out)(int v), int _hover_out_value, int flip, SDL_Color color);

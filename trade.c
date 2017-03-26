@@ -16,6 +16,7 @@ int trade_setup()
 	trade_item_name = "";
 	trade_item_price = -1;
 	trade_total = 0;
+	trade_category_count = 0;
 	trade_category = TRADE_ITEM_SOLID;
 
 	economy_items = malloc(sizeof(Vector));
@@ -82,9 +83,13 @@ int trade_setup()
 	trade_player = malloc(sizeof(Trade_Entity));
 	trade_setup_entities(trade_player);
 
-	trade_items = malloc(sizeof(Vector));
-	vector_init(trade_items, 5);
-	trade_build_combined_inventory();
+	trade_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
+	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+	{
+		trade_items[i] = malloc(sizeof(Vector));
+		vector_init(trade_items[i], 5);
+		trade_build_combined_inventory(trade_items[i], i);
+	}
 
 	trade_item_button_list = malloc(sizeof(Vector));
 	vector_init(trade_item_button_list, 15);
@@ -99,20 +104,15 @@ int trade_setup()
 	return 0;
 }
 
-void trade_build_combined_inventory()
+void trade_build_combined_inventory(Vector *trade_item_category, int category)
 {
-	while (vector_get_size(trade_items) > 0)
-	{
-		Trade_Inventory_Item* ti = (Trade_Inventory_Item *)vector_get(trade_items, 0);
-		vector_remove(trade_items, 0);
-		free(ti);
-	}
+	trade_category_limits = malloc(sizeof(int) * TRADE_ITEM_COUNT);
 
 	if (trade_mode == TRADE_MODE_BUY)
 	{
-		for (int i = 0; i < vector_get_size(trade_npc->cargo_items[trade_category]); ++i)
+		for (int i = 0; i < vector_get_size(trade_npc->cargo_items[category]); ++i)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], i);
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[category], i);
 			if (ti->qty > 0)
 			{
 				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
@@ -120,15 +120,24 @@ void trade_build_combined_inventory()
 				tsi->player_qty = 0;
 				tsi->item = ti->item;
 				tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
-				vector_add(trade_items, tsi);
+				vector_add(trade_item_category, tsi);
+			}
+		}
+		
+		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+		{
+			trade_category_limits[i] = trade_player->cargo_limits[i];
+			for (int j = 0; j < vector_get_size(trade_player->cargo_items[i]); ++j)
+			{
+				trade_category_limits[i] = trade_category_limits[i] - ((Trade_Inventory_Item*)vector_get(trade_player->cargo_items[i], j))->qty;
 			}
 		}
 	}
 	else //selling
 	{
-		for (int i = 0; i < vector_get_size(trade_player->cargo_items[trade_category]); ++i)
+		for (int i = 0; i < vector_get_size(trade_player->cargo_items[category]); ++i)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], i);
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[category], i);
 			if (ti->qty > 0)
 			{
 				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
@@ -136,7 +145,16 @@ void trade_build_combined_inventory()
 				tsi->player_qty = ti->qty;
 				tsi->item = ti->item;
 				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
-				vector_add(trade_items, tsi);
+				vector_add(trade_item_category, tsi);
+			}
+		}
+		
+		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+		{
+			trade_category_limits[i] = trade_npc->cargo_limits[i];
+			for (int j = 0; j < vector_get_size(trade_npc->cargo_items[i]); ++j)
+			{
+				trade_category_limits[i] = trade_category_limits[i] - ((Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[i], j))->qty;
 			}
 		}
 	}
@@ -146,14 +164,13 @@ void trade_setup_entities(Trade_Entity* te)
 {
 	te->creds = rand() % 2500;
 
-	//TODO: Initialise cargo_items and cargo_capacities lists
-	te->cargo_capacities = malloc(sizeof(int) * TRADE_ITEM_COUNT);
-	te->cargo_capacities[TRADE_ITEM_SOLID] = 20;
-	te->cargo_capacities[TRADE_ITEM_LIQUID] = 20;
-	te->cargo_capacities[TRADE_ITEM_GAS] = 20;
-	te->cargo_capacities[TRADE_ITEM_LIFE] = 20;
-	te->cargo_capacities[TRADE_ITEM_TECH] = 20;
-	te->cargo_capacities[TRADE_ITEM_STRANGE] = 20;
+	te->cargo_limits = malloc(sizeof(int) * TRADE_ITEM_COUNT);
+	te->cargo_limits[TRADE_ITEM_SOLID] = 20;
+	te->cargo_limits[TRADE_ITEM_LIQUID] = 20;
+	te->cargo_limits[TRADE_ITEM_GAS] = 20;
+	te->cargo_limits[TRADE_ITEM_LIFE] = 20;
+	te->cargo_limits[TRADE_ITEM_TECH] = 20;
+	te->cargo_limits[TRADE_ITEM_STRANGE] = 20;
 
 	te->cargo_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
 	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
@@ -166,7 +183,7 @@ void trade_setup_entities(Trade_Entity* te)
 	for (int i = 0; i < vector_get_size(economy_items); ++i)
 	{
 		Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
-		tii->qty = rand() % 20;
+		tii->qty = rand() % 10;
 		tii->item = vector_get(economy_items, i);
 		vector_add(te->cargo_items[tii->item->type], tii);
 	}
@@ -186,12 +203,13 @@ void trade_set_mode(int m)
 void trade_setup_gui()
 {
 	gui_clear();
-	gui_add_symbol_button_mini(SYMBOL_CARGO_SOLID, 27, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_SOLID, NULL, -1, NULL, -1);
-	gui_add_symbol_button_mini(SYMBOL_CARGO_LIQUID, 33, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIQUID, NULL, -1, NULL, -1);
-	gui_add_symbol_button_mini(SYMBOL_CARGO_GAS, 39, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_GAS, NULL, -1, NULL, -1);
-	gui_add_symbol_button_mini(SYMBOL_CARGO_LIFEFORM, 45, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIFE, NULL, -1, NULL, -1);
-	gui_add_symbol_button_mini(SYMBOL_CARGO_TECH, 51, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_TECH, NULL, -1, NULL, -1);
-	gui_add_symbol_button_mini(SYMBOL_CARGO_STRANGE, 57, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_STRANGE, NULL, -1, NULL, -1);
+	trade_category_buttons = malloc(sizeof(int) * TRADE_ITEM_COUNT);
+	trade_category_buttons[TRADE_ITEM_SOLID] = gui_add_symbol_button_mini(SYMBOL_CARGO_SOLID, 1, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY_SELECTED, -1, &trade_update_category, TRADE_ITEM_SOLID, NULL, -1, NULL, -1);
+	trade_category_buttons[TRADE_ITEM_LIQUID] = gui_add_symbol_button_mini(SYMBOL_CARGO_LIQUID, 7, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIQUID, NULL, -1, NULL, -1);
+	trade_category_buttons[TRADE_ITEM_GAS] = gui_add_symbol_button_mini(SYMBOL_CARGO_GAS, 13, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_GAS, NULL, -1, NULL, -1);
+	trade_category_buttons[TRADE_ITEM_LIFE] = gui_add_symbol_button_mini(SYMBOL_CARGO_LIFEFORM, 19, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_LIFE, NULL, -1, NULL, -1);
+	trade_category_buttons[TRADE_ITEM_TECH] = gui_add_symbol_button_mini(SYMBOL_CARGO_TECH, 25, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_TECH, NULL, -1, NULL, -1);
+	trade_category_buttons[TRADE_ITEM_STRANGE] = gui_add_symbol_button_mini(SYMBOL_CARGO_STRANGE, 31, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_STRANGE, NULL, -1, NULL, -1);
 
 	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
 	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
@@ -234,10 +252,8 @@ void trade_setup_trade_buttons()
 		free(temp);
 	}
 
-	trade_scroll_size = vector_get_size(trade_items);
+	trade_scroll_size = vector_get_size(trade_items[trade_category]);
 
-	//TODO: combine NPC and player inventories, sort, then loop through and render buttons for each.
-	//TODO: Clip and scroll
 	for (int i = 0; i < 3; ++i)
 	{
 		if (trade_scroll_offset + i >= trade_scroll_size)
@@ -293,7 +309,7 @@ void trade_draw_item_text()
 		{
 			break;
 		}
-		Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items, trade_scroll_offset + i);
+		Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_scroll_offset + i);
 
 		char player_qty[20];
 		sprintf(player_qty, "%d", temp->player_qty);
@@ -311,11 +327,11 @@ void trade_draw()
 
 	if (trade_mode == TRADE_MODE_BUY)
 	{
-		draw_text(1, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(2, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 	else
 	{
-		draw_text(1, 1, "Seller", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		draw_text(2, 1, "Buyer", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 	char creds[11];
 	if (trade_mode == TRADE_MODE_BUY)
@@ -326,7 +342,7 @@ void trade_draw()
 	{
 		sprintf(creds, "%d", trade_npc->creds - trade_total);
 	}
-	draw_text(64 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	draw_text(63 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
 	if (strlen(trade_item_name) > 0)
 	{
@@ -351,15 +367,22 @@ void trade_draw()
 		draw_text(64 - strlen(cost_string) * 4, 49, cost_string, strlen(cost_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	}
 
-	main_blit(g_symbols_mini_background, 27, 7, NOFLIP, &CARGO_COLOR_SOLID);
-	main_blit(g_symbols_mini_background, 33, 7, NOFLIP, &CARGO_COLOR_LIQUID);
-	main_blit(g_symbols_mini_background, 39, 7, NOFLIP, &CARGO_COLOR_GAS);
-	main_blit(g_symbols_mini_background, 45, 7, NOFLIP, &CARGO_COLOR_LIFE);
-	main_blit(g_symbols_mini_background, 51, 7, NOFLIP, &CARGO_COLOR_TECH);
-	main_blit(g_symbols_mini_background, 57, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+	//TODO: Draw cargo capacities
+	char capacities_string[20];
+	sprintf(capacities_string, "%d/%d", trade_category_count, trade_category_limits[trade_category]);
+	draw_text(63 - strlen(capacities_string) * 4, 8, capacities_string, strlen(capacities_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	
 
-	g_symbols_mini_background = Load_tex("sprites/gui/symbol_background_mini.png");
-	g_symbols_mini_hightlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
+	//TODO: Draw cargo category labels?
+
+	main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
+	main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_LIQUID);
+	main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_GAS);
+	main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_LIFE);
+	main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_TECH);
+	main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+
+	main_blit(g_symbols_mini_highlight, 1 + 6 * trade_category, 7, NOFLIP, &GUI_DEFAULT_COLOR);
 
 	trade_draw_item_text();
 }
@@ -425,9 +448,16 @@ void trade_scroll_update_button_states()
 
 int trade_update_category(int v)
 {
+	//TODO: Update category button styles?
+	update_button_style(trade_category_buttons[trade_category], BUTTON_STYLE_TRADE_CATEGORY);
 	trade_category = v;
-	trade_build_combined_inventory();
+	update_button_style(trade_category_buttons[trade_category], BUTTON_STYLE_TRADE_CATEGORY_SELECTED);
 	trade_setup_trade_buttons();
+	trade_category_count = 0;
+	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
+	{
+		trade_category_count = trade_category_count + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+	}
 	return 0;
 }
 
@@ -437,7 +467,7 @@ int trade_item_hover(int v)
 	{
 		return -1;
 	}
-	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
+	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items[trade_category], v);
 	trade_item_name = tsi->item->name;
 	trade_item_price = tsi->price;
 	update_button_state(trade_button_info, BUTTON_STATE_ENABLED);
@@ -459,7 +489,12 @@ int trade_query(int v)
 
 int trade_buy(int v)
 {
-	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
+	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items[trade_category], v);
+	int getting = 0;
+	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
+	{
+		getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+	}
 	bool can_trade = true;
 	if (tsi->npc_qty > 0)
 	{
@@ -469,7 +504,17 @@ int trade_buy(int v)
 			{
 				can_trade = false;
 			}
-			//TODO: Check moneys, cargo capacity
+
+			getting = getting + 1;
+			if (getting > trade_category_limits[trade_category])
+			{
+				can_trade = false;
+				printf("Not enough space!\n");
+			}
+		}
+		else
+		{
+			getting = getting - 1;
 		}
 	}
 	else
@@ -480,6 +525,7 @@ int trade_buy(int v)
 
 	if (can_trade)
 	{
+		trade_category_count = getting;
 		tsi->npc_qty = tsi->npc_qty - 1;
 		tsi->player_qty = tsi->player_qty + 1;
 		if (trade_mode == TRADE_MODE_BUY)
@@ -497,7 +543,13 @@ int trade_buy(int v)
 
 int trade_sell(int v)
 {
-	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items, v);
+	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items[trade_category], v);
+	int getting = 0;
+	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
+	{
+		getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+	}
+
 	bool can_trade = true;
 	if (tsi->player_qty > 0)
 	{
@@ -507,7 +559,17 @@ int trade_sell(int v)
 			{
 				can_trade = false;
 			}
-			//TODO: Check moneys, cargo capacity
+
+			getting = getting + 1;
+			if (getting > trade_category_limits[trade_category])
+			{
+				can_trade = false;
+				printf("Not enough space!\n");
+			}
+		}
+		else
+		{
+			getting = getting - 1;
 		}
 	}
 	else
@@ -518,6 +580,7 @@ int trade_sell(int v)
 
 	if (can_trade)
 	{
+		trade_category_count = getting;
 		tsi->npc_qty = tsi->npc_qty + 1;
 		tsi->player_qty = tsi->player_qty - 1;
 		if (trade_mode == TRADE_MODE_BUY)
@@ -534,10 +597,23 @@ int trade_sell(int v)
 
 int trade_cancel(int v)
 {
+
+/*	while (vector_get_size(trade_item_category) > 0)
+	{
+		Trade_Inventory_Item* ti = (Trade_Inventory_Item *)vector_get(trade_item_category, 0);
+		vector_remove(trade_item_category, 0);
+		free(ti);
+	}
+*/
+	//clear relevant vectors
+	//Return to comms (what happens if we're salvaging cargo from smashed ships? Do we want to show a cancel button in that case?)
 	return 0;
 }
 
 int trade_apply(int v)
 {
+	//Adjust both entities' creds
+	//Adjust both entities' inventory numbers, remove 0 qty entries
+	//Return to comms (what happens if we're salvaging cargo from smashed ships?)
 	return 0;
 }

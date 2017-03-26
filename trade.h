@@ -21,10 +21,13 @@ Trade_Entity* trade_player;
 Trade_Entity* trade_npc;
 int npc_faction;
 Vector* economy_items;
-Vector* trade_items;
+Vector** trade_items;
 char* trade_item_name;
 int trade_item_price;
 int trade_total;
+int trade_category_count;
+int* trade_category_limits;
+int* trade_category_buttons;
 int trade_category;
 
 int trade_scroll_offset;
