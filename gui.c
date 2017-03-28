@@ -390,7 +390,6 @@ void gui_draw()
 			{
 				if(button->style==BUTTON_STYLE_STARMAP){
 					if(g_blink<4){
-						printf("Drawing sprite button?\n");
 						draw_text( button->button_bounds.x+7, button->button_bounds.y+1, "]", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 						draw_text( button->button_bounds.x-2, button->button_bounds.y+1, "[", 1, FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 					}
