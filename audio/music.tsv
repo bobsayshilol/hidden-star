@@ -14,3 +14,7 @@ MUSIC_ROLE_COMMS	FACTION_HUMAN	audio/music/placeholder/human1_loop.ogg
 MUSIC_ROLE_COMMS	FACTION_SNEEB	audio/music/placeholder/sneeb2_loop.ogg
 MUSIC_ROLE_COMMS	FACTION_KRULL	audio/music/placeholder/krull3_loop.ogg
 MUSIC_ROLE_COMMS	FACTION_PLINK	audio/music/placeholder/plink2_loop.ogg
+MUSIC_ROLE_TRADE	FACTION_HUMAN	audio/music/placeholder/human2_loop.ogg
+MUSIC_ROLE_TRADE	FACTION_SNEEB	audio/music/placeholder/sneeb1_loop.ogg
+MUSIC_ROLE_TRADE	FACTION_KRULL	audio/music/placeholder/krull1_loop.ogg
+MUSIC_ROLE_TRADE	FACTION_PLINK	audio/music/placeholder/plink1_loop.ogg
