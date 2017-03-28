@@ -1,5 +1,6 @@
 #include "comms.h"
 #include "starmap.h"
+#include "trade.h"
 #include <limits.h>
 
 int comms_setup()
@@ -146,8 +147,8 @@ void prepare_npc_lists()
 				next_state_index = -1;
 				break;
 			case COMMS_NPC_TRADE: //todo: We should define these values later based on the tone (angry NPCs don't want to trade, etc.)
-				next_state = COMMS_STATE_PLAYER_CHOICE; //COMMS_STATE_ENTER_TRADE;
-				next_state_index = COMMS_PLAYER_CHOICE_MAIN; //-1;
+				next_state = COMMS_STATE_ENTER_TRADE;
+				next_state_index = -1; //TODO: This should be a buy/sell choice
 				break;
 			case COMMS_NPC_INFO: //todo: We should define these values later based on the tone (angry NPCs don't want to talk, etc.)
 				next_state = COMMS_STATE_PLAYER_CHOICE; 
@@ -606,8 +607,9 @@ int advance_comms()
 					break;
 				case COMMS_STATE_ENTER_TRADE:
 					gui_clear();
-					intro_setup();
-					menu_setup_main_menu(0); //exit comms, start trade
+					Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
+					trade_set_npc_entity(t->t);
+					trade_setup(); //exit comms, start trade
 					break;
 			}
 			break;

@@ -12,76 +12,11 @@ int trade_setup()
 
 	npc_faction = 0;
 	trade_scroll_offset = 0;
-	trade_scroll_size = 0;
 	trade_item_name = "";
 	trade_item_price = -1;
 	trade_total = 0;
 	trade_category_count = 0;
 	trade_category = TRADE_ITEM_SOLID;
-
-	economy_items = malloc(sizeof(Vector));
-	vector_init(economy_items, 5);
-	Trade_Item *ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_SOLID;
-	ti->name = "Ultranium Ore";
-	ti->description = "Ores of the higest ultranium quality. Unfortunately, that is quite low.";
-	ti->base_value = 1;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_SOLID;
-	ti->name = "Inert Snags";
-	ti->description = "Sausages, packed for storage, ready to move.";
-	ti->base_value = 63;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_SOLID;
-	ti->name = "Petrified Poo";
-	ti->description = "Dung from the primates of the ancient planet of Wanfestus, long turned to stone and now traded as a highly valued knicknack. Most commonly used as a joke gift for a friend who definitely would never want one.";
-	ti->base_value = 2;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_LIQUID;
-	ti->name = "Lava";
-	ti->description = "Some very hot rocks.";
-	ti->base_value = 2;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_LIFE;
-	ti->name = "Han Solo";
-	ti->description = "Smuggler, rogue, hero.";
-	ti->base_value = 2;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_TECH;
-	ti->name = "Toasters";
-	ti->description = "Manufactured on Vexx.";
-	ti->base_value = 2;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_GAS;
-	ti->name = "BumBum";
-	ti->description = "The qualities of BumBum are unknown, but the Plink prize it highly. What they do with it is also unknown.";
-	ti->base_value = 30;
-	vector_add(economy_items, ti);
-
-	ti = malloc(sizeof(Trade_Item));
-	ti->type = TRADE_ITEM_STRANGE;
-	ti->name = "Weird Inducer";
-	ti->description = "A strange rotary inducer. It radiates with dark energies.";
-	ti->base_value = 2;
-	vector_add(economy_items, ti);
-
-	trade_npc = malloc(sizeof(Trade_Entity));
-	trade_setup_entities(trade_npc);
-
-	trade_player = malloc(sizeof(Trade_Entity));
-	trade_setup_entities(trade_player);
 
 	trade_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
 	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
@@ -104,8 +39,228 @@ int trade_setup()
 	return 0;
 }
 
+void trade_setup_items()
+{
+	economy_items = malloc(sizeof(Vector));
+	vector_init(economy_items, 5);
+	Trade_Item *ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_SOLID;
+	ti->name = "Ultranium Ore";
+	ti->description = "Ores of the higest ultranium quality. Unfortunately, that is quite low.";
+	ti->base_value = 5;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_SOLID;
+	ti->name = "Inert Snags";
+	ti->description = "Sausages, packed for storage, ready to move.";
+	ti->base_value = 13;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_SOLID;
+	ti->name = "Petrified Poo";
+	ti->description = "Dung from the primates of the ancient planet of Wanfestus, long turned to stone and now traded as a highly valued knicknack. Most commonly used as a joke gift for a friend who definitely would never want one.";
+	ti->base_value = 50;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_SOLID;
+	ti->name = "Solid Fuel";
+	ti->description = "Solid fuel is great. It's not what your ship runs on though.";
+	ti->base_value = 44;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Lava";
+	ti->description = "Some very hot rocks.";
+	ti->base_value = 25;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Algresian Ale";
+	ti->description = "It smells like water, it tastes light water, and chemical analysis confirms it's water. You think the Algresians must be lightweight, and you're right. They're a race of sentient feathers.";
+	ti->base_value = 83;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Eel Lubricant";
+	ti->description = "Freshly squeezed.";
+	ti->base_value = 17;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Decanted Tena";
+	ti->description = "Tena is the juice of a rare gourd found in the hinterlands of Greldar 4. It even comes with its own decanter.";
+	ti->base_value = 36;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIQUID;
+	ti->name = "Yak Milk";
+	ti->description = "The yak trade yields many commodities. Most of them are milk.";
+	ti->base_value = 6;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Han Solo";
+	ti->description = "Smuggler, rogue, hero.";
+	ti->base_value = 800;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Pet Rocks";
+	ti->description = "You doubt they're alive, but the manifest says they're lifeforms.";
+	ti->base_value = 3;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Circus Fleas";
+	ti->description = "There's even a tiny trapeze.";
+	ti->base_value = 20;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Dinosaurs";
+	ti->description = "Spare no expense.";
+	ti->base_value = 328;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Space Cattle";
+	ti->description = "Cattle. In space.";
+	ti->base_value = 61;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Dairy Yaks";
+	ti->description = "Spacefolk gotta get their milks from somewheres.";
+	ti->base_value = 75;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_LIFE;
+	ti->name = "Howler Monkeys";
+	ti->description = "They're really loud.";
+	ti->base_value = 45;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Toasters";
+	ti->description = "Manufactured on Vexx.";
+	ti->base_value = 26;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Circuit Bands";
+	ti->description = "Remember when circuits used to be made as boards? Me neither, that was millenia ago.";
+	ti->base_value = 18;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Transducers";
+	ti->description = "What do these even do?";
+	ti->base_value = 33;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Bio FabKits";
+	ti->description = "Bio FabKits are used to construct self contained biomes suitable for outposts or small scale colonisation.";
+	ti->base_value = 500;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Fab BioKits";
+	ti->description = "For the discerning biotech on the move who needs to look FABULOUS at a moment's notice.";
+	ti->base_value = 500;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_TECH;
+	ti->name = "Weapon Parts";
+	ti->description = "Containers full of misc weapon parts. Fingers crossed that they don't jostle into a fully functional Greeble Ray Beam Blaster during transport. It takes forever to get greebles off.";
+	ti->base_value = 250;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
+	ti->name = "BumBum";
+	ti->description = "The qualities of BumBum are unknown, but the Plink prize it highly. What they do with it is also unknown.";
+	ti->base_value = 160;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
+	ti->name = "Earth Air";
+	ti->description = "Earth air is rare. Rarer than the Earth itself.";
+	ti->base_value = 380;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
+	ti->name = "Hentozime";
+	ti->description = "Hentozime gas is primarily used in the construction of FabKits and fashionable yak hats. Gotta keep those yaks looking good.";
+	ti->base_value = 40;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
+	ti->name = "Aaaaaargon";
+	ti->description = "Isn't there a St. Aaaaaargh's in Cornwall?";
+	ti->base_value = 30;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_GAS;
+	ti->name = "Hyperwind";
+	ti->description = "Wind from the clefts of the Prune of Dome. It's a bit pongy.";
+	ti->base_value = 25;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_STRANGE;
+	ti->name = "Weird Inducer";
+	ti->description = "A strange rotary inducer. It radiates with dark energies.";
+	ti->base_value = 150;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_STRANGE;
+	ti->name = "Bizzare Screws";
+	ti->description = "These are useless without some unlikely nuts. They hum with dark energies.";
+	ti->base_value = 62;
+	vector_add(economy_items, ti);
+
+	ti = malloc(sizeof(Trade_Item));
+	ti->type = TRADE_ITEM_STRANGE;
+	ti->name = "Unlikely Nuts";
+	ti->description = "These probably go on bizzare screws. They smell like dark energies.";
+	ti->base_value = 30;
+	vector_add(economy_items, ti);
+}
+
 void trade_build_combined_inventory(Vector *trade_item_category, int category)
 {
+	printf("Building combined inventory\n");
+	if (trade_category_limits != NULL)
+	{
+		free(trade_category_limits);
+	}
 	trade_category_limits = malloc(sizeof(int) * TRADE_ITEM_COUNT);
 
 	if (trade_mode == TRADE_MODE_BUY)
@@ -137,13 +292,14 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 	{
 		for (int i = 0; i < vector_get_size(trade_player->cargo_items[category]); ++i)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[category], i);
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_player->cargo_items[category], i);
 			if (ti->qty > 0)
 			{
 				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
 				tsi->npc_qty = 0;
 				tsi->player_qty = ti->qty;
 				tsi->item = ti->item;
+				printf("%p %p %s %p\n", tsi, tsi->item, ti->item->name, ti->item);
 				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
 				vector_add(trade_item_category, tsi);
 			}
@@ -157,20 +313,20 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				trade_category_limits[i] = trade_category_limits[i] - ((Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[i], j))->qty;
 			}
 		}
-	}
+	}	
 }
 
-void trade_setup_entities(Trade_Entity* te)
+void trade_setup_entity(Trade_Entity* te)
 {
 	te->creds = rand() % 2500;
 
 	te->cargo_limits = malloc(sizeof(int) * TRADE_ITEM_COUNT);
-	te->cargo_limits[TRADE_ITEM_SOLID] = 20;
-	te->cargo_limits[TRADE_ITEM_LIQUID] = 20;
-	te->cargo_limits[TRADE_ITEM_GAS] = 20;
-	te->cargo_limits[TRADE_ITEM_LIFE] = 20;
-	te->cargo_limits[TRADE_ITEM_TECH] = 20;
-	te->cargo_limits[TRADE_ITEM_STRANGE] = 20;
+	te->cargo_limits[TRADE_ITEM_SOLID] = rand() % 20;
+	te->cargo_limits[TRADE_ITEM_LIQUID] = rand() % 20;
+	te->cargo_limits[TRADE_ITEM_GAS] = rand() % 20;
+	te->cargo_limits[TRADE_ITEM_LIFE] = rand() % 20;
+	te->cargo_limits[TRADE_ITEM_TECH] = rand() % 20;
+	te->cargo_limits[TRADE_ITEM_STRANGE] = rand() % 20;
 
 	te->cargo_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
 	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
@@ -182,10 +338,50 @@ void trade_setup_entities(Trade_Entity* te)
 	
 	for (int i = 0; i < vector_get_size(economy_items); ++i)
 	{
-		Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
-		tii->qty = rand() % 10;
-		tii->item = vector_get(economy_items, i);
-		vector_add(te->cargo_items[tii->item->type], tii);
+		if (rand() % 10 < 4)
+		{
+			Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
+			tii->qty = rand() % 10;
+			tii->item = vector_get(economy_items, i);
+			vector_add(te->cargo_items[tii->item->type], tii);
+			te->cargo_limits[tii->item->type] = te->cargo_limits[tii->item->type] + tii->qty;
+		}
+	}
+}
+
+void trade_setup_player()
+{
+	trade_player = malloc(sizeof(Trade_Entity));
+
+	trade_player->creds = rand() % 2500;
+
+	trade_player->cargo_limits = malloc(sizeof(int) * TRADE_ITEM_COUNT);
+	trade_player->cargo_limits[TRADE_ITEM_SOLID] = 20;
+	trade_player->cargo_limits[TRADE_ITEM_LIQUID] = 20;
+	trade_player->cargo_limits[TRADE_ITEM_GAS] = 20;
+	trade_player->cargo_limits[TRADE_ITEM_LIFE] = 20;
+	trade_player->cargo_limits[TRADE_ITEM_TECH] = 20;
+	trade_player->cargo_limits[TRADE_ITEM_STRANGE] = 20;
+
+	trade_player->cargo_items = malloc(sizeof(Vector) * TRADE_ITEM_COUNT);
+	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+	{
+		//FIXME: This malloc should be unnecessary? The space for it is allocated above, and the space for its contents should be allocated in vector_init()
+		trade_player->cargo_items[i] = malloc(sizeof(Vector));
+		vector_init(trade_player->cargo_items[i], 5);
+	}
+
+	for (int i = 0; i < vector_get_size(economy_items); ++i)
+	{
+		if (rand() % 10 > -1)
+		{
+			Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
+			tii->qty = rand() % 5;
+			tii->item = vector_get(economy_items, i);
+			vector_add(trade_player->cargo_items[tii->item->type], tii);
+			trade_player->cargo_limits[tii->item->type] = trade_player->cargo_limits[tii->item->type] + tii->qty;
+			printf("Adding %dx %s (%d)\n", tii->qty, tii->item->name, vector_get_size(trade_player->cargo_items[tii->item->type]));
+		}
 	}
 }
 
@@ -193,6 +389,13 @@ void trade_set_faction(int f)
 {
 	//TODO: Get rid of this and replace it with some kind of structure that handles/tracks NPCs
 	npc_faction = f;
+}
+
+void trade_set_npc_entity(Trade_Entity* te)
+{
+	printf("Setting NPC trade entity %p\n", te);
+	//TODO: Get rid of this and replace it with some kind of structure that handles/tracks NPCs
+	trade_npc = te;
 }
 
 void trade_set_mode(int m)
@@ -253,6 +456,7 @@ void trade_setup_trade_buttons()
 	}
 
 	trade_scroll_size = vector_get_size(trade_items[trade_category]);
+	printf("Setting up trade buttons (%d, %d)\n", trade_scroll_offset, trade_scroll_size);
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -261,7 +465,7 @@ void trade_setup_trade_buttons()
 			break;
 		}
 		int *temp = (int *)malloc(sizeof(int));
-		Trade_Inventory_Item* tempII = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[trade_category], trade_scroll_offset + i);
+		Trade_Screen_Item* tempII = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_scroll_offset + i);
 
 		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
@@ -453,7 +657,10 @@ int trade_update_category(int v)
 	trade_category = v;
 	update_button_style(trade_category_buttons[trade_category], BUTTON_STYLE_TRADE_CATEGORY_SELECTED);
 	trade_setup_trade_buttons();
+	trade_scroll_offset = 0;
+	trade_scroll_update_button_states();
 	trade_category_count = 0;
+	
 	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
 	{
 		trade_category_count = trade_category_count + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
@@ -463,10 +670,6 @@ int trade_update_category(int v)
 
 int trade_item_hover(int v)
 {
-	if (v < 0 || v >= vector_get_size(trade_npc->cargo_items[trade_category]))
-	{
-		return -1;
-	}
 	Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items[trade_category], v);
 	trade_item_name = tsi->item->name;
 	trade_item_price = tsi->price;
@@ -597,15 +800,19 @@ int trade_sell(int v)
 
 int trade_cancel(int v)
 {
-
-/*	while (vector_get_size(trade_item_category) > 0)
+	for (int i = 0; i <  TRADE_ITEM_COUNT; ++i)
 	{
-		Trade_Inventory_Item* ti = (Trade_Inventory_Item *)vector_get(trade_item_category, 0);
-		vector_remove(trade_item_category, 0);
-		free(ti);
+		Vector* trade_item_category = trade_items[i];
+		while (vector_get_size(trade_item_category) > 0)
+		{
+			Trade_Inventory_Item* ti = (Trade_Inventory_Item *)vector_get(trade_item_category, 0);
+			vector_remove(trade_item_category, 0);
+			free(ti);
+		}
+		free (trade_item_category);
 	}
-*/
-	//clear relevant vectors
+	free (trade_items);
+	comms_setup();
 	//Return to comms (what happens if we're salvaging cargo from smashed ships? Do we want to show a cancel button in that case?)
 	return 0;
 }
@@ -615,5 +822,6 @@ int trade_apply(int v)
 	//Adjust both entities' creds
 	//Adjust both entities' inventory numbers, remove 0 qty entries
 	//Return to comms (what happens if we're salvaging cargo from smashed ships?)
+	trade_cancel(v);
 	return 0;
 }

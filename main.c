@@ -490,6 +490,9 @@ int main(int argc, char *argv[]){
 	pref_path = SDL_GetPrefPath("HiddenStar", "HiddenStar");
 	screenshot_counter = 0;
 
+	trade_setup_items();
+	trade_setup_player();
+
 	starmap = malloc(sizeof(Vector));
 	vector_init(starmap, 5);
 	comms_init();

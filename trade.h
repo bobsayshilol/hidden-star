@@ -38,9 +38,12 @@ int trade_button_info;
 Vector* trade_item_button_list;
 
 int trade_setup();
+void trade_setup_items();
 void trade_build_combined_inventory();
-void trade_setup_entities(Trade_Entity* te);
+void trade_setup_entity(Trade_Entity* te);
+void trade_setup_player();
 void trade_set_faction(int f);
+void trade_set_npc_entity(Trade_Entity* te);
 void trade_setup_gui();
 void trade_setup_trade_buttons();
 void trade_draw();

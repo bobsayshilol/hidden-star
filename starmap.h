@@ -18,6 +18,7 @@ typedef struct Travel_Node
 	int y;
 	int f;
 	struct Planet *p;
+	struct Trade_Entity *t;
 	bool connected;
 	NODE *connections[4];
 	char node_name[250];

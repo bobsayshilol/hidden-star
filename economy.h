@@ -1,9 +1,11 @@
 #ifndef HS_ECONOMY
 #define HS_ECONOMY
 
-	//TODO: How do we model the impact of affiliation, enemies, wants and needs? Do we keep a list of items along with a demand rating? For every trade entity (planet, ship, station, etc.)?
-	//TODO: Also, how does supply impact on supply? If a trade entity receives food, will that increase the likelihood of lifeforms being produced?
-	//TODO: How closely should we track the movement of supply and demand outside of the player's actions?
+//TODO: How do we model the impact of affiliation, enemies, wants and needs? Do we keep a list of items along with a demand rating? For every trade entity (planet, ship, station, etc.)?
+//TODO: Also, how does supply impact on supply? If a trade entity receives food, will that increase the likelihood of lifeforms being produced?
+//TODO: How closely should we track the movement of supply and demand outside of the player's actions?
+
+//TODO: Would it be helpful to keep a #define for every trade item that matches its index in the economy_items Vector?
 
 #define TRADE_ITEM_SOLID	0
 #define TRADE_ITEM_LIQUID	1

@@ -364,6 +364,9 @@ void make_child_nodes(Vector *node_list, Travel_Node *n, int max_depth, int spre
 	nn->p = p;
 	planet_set_default(nn->p, nn->f);
 	planet_set_random(nn->p);
+
+	nn->t = malloc(sizeof(Trade_Entity));
+	trade_setup_entity(nn->t);
 }
 
 //yoinked from http://stackoverflow.com/a/14795484
@@ -633,6 +636,9 @@ void make_tree(Vector *node_list, Travel_NodeDefs defs, int root_x, int root_y)
 	root->p = p;
 	planet_set_default(root->p, root->f);
 	planet_set_random(root->p);
+
+	root->t = malloc(sizeof(Trade_Entity));
+	trade_setup_entity(root->t);
 }
 
 void make_connections(Vector *node_list, Travel_NodeDefs defs)
