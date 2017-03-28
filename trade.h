@@ -14,6 +14,8 @@ typedef struct Trade_Screen_Item
 	int npc_qty;
 	int price;
 	Trade_Item* item;
+	Trade_Inventory_Item* player_inventory;
+	Trade_Inventory_Item* npc_inventory;
 } Trade_Screen_Item;
 
 int trade_mode;
@@ -50,6 +52,7 @@ void trade_build_combined_inventory();
 void trade_setup_entity(Trade_Entity* te);
 void trade_setup_player();
 void trade_set_faction(int f);
+void trade_set_mode(int m);
 void trade_set_npc_entity(Trade_Entity* te);
 void trade_setup_gui();
 void trade_setup_query_gui();
@@ -70,6 +73,7 @@ int trade_item_out(int v);
 int trade_buy(int v);
 int trade_sell(int v);
 int trade_cancel(int v);
+int trade_apply(int v);
 int trade_query(int v);
 int trade_query_hover(int v);
 int trade_query_back(int v);

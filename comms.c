@@ -43,6 +43,12 @@ int comms_setup()
 	return 0;
 }
 
+void comms_return()
+{
+	//TODO: Return us to previous comms menu state (returning from trade, etc.)
+	comms_setup();
+}
+
 void comms_init()
 {
 	portrait_background = Load_tex("sprites/gui/comms_portrait_background.png");
@@ -52,7 +58,8 @@ void comms_init()
 	comms_npc_line_files[COMMS_NPC_TRADE] = "text/comms_npc_trade.tsv";
 	comms_npc_line_files[COMMS_NPC_INFO] = "text/comms_npc_info.tsv";
 	comms_npc_line_files[COMMS_NPC_FAREWELL] = "text/comms_npc_farewell.tsv";
-	comms_npc_line_files[COMMS_NPC_TRADE_ACCEPT] = "text/comms_npc_trade_accept.tsv";
+	comms_npc_line_files[COMMS_NPC_TRADE_ACCEPT_BUY] = "text/comms_npc_trade_accept.tsv";
+	comms_npc_line_files[COMMS_NPC_TRADE_ACCEPT_SELL] = "text/comms_npc_trade_accept.tsv";
 	comms_npc_line_files[COMMS_NPC_TRADE_DECLINE] = "text/comms_npc_trade_decline.tsv";
 	comms_npc_line_files[COMMS_NPC_ATTACK_ACCEPT] = "text/comms_npc_attack_accept.tsv";
 	comms_npc_line_files[COMMS_NPC_ATTACK_FLEE] = "text/comms_npc_attack_flee.tsv";
@@ -116,11 +123,11 @@ void comms_set_faction(int f)
 
 void prepare_npc_lists()
 {
-	vector_init(&comms_npc_lines, 10);
+	vector_init(&comms_npc_lines, COMMS_NPC_COUNT);
 	vector_fill(&comms_npc_lines, NULL);
 
 	//Allocate all the space we'll need for the default library of npc dialogue (anything else we can allocate as we go)
-	for (int i = 0; i < 10; i++) //npc lines 0 to 9
+	for (int i = 0; i < COMMS_NPC_COUNT; i++) //npc lines 0 to 9
 	{
 		Vector **lines = malloc(4 * sizeof(Vector));
 		for (int j = 0; j < 4; j++)
@@ -147,8 +154,15 @@ void prepare_npc_lists()
 				next_state_index = -1;
 				break;
 			case COMMS_NPC_TRADE: //todo: We should define these values later based on the tone (angry NPCs don't want to trade, etc.)
-				next_state = COMMS_STATE_ENTER_TRADE;
-				next_state_index = -1; //TODO: This should be a buy/sell choice
+				next_state = COMMS_STATE_PLAYER_CHOICE; //COMMS_STATE_ENTER_TRADE;
+				if (faction_disposition[comms_faction] > FACTION_THRESHOLD_DISLIKE)
+				{
+					next_state_index = COMMS_PLAYER_CHOICE_TRADE; //-1; //TODO: This should be a buy/sell choice
+				}
+				else
+				{
+					next_state_index = COMMS_PLAYER_CHOICE_MAIN;
+				}
 				break;
 			case COMMS_NPC_INFO: //todo: We should define these values later based on the tone (angry NPCs don't want to talk, etc.)
 				next_state = COMMS_STATE_PLAYER_CHOICE; 
@@ -158,8 +172,12 @@ void prepare_npc_lists()
 				next_state = COMMS_STATE_ENTER_TRAVEL;
 				next_state_index = -1;
 				break;
-			case COMMS_NPC_TRADE_ACCEPT:
-				next_state = COMMS_STATE_ENTER_TRADE;
+			case COMMS_NPC_TRADE_ACCEPT_BUY:
+				next_state = COMMS_STATE_ENTER_TRADE_BUY;
+				next_state_index = -1;
+				break;
+			case COMMS_NPC_TRADE_ACCEPT_SELL:
+				next_state = COMMS_STATE_ENTER_TRADE_SELL;
 				next_state_index = -1;
 				break;
 			case COMMS_NPC_TRADE_DECLINE:
@@ -252,7 +270,7 @@ void load_default_npc_lines(Vector **line_type, char *fname, int next_state, int
 void comms_set_current_npc_lines()
 {
 	vector_free(&comms_current_npc_lines);
-	vector_init(&comms_current_npc_lines, 10);
+	vector_init(&comms_current_npc_lines, COMMS_NPC_COUNT);
 	vector_fill(&comms_current_npc_lines, NULL);
 
 	//todo: load possible npc text from file and select appropriate one based on disposition/bounty/resource need
@@ -295,9 +313,15 @@ void comms_set_current_npc_lines()
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
 	npcd->text = wrap_text("Good, let's trade", 64);
-	npcd->next_state = COMMS_STATE_ENTER_TRADE;
+	npcd->next_state = COMMS_STATE_ENTER_TRADE_BUY;
 	npcd->next_state_index = -1;
-	vector_set(&comms_current_npc_lines, COMMS_NPC_TRADE_ACCEPT, npcd);
+	vector_set(&comms_current_npc_lines, COMMS_NPC_TRADE_ACCEPT_BUY, npcd);
+
+	npcd = malloc(sizeof(Comms_NPCDialogue));
+	npcd->text = wrap_text("Good, let's trade", 64);
+	npcd->next_state = COMMS_STATE_ENTER_TRADE_SELL;
+	npcd->next_state_index = -1;
+	vector_set(&comms_current_npc_lines, COMMS_NPC_TRADE_ACCEPT_SELL, npcd);
 
 	npcd = malloc(sizeof(Comms_NPCDialogue));
 	npcd->text = wrap_text("No trade? oh well", 64);
@@ -326,7 +350,7 @@ void comms_load_player_choices()
 		free(pc);
 	}
 
-	vector_init(&comms_player_choices, 3);
+	vector_init(&comms_player_choices, COMMS_PLAYER_CHOICE_COUNT);
 	vector_fill(&comms_player_choices, NULL);
 
 
@@ -345,11 +369,22 @@ void comms_load_player_choices()
 
 	pc = malloc(sizeof(Comms_PlayerChoice));
 	pc->text0 = "aggree";
-	pc->choice0 = COMMS_NPC_TRADE_ACCEPT;
+	pc->choice0 = COMMS_NPC_TRADE_ACCEPT_BUY; //TODO: This doesn't account for buy/sell separation
 	pc->text1 = "decline";
 	pc->choice1 = COMMS_NPC_TRADE_DECLINE;
 	pc->text2 = NULL;
 	pc->choice2 = -1;
+	pc->text3 = NULL;
+	pc->choice3 = -1;
+	vector_set(&comms_player_choices, COMMS_PLAYER_CHOICE_TRADE_INVITE, pc);
+
+	pc = malloc(sizeof(Comms_PlayerChoice));
+	pc->text0 = "buy";
+	pc->choice0 = COMMS_NPC_TRADE_ACCEPT_BUY;
+	pc->text1 = "sell";
+	pc->choice1 = COMMS_NPC_TRADE_ACCEPT_SELL;
+	pc->text2 = "back";
+	pc->choice2 = COMMS_PLAYER_CHOICE_MAIN;
 	pc->text3 = NULL;
 	pc->choice3 = -1;
 	vector_set(&comms_player_choices, COMMS_PLAYER_CHOICE_TRADE, pc);
@@ -605,11 +640,27 @@ int advance_comms()
 					faction_update_disposition(comms_faction, 5); //TODO: This is temp code
 					starmap_setup(); //exit comms, start travel
 					break;
-				case COMMS_STATE_ENTER_TRADE:
-					gui_clear();
-					Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
-					trade_set_npc_entity(t->t);
-					trade_setup(); //exit comms, start trade
+				case COMMS_STATE_ENTER_TRADE_BUY:
+					{
+						gui_clear();
+						Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
+						trade_set_npc_entity(t->t);
+						trade_set_faction(t->f);
+						printf("Entering buy mode?\n");
+						trade_set_mode(TRADE_MODE_BUY);
+						trade_setup(); //exit comms, start trade
+					}
+					break;
+				case COMMS_STATE_ENTER_TRADE_SELL:
+					{
+						gui_clear();
+						Travel_Node *t = (Travel_Node *)vector_get(starmap, current_node);
+						trade_set_npc_entity(t->t);
+						trade_set_faction(t->f);
+						printf("Entering sell mode?\n");
+						trade_set_mode(TRADE_MODE_SELL);
+						trade_setup(); //exit comms, start trade
+					}
 					break;
 			}
 			break;

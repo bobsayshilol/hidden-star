@@ -11,22 +11,27 @@ int comms_draw_count;
 #define COMMS_STATE_PLAYER_CHOICE 2
 #define COMMS_STATE_ENTER_COMBAT 3
 #define COMMS_STATE_ENTER_TRAVEL 4
-#define COMMS_STATE_ENTER_TRADE 5
+#define COMMS_STATE_ENTER_TRADE_BUY 5
+#define COMMS_STATE_ENTER_TRADE_SELL 6
 
 #define COMMS_PLAYER_CHOICE_MAIN 0
 #define COMMS_PLAYER_CHOICE_TRADE 1
-#define COMMS_PLAYER_CHOICE_DEFEND 2
+#define COMMS_PLAYER_CHOICE_TRADE_INVITE 2
+#define COMMS_PLAYER_CHOICE_DEFEND 3
+#define COMMS_PLAYER_CHOICE_COUNT 4
 
 #define COMMS_NPC_GREETING 0
 #define COMMS_NPC_DEFEND 1
 #define COMMS_NPC_TRADE 2
 #define COMMS_NPC_INFO 3
 #define COMMS_NPC_FAREWELL 4
-#define COMMS_NPC_TRADE_ACCEPT 5
-#define COMMS_NPC_TRADE_DECLINE 6
-#define COMMS_NPC_ATTACK_ACCEPT 7
-#define COMMS_NPC_ATTACK_FLEE 8
-#define COMMS_NPC_ATTACK_PLEAD 9
+#define COMMS_NPC_TRADE_ACCEPT_BUY 5
+#define COMMS_NPC_TRADE_ACCEPT_SELL 6
+#define COMMS_NPC_TRADE_DECLINE 7
+#define COMMS_NPC_ATTACK_ACCEPT 8
+#define COMMS_NPC_ATTACK_FLEE 9
+#define COMMS_NPC_ATTACK_PLEAD 10
+#define COMMS_NPC_COUNT 11
 
 #define COMMS_TONE_UNKNOWN 0
 #define COMMS_TONE_NEUTRAL 1
@@ -84,6 +89,7 @@ int comms_tone;
 
 void comms_init();
 int comms_setup();
+void comms_return();
 void comms_set_subject_name(char name[]);
 void comms_set_faction(int f);
 void prepare_npc_lists();

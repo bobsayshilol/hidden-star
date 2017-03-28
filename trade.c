@@ -8,10 +8,10 @@ int trade_setup()
 	main_scene = SCENE_TRADE;
 	frame_skip=0;
 
-	trade_mode = TRADE_MODE_SELL;
+	//trade_mode = TRADE_MODE_BUY;
 	trade_query_screen = 0;
 
-	npc_faction = 0;
+	//npc_faction = 0;
 	trade_scroll_offset = 0;
 	trade_item_name = "";
 	trade_item_price = -1;
@@ -276,6 +276,8 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				tsi->player_qty = 0;
 				tsi->item = ti->item;
 				tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
+				tsi->player_inventory = NULL;
+				tsi->npc_inventory = ti;
 				vector_add(trade_item_category, tsi);
 			}
 		}
@@ -285,7 +287,8 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 			trade_category_limits[i] = trade_player->cargo_limits[i];
 			for (int j = 0; j < vector_get_size(trade_player->cargo_items[i]); ++j)
 			{
-				trade_category_limits[i] = trade_category_limits[i] - ((Trade_Inventory_Item*)vector_get(trade_player->cargo_items[i], j))->qty;
+				Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_player->cargo_items[i], j);
+				trade_category_limits[i] = trade_category_limits[i] - ti->qty;
 			}
 		}
 	}
@@ -301,6 +304,8 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				tsi->player_qty = ti->qty;
 				tsi->item = ti->item;
 				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
+				tsi->npc_inventory = NULL;
+				tsi->player_inventory = ti;
 				vector_add(trade_item_category, tsi);
 			}
 		}
@@ -437,7 +442,7 @@ void trade_setup_gui()
 	{
 		confirm_text = "Sell";
 	}
-	gui_add_text_button(confirm_text, 64-47, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
+	gui_add_text_button(confirm_text, 64-47, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_apply, -1, NULL, -1, NULL, -1);
 
 	int default_button;
 	default_button = gui_add_text_button("Back", 64-24, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_cancel, -1, NULL, -1, NULL, -1);
@@ -1010,13 +1015,118 @@ int trade_cancel(int v)
 		free (trade_item_category);
 	}
 	free (trade_items);
-	comms_setup();
+	comms_return();
 	//Return to comms (what happens if we're salvaging cargo from smashed ships? Do we want to show a cancel button in that case?)
 	return 0;
 }
 
 int trade_apply(int v)
 {
+	if (trade_mode == TRADE_MODE_BUY)
+	{
+		trade_player->creds -= trade_total;
+		trade_npc->creds += trade_total;
+		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+		{
+			for (int j = 0; j < vector_get_size(trade_items[i]); ++j)
+			{
+				Trade_Screen_Item* tsi = (Trade_Screen_Item *)vector_get(trade_items[i], j);
+				if (tsi->player_qty > 0)
+				{
+					tsi->npc_inventory->qty -= tsi->player_qty;
+					if (tsi->npc_inventory->qty <= 0)
+					{
+						if (tsi->npc_inventory->qty < 0)
+						{
+							printf("BWARP BWARP! Someone has negative inventory!");
+						}
+						//remove the item's entry from the npc?
+					}
+					bool found = false;
+					for (int k = 0; k < TRADE_ITEM_COUNT; ++k)
+					{
+						if (found)
+						{
+							break;
+						}
+						for (int l = 0; l < vector_get_size(trade_player->cargo_items[k]); ++l)
+						{
+							Trade_Inventory_Item* tii = (Trade_Inventory_Item *)vector_get(trade_player->cargo_items[k], l);
+							if (tii->item == tsi->item)
+							{
+								found = true;
+								tii->qty = tsi->player_qty;
+								break;
+							}
+						}
+					}
+					if (!found)
+					{
+						Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
+						tii->qty = tsi->player_qty;
+						tii->item = tsi->item;
+						vector_add(trade_player->cargo_items[tii->item->type], tii);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		printf("Selling!\n");
+		trade_player->creds += trade_total;
+		trade_npc->creds -= trade_total;
+
+		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+		{
+			for (int j = 0; j < vector_get_size(trade_items[i]); ++j)
+			{
+				Trade_Screen_Item* tsi = (Trade_Screen_Item *)vector_get(trade_items[i], j);
+				printf("Checking %s\n", tsi->item->name);
+				if (tsi->npc_qty > 0)
+				{
+					printf("Player qty for %s before trade %d, ", tsi->item->name, tsi->player_inventory->qty);
+					tsi->player_inventory->qty -= tsi->npc_qty;
+					printf("after %d\n", tsi->player_inventory->qty);
+
+					if (tsi->player_inventory->qty <= 0)
+					{
+						if (tsi->player_inventory->qty < 0)
+						{
+							printf("BWARP BWARP! Player has negative inventory!");
+						}
+						//remove the item's entry from the npc?
+					}
+				}
+
+				bool found = false;
+				for (int k = 0; k < TRADE_ITEM_COUNT; ++k)
+				{
+					if (found)
+					{
+						break;
+					}
+					for (int l = 0; l < vector_get_size(trade_npc->cargo_items[k]); ++l)
+					{
+						Trade_Inventory_Item* tii = (Trade_Inventory_Item *)vector_get(trade_npc->cargo_items[k], l);
+						if (tii->item == tsi->item)
+						{
+							found = true;
+							tii->qty = tsi->npc_qty;
+							break;
+						}
+					}
+				}
+				if (!found)
+				{
+					Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
+					tii->qty = tsi->npc_qty;
+					tii->item = tsi->item;
+					vector_add(trade_npc->cargo_items[tii->item->type], tii);
+				}
+			}
+		}
+	}
 	//Adjust both entities' creds
 	//Adjust both entities' inventory numbers, remove 0 qty entries
 	//Return to comms (what happens if we're salvaging cargo from smashed ships?)
