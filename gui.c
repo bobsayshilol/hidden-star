@@ -663,6 +663,9 @@ int gui_setup()
 	printf("Loading gui...\n");
 	current_button = -1;
 
+	g_computer_bg = Load_tex("sprites/gui/trade_background.png");
+	g_scroll_bg = Load_tex("sprites/gui/trade_scroll_background.png");
+
 	g_button_list = malloc(sizeof(Vector));
 	vector_init(g_button_list, 5);
 
@@ -719,6 +722,7 @@ int gui_setup()
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_ENABLED] = trans;
 	g_button_cap[BUTTON_STYLE_MENU][BUTTON_STATE_SELECTED] = Load_tex("sprites/gui/menu_left_h.png");
 
+	g_symbols_background = Load_tex("sprites/gui/symbol_background.png");
 	g_symbols_mini_background = Load_tex("sprites/gui/symbol_background_mini.png");
 	g_symbols_mini_highlight = Load_tex("sprites/gui/symbol_highlight_mini.png");
 

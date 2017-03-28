@@ -9,11 +9,13 @@ int trade_setup()
 	frame_skip=0;
 
 	trade_mode = TRADE_MODE_SELL;
+	trade_query_screen = 0;
 
 	npc_faction = 0;
 	trade_scroll_offset = 0;
 	trade_item_name = "";
 	trade_item_price = -1;
+	trade_item_current = -1;
 	trade_total = 0;
 	trade_category_count = 0;
 	trade_category = TRADE_ITEM_SOLID;
@@ -256,7 +258,6 @@ void trade_setup_items()
 
 void trade_build_combined_inventory(Vector *trade_item_category, int category)
 {
-	printf("Building combined inventory\n");
 	if (trade_category_limits != NULL)
 	{
 		free(trade_category_limits);
@@ -299,7 +300,6 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				tsi->npc_qty = 0;
 				tsi->player_qty = ti->qty;
 				tsi->item = ti->item;
-				printf("%p %p %s %p\n", tsi, tsi->item, ti->item->name, ti->item);
 				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
 				vector_add(trade_item_category, tsi);
 			}
@@ -380,7 +380,6 @@ void trade_setup_player()
 			tii->item = vector_get(economy_items, i);
 			vector_add(trade_player->cargo_items[tii->item->type], tii);
 			trade_player->cargo_limits[tii->item->type] = trade_player->cargo_limits[tii->item->type] + tii->qty;
-			printf("Adding %dx %s (%d)\n", tii->qty, tii->item->name, vector_get_size(trade_player->cargo_items[tii->item->type]));
 		}
 	}
 }
@@ -403,6 +402,18 @@ void trade_set_mode(int m)
 	trade_mode = m;
 }
 
+
+void trade_setup_query_gui()
+{
+	gui_clear();
+	trade_button_scroll_info_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_info_down, -1, NULL, -1, NULL, -1);
+	trade_button_scroll_info_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_info_up, -1, NULL, -1, NULL, -1);
+
+	int default_button = gui_add_text_button("Back", 64-24, 55, 21, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, -1, &trade_query_back, -1, NULL, -1, NULL, -1);
+	update_button_state(default_button, BUTTON_STATE_SELECTED);
+}
+
+
 void trade_setup_gui()
 {
 	gui_clear();
@@ -416,7 +427,7 @@ void trade_setup_gui()
 
 	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
 	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
-	trade_button_info = gui_add_text_button("?", 64-12, 39, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, NULL, -1, NULL, -1);
+	trade_button_info = gui_add_text_button("?", 64-12, 39, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, &trade_query_hover, -1, NULL, -1);
 	char *confirm_text;
 	if (trade_mode == TRADE_MODE_BUY)
 	{
@@ -456,7 +467,6 @@ void trade_setup_trade_buttons()
 	}
 
 	trade_scroll_size = vector_get_size(trade_items[trade_category]);
-	printf("Setting up trade buttons (%d, %d)\n", trade_scroll_offset, trade_scroll_size);
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -465,38 +475,8 @@ void trade_setup_trade_buttons()
 			break;
 		}
 		int *temp = (int *)malloc(sizeof(int));
-		Trade_Screen_Item* tempII = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_scroll_offset + i);
 
 		*temp = gui_add_symbol_button(SYMBOL_ARROW_LEFT, 18, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, trade_scroll_offset + i, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
-		vector_add(trade_item_button_list, temp);
-
-		temp = (int *)malloc(sizeof(int));
-		int item_type = SYMBOL_CARGO_SOLID;
-		if (tempII->item->type == TRADE_ITEM_SOLID)
-		{
-			item_type = SYMBOL_CARGO_SOLID;
-		}
-		else if (tempII->item->type == TRADE_ITEM_LIQUID)
-		{
-			item_type = SYMBOL_CARGO_LIQUID;
-		}
-		else if (tempII->item->type == TRADE_ITEM_GAS)
-		{
-			item_type = SYMBOL_CARGO_GAS;
-		}
-		else if (tempII->item->type == TRADE_ITEM_LIFE)
-		{
-			item_type = SYMBOL_CARGO_LIFEFORM;
-		}
-		else if (tempII->item->type == TRADE_ITEM_TECH)
-		{
-			item_type = SYMBOL_CARGO_TECH;
-		}
-		else if (tempII->item->type == TRADE_ITEM_STRANGE)
-		{
-			item_type = SYMBOL_CARGO_STRANGE;
-		}
-		*temp = gui_add_symbol_button(item_type, 28, 15 + 8 * i, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_GUI, trade_scroll_offset + i, &trade_buy, 0, &trade_item_hover, trade_scroll_offset + i, &trade_item_out, trade_scroll_offset + i);
 		vector_add(trade_item_button_list, temp);
 
 		temp = (int *)malloc(sizeof(int));
@@ -509,6 +489,7 @@ void trade_draw_item_text()
 {
 	for (int i = 0; i < 3; ++i)
 	{
+		main_blit(g_scroll_bg, 1, 16 + 8 * i, NOFLIP, &GUI_DEFAULT_COLOR);
 		if (trade_scroll_offset + i >= trade_scroll_size)
 		{
 			break;
@@ -519,85 +500,207 @@ void trade_draw_item_text()
 		sprintf(player_qty, "%d", temp->player_qty);
 		draw_text(18 - strlen(player_qty) * 4, 17 + 8 * i, player_qty, strlen(player_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
+		int item_type = SYMBOL_CARGO_SOLID;
+		SDL_Color* item_color = NULL;
+		if (temp->item->type == TRADE_ITEM_SOLID)
+		{
+			item_type = SYMBOL_CARGO_SOLID;
+			item_color = &CARGO_COLOR_SOLID;
+		}
+		else if (temp->item->type == TRADE_ITEM_LIQUID)
+		{
+			item_type = SYMBOL_CARGO_LIQUID;
+			item_color = &CARGO_COLOR_LIQUID;
+		}
+		else if (temp->item->type == TRADE_ITEM_GAS)
+		{
+			item_type = SYMBOL_CARGO_GAS;
+			item_color = &CARGO_COLOR_GAS;
+		}
+		else if (temp->item->type == TRADE_ITEM_LIFE)
+		{
+			item_type = SYMBOL_CARGO_LIFEFORM;
+			item_color = &CARGO_COLOR_LIFE;
+		}
+		else if (temp->item->type == TRADE_ITEM_TECH)
+		{
+			item_type = SYMBOL_CARGO_TECH;
+			item_color = &CARGO_COLOR_TECH;
+		}
+		else if (temp->item->type == TRADE_ITEM_STRANGE)
+		{
+			item_type = SYMBOL_CARGO_STRANGE;
+			item_color = &CARGO_COLOR_STRANGE;
+		}
+
+		main_blit(g_symbols_background, 29, 16 + 8 * i, NOFLIP, item_color);
+
+		SDL_Rect srect;
+		srect.x = symbols[item_type].x;
+		srect.y = symbols[item_type].y;
+		srect.w = 5;
+		srect.h = 5;
+		SDL_Rect drect;
+		drect.x = 30;
+		drect.y = 17 + 8 * i;
+		drect.w = 5;
+		drect.h = 5;
+		SDL_SetTextureColorMod(g_symbols, GUI_TEXT_COLOR_ENABLED.r, GUI_TEXT_COLOR_ENABLED.g, GUI_TEXT_COLOR_ENABLED.b);
+		SDL_RenderCopy(main_renderer, g_symbols, &srect, &drect);
+
 		char npc_qty[20];
 		sprintf(npc_qty, "%d", temp->npc_qty);
 		draw_text(64 - strlen(npc_qty) * 4, 17 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+
+		main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
+
 	}
+}
+
+void trade_draw_item_detail()
+{
+	Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_item_current);
+		
+	int item_type = SYMBOL_CARGO_SOLID;
+	SDL_Color* item_color = NULL;
+	if (temp->item->type == TRADE_ITEM_SOLID)
+	{
+		item_type = SYMBOL_CARGO_SOLID;
+		item_color = &CARGO_COLOR_SOLID;
+	}
+	else if (temp->item->type == TRADE_ITEM_LIQUID)
+	{
+		item_type = SYMBOL_CARGO_LIQUID;
+		item_color = &CARGO_COLOR_LIQUID;
+	}
+	else if (temp->item->type == TRADE_ITEM_GAS)
+	{
+		item_type = SYMBOL_CARGO_GAS;
+		item_color = &CARGO_COLOR_GAS;
+	}
+	else if (temp->item->type == TRADE_ITEM_LIFE)
+	{
+		item_type = SYMBOL_CARGO_LIFEFORM;
+		item_color = &CARGO_COLOR_LIFE;
+	}
+	else if (temp->item->type == TRADE_ITEM_TECH)
+	{
+		item_type = SYMBOL_CARGO_TECH;
+		item_color = &CARGO_COLOR_TECH;
+	}
+	else if (temp->item->type == TRADE_ITEM_STRANGE)
+	{
+		item_type = SYMBOL_CARGO_STRANGE;
+		item_color = &CARGO_COLOR_STRANGE;
+	}
+
+	main_blit(g_symbols_background, 2, 2, NOFLIP, item_color);
+
+	SDL_Rect srect;
+	srect.x = symbols[item_type].x;
+	srect.y = symbols[item_type].y;
+	srect.w = 5;
+	srect.h = 5;
+	SDL_Rect drect;
+	drect.x = 3;
+	drect.y = 3;
+	drect.w = 5;
+	drect.h = 5;
+	SDL_SetTextureColorMod(g_symbols, GUI_TEXT_COLOR_ENABLED.r, GUI_TEXT_COLOR_ENABLED.g, GUI_TEXT_COLOR_ENABLED.b);
+	SDL_RenderCopy(main_renderer, g_symbols, &srect, &drect);
+
+	draw_text(11, 3, temp->item->name, strlen(temp->item->name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+
+	drect.x = 2;
+	drect.y = 11;
+	drect.w = 60;
+	drect.h = 43;
+	SDL_RenderSetClipRect(main_renderer, &drect);
+	draw_text(2, 11 - trade_scroll_info_offset, trade_scroll_info_text, strlen(trade_scroll_info_text), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+	SDL_RenderSetClipRect(main_renderer, NULL);
 }
 
 void trade_draw()
 {
 	SDL_RenderClear(main_renderer);
+	SDL_RenderCopy(main_renderer, g_computer_bg, NULL, NULL);
 
-	if (trade_mode == TRADE_MODE_BUY)
+	if (trade_query_screen == 0)
 	{
-		draw_text(2, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	}
-	else
-	{
-		draw_text(2, 1, "Buyer", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	}
-	char creds[11];
-	if (trade_mode == TRADE_MODE_BUY)
-	{
-		sprintf(creds, "%d", trade_player->creds - trade_total);
-	}
-	else
-	{
-		sprintf(creds, "%d", trade_npc->creds - trade_total);
-	}
-	draw_text(63 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-
-	if (strlen(trade_item_name) > 0)
-	{
-		draw_text(2, 41, trade_item_name, strlen(trade_item_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	}
-
-	char total_string[20];
-	sprintf(total_string, "T: %d", trade_total);
-	draw_text(2, 49, total_string, strlen(total_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-
-	if (trade_item_price >= 0)
-	{
-		char cost_string[20];
 		if (trade_mode == TRADE_MODE_BUY)
 		{
-			sprintf(cost_string, "B: %d", trade_item_price);
+			draw_text(2, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
 		else
 		{
-			sprintf(cost_string, "S: %d", trade_item_price);
+			draw_text(2, 1, "Buyer", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
-		draw_text(64 - strlen(cost_string) * 4, 49, cost_string, strlen(cost_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-	}
+		char creds[11];
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			sprintf(creds, "%d", trade_player->creds - trade_total);
+		}
+		else
+		{
+			sprintf(creds, "%d", trade_npc->creds - trade_total);
+		}
+		draw_text(63 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
-	//TODO: Draw cargo capacities
-	char capacities_string[20];
-	sprintf(capacities_string, "%d/%d", trade_category_count, trade_category_limits[trade_category]);
-	draw_text(63 - strlen(capacities_string) * 4, 8, capacities_string, strlen(capacities_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		if (strlen(trade_item_name) > 0)
+		{
+			draw_text(2, 41, trade_item_name, strlen(trade_item_name), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		}
+
+		char total_string[20];
+		sprintf(total_string, "T: %d", trade_total);
+		draw_text(2, 49, total_string, strlen(total_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+
+		if (trade_item_price >= 0)
+		{
+			char cost_string[20];
+			if (trade_mode == TRADE_MODE_BUY)
+			{
+				sprintf(cost_string, "B: %d", trade_item_price);
+			}
+			else
+			{
+				sprintf(cost_string, "S: %d", trade_item_price);
+			}
+			draw_text(64 - strlen(cost_string) * 4, 49, cost_string, strlen(cost_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+		}
+
+		//TODO: Draw cargo capacities
+		char capacities_string[20];
+		sprintf(capacities_string, "%d/%d", trade_category_count, trade_category_limits[trade_category]);
+		draw_text(63 - strlen(capacities_string) * 4, 8, capacities_string, strlen(capacities_string), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 	
 
-	//TODO: Draw cargo category labels?
+		//TODO: Draw cargo category labels?
 
-	main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
-	main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_LIQUID);
-	main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_GAS);
-	main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_LIFE);
-	main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_TECH);
-	main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+		main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
+		main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_LIQUID);
+		main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_GAS);
+		main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_LIFE);
+		main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_TECH);
+		main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_STRANGE);
 
-	main_blit(g_symbols_mini_highlight, 1 + 6 * trade_category, 7, NOFLIP, &GUI_DEFAULT_COLOR);
+		main_blit(g_symbols_mini_highlight, 1 + 6 * trade_category, 7, NOFLIP, &GUI_DEFAULT_COLOR);
 
-	trade_draw_item_text();
+		trade_draw_item_text();
+	}
+	else if (trade_item_current > -1)
+	{
+		trade_draw_item_detail();	
+	}
 }
-
 
 int trade_scroll_up(int v)
 {
-	printf("Scrolling up from %d to ", trade_scroll_offset);
 	if (trade_scroll_offset > 0)
 	{
 		trade_scroll_offset = trade_scroll_offset - 1;
+		trade_item_current = -1;
+
 		trade_setup_trade_buttons();
 		trade_scroll_update_button_states();
 		if (trade_scroll_offset > 0)
@@ -605,15 +708,14 @@ int trade_scroll_up(int v)
 			update_button_state(trade_button_scroll_up, BUTTON_STATE_SELECTED);
 		}
 	}
-	printf("%d\n", trade_scroll_offset);
 	return 0;
 }
 
 int trade_scroll_down(int v)
 {
-	printf("Scrolling up from %d to ", trade_scroll_offset);
 	if (trade_scroll_offset < trade_scroll_size - 3)
 	{
+		trade_item_current = -1;
 		trade_scroll_offset = trade_scroll_offset + 1;
 		trade_setup_trade_buttons();
 		trade_scroll_update_button_states();
@@ -622,7 +724,37 @@ int trade_scroll_down(int v)
 			update_button_state(trade_button_scroll_down, BUTTON_STATE_SELECTED);
 		}
 	}
-	printf("%d\n", trade_scroll_offset);
+	return 0;
+}
+
+int trade_scroll_info_up(int v)
+{
+	if (trade_scroll_info_offset > 0)
+	{
+		printf("Scrolling up\n");
+		trade_scroll_info_offset = trade_scroll_info_offset - 6;
+		trade_scroll_info_update_button_states();
+		if (trade_scroll_info_offset > 0)
+		{
+			trade_scroll_update_button_states(trade_button_scroll_info_up, BUTTON_STATE_SELECTED);
+		}
+	}
+	return 0;
+}
+
+int trade_scroll_info_down(int v)
+{
+	printf("Trying to scroll down\n");
+	if (trade_scroll_info_offset < trade_scroll_info_size - 44)
+	{
+		printf("Scrolling down\n");
+		trade_scroll_info_offset = trade_scroll_info_offset + 6;
+		trade_scroll_info_update_button_states();
+		if (trade_scroll_info_offset < trade_scroll_info_size - 44)
+		{
+			trade_scroll_update_button_states(trade_button_scroll_info_down, BUTTON_STATE_SELECTED);
+		}
+	}
 	return 0;
 }
 
@@ -643,11 +775,37 @@ void trade_scroll_update_button_states()
 		update_button_state(trade_button_scroll_down, BUTTON_STATE_DISABLED);
 		//printf("Disabling down button\n");
 	}
-	else if (trade_scroll_offset == trade_scroll_size - 4)
+	else if (trade_scroll_offset >= 0 && trade_scroll_size > 3)
 	{
 		update_button_state(trade_button_scroll_down, BUTTON_STATE_ENABLED);
 		//printf("Enabling down button\n");
 	}
+}
+
+void trade_scroll_info_update_button_states()
+{
+	printf("offset %d, size %d\n", trade_scroll_info_offset, trade_scroll_info_size);
+	if (trade_scroll_info_offset <= 0)
+	{
+		trade_scroll_info_offset = 0;
+		update_button_state(trade_button_scroll_info_up, BUTTON_STATE_DISABLED);
+		printf("Disabling up button\n");
+	}
+	else if (trade_scroll_info_offset > 0)
+	{
+		update_button_state(trade_button_scroll_info_up, BUTTON_STATE_ENABLED);
+		printf("Enabling up button\n");
+	}
+	if (trade_scroll_info_offset >= trade_scroll_info_size - 50)
+	{
+		update_button_state(trade_button_scroll_info_down, BUTTON_STATE_DISABLED);
+		printf("Disabling down button\n");
+	}
+	else if (trade_scroll_info_offset >= 0 && trade_scroll_info_size > 44)
+	{
+		update_button_state(trade_button_scroll_info_down, BUTTON_STATE_ENABLED);
+		printf("Enabling down button2\n");
+	} 
 }
 
 int trade_update_category(int v)
@@ -655,9 +813,10 @@ int trade_update_category(int v)
 	//TODO: Update category button styles?
 	update_button_style(trade_category_buttons[trade_category], BUTTON_STYLE_TRADE_CATEGORY);
 	trade_category = v;
+	trade_item_current = -1;
 	update_button_style(trade_category_buttons[trade_category], BUTTON_STYLE_TRADE_CATEGORY_SELECTED);
-	trade_setup_trade_buttons();
 	trade_scroll_offset = 0;
+	trade_setup_trade_buttons();
 	trade_scroll_update_button_states();
 	trade_category_count = 0;
 	
@@ -674,6 +833,7 @@ int trade_item_hover(int v)
 	trade_item_name = tsi->item->name;
 	trade_item_price = tsi->price;
 	update_button_state(trade_button_info, BUTTON_STATE_ENABLED);
+	trade_item_current = v;
 	return 0;
 }
 
@@ -687,6 +847,44 @@ int trade_item_out(int v)
 
 int trade_query(int v)
 {
+	printf("Showing trade info...\n");
+	trade_query_screen = 1;
+	trade_scroll_info_offset = 0;
+	Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_item_current);
+	trade_scroll_info_text = wrap_text(temp->item->description, 60);
+	trade_scroll_info_size = 0;
+	for (int i = 0; i < strlen(trade_scroll_info_text); ++i)
+	{
+		if (trade_scroll_info_text[i] == '\n')
+		{
+			trade_scroll_info_size += 7;
+		}
+	}
+
+	trade_setup_query_gui();
+	if (trade_scroll_info_size >= 44)
+	{
+		update_button_state(trade_button_scroll_info_down, BUTTON_STATE_ENABLED);
+	}
+	return 0;
+}
+
+int trade_query_back(int v)
+{
+	trade_query_screen = 0;
+	trade_setup_gui();
+	return 0;
+}
+
+int trade_query_hover(int v)
+{	
+	//FIXME: This is kinda messy
+	if (trade_item_current > -1)
+	{
+		Trade_Screen_Item* tsi = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_item_current);
+		trade_item_name = tsi->item->name;
+		trade_item_price = tsi->price;
+	}
 	return 0;
 }
 
