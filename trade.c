@@ -275,7 +275,30 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				tsi->npc_qty = ti->qty;
 				tsi->player_qty = 0;
 				tsi->item = ti->item;
-				tsi->price = tsi->item->base_value + rand() % tsi->item->base_value;
+
+				//TODO: Handle this better!
+				int price_multiplier = 0;
+				if (faction_disposition[npc_faction] <= FACTION_THRESHOLD_DISLIKE)
+				{
+					price_multiplier = 2;
+				}
+				else if (faction_disposition[npc_faction] < FACTION_THRESHOLD_LIKE)
+				{
+					price_multiplier = 1;
+				}
+				else if (faction_disposition[npc_faction] >= FACTION_THRESHOLD_LIKE)
+				{
+					price_multiplier = -2;
+				}
+				
+				tsi->price = tsi->item->base_value + (rand() % (tsi->item->base_value / 2)) * price_multiplier;
+				if (tsi->price <= 0)
+				{
+					tsi->price = 1;
+				}
+
+				printf("Buying %s at %d (base %d, disposition %d)\n", tsi->item->name, tsi->price, tsi->item->base_value, faction_disposition[npc_faction]);
+
 				tsi->player_inventory = NULL;
 				tsi->npc_inventory = ti;
 				vector_add(trade_item_category, tsi);
@@ -303,7 +326,30 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 				tsi->npc_qty = 0;
 				tsi->player_qty = ti->qty;
 				tsi->item = ti->item;
-				tsi->price = tsi->item->base_value - rand() % (int)(tsi->item->base_value / 2 + 1) + 1;
+
+				//TODO: Handle this better!
+				int price_multiplier = 0;
+				if (faction_disposition[npc_faction] <= FACTION_THRESHOLD_DISLIKE)
+				{
+					price_multiplier = 2;
+				}
+				else if (faction_disposition[npc_faction] < FACTION_THRESHOLD_LIKE)
+				{
+					price_multiplier = 1;
+				}
+				else if (faction_disposition[npc_faction] >= FACTION_THRESHOLD_LIKE)
+				{
+					price_multiplier = -2;
+				}
+				
+				tsi->price = tsi->item->base_value - (rand() % (int)(tsi->item->base_value / 4 + 1)) * price_multiplier;
+				if (tsi->price <= 0)
+				{
+					tsi->price = 1;
+				}
+
+				printf("Selling %s at %d (base %d, disposition %d)\n", tsi->item->name, tsi->price, tsi->item->base_value, faction_disposition[npc_faction]);
+
 				tsi->npc_inventory = NULL;
 				tsi->player_inventory = ti;
 				vector_add(trade_item_category, tsi);
@@ -1073,7 +1119,6 @@ int trade_apply(int v)
 	}
 	else
 	{
-		printf("Selling!\n");
 		trade_player->creds += trade_total;
 		trade_npc->creds -= trade_total;
 
@@ -1082,13 +1127,9 @@ int trade_apply(int v)
 			for (int j = 0; j < vector_get_size(trade_items[i]); ++j)
 			{
 				Trade_Screen_Item* tsi = (Trade_Screen_Item *)vector_get(trade_items[i], j);
-				printf("Checking %s\n", tsi->item->name);
 				if (tsi->npc_qty > 0)
 				{
-					printf("Player qty for %s before trade %d, ", tsi->item->name, tsi->player_inventory->qty);
 					tsi->player_inventory->qty -= tsi->npc_qty;
-					printf("after %d\n", tsi->player_inventory->qty);
-
 					if (tsi->player_inventory->qty <= 0)
 					{
 						if (tsi->player_inventory->qty < 0)
