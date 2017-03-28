@@ -1,7 +1,11 @@
-FACTION_SNEEB	TONE_NEUTRAL	We are uncomfortable trading with you at this time.
-FACTION_KRULL	TONE_NEUTRAL	This trade. It can not happen.
-FACTION_PLINK	TONE_NEUTRAL	We can not trade with it.
-FACTION_NONE	TONE_NEUTRAL	Stores are closed.
+FACTION_SNEEB	TONE_NEUTRAL	We will trade with you at this time.
+FACTION_KRULL	TONE_NEUTRAL	This trade. We will permit it.
+FACTION_PLINK	TONE_NEUTRAL	We do not want to trade with it, but we are nice.
+FACTION_NONE	TONE_NEUTRAL	OK, what do you propose?
+FACTION_SNEEB	TONE_AGGRESSIVE	We are uncomfortable trading with you at this time.
+FACTION_KRULL	TONE_AGGRESSIVE	This trade. It can not happen.
+FACTION_PLINK	TONE_AGGRESSIVE	We can not trade with it.
+FACTION_NONE	TONE_AGGRESSIVE	Stores are closed.
 FACTION_SNEEB	TONE_AGGRESSIVE	We have no interest in trading with you.
 FACTION_SNEEB	TONE_AGGRESSIVE	You have nothing to offer to us.
 FACTION_SNEEB	TONE_AGGRESSIVE	We would never open our stores to you.
