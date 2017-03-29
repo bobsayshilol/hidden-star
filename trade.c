@@ -497,6 +497,12 @@ void trade_set_mode(int m)
 void trade_setup_query_gui()
 {
 	gui_clear();
+
+	while(vector_get_size(trade_item_button_list) > 0)
+	{
+		vector_remove(trade_item_button_list, 0);
+	}
+
 	trade_button_scroll_info_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_info_down, -1, NULL, -1, NULL, -1);
 	trade_button_scroll_info_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_info_up, -1, NULL, -1, NULL, -1);
 
@@ -1008,6 +1014,7 @@ int trade_item_out(int v)
 int trade_query(int v)
 {
 	printf("Showing trade info...\n");
+
 	trade_query_screen = 1;
 	trade_scroll_info_offset = 0;
 	Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_item_current);
