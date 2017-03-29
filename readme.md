@@ -25,6 +25,18 @@ Only one enemy movement/firing pattern is currently available.
 
 Below are a summary of notable changes for releases. More detailed commit history can be found on [GitHub](https://github.com/Cheeseness/hidden-star/commits/master).
 
+### 2017-03-29 Build (fa4b3a9)
+* Added event scheduling system
+* Added audio handler
+* Added music handler
+* Added placeholder UI sounds
+* Added placeholder music tracks
+* Added trade submenu to comms screen
+* Added buy trade screen
+* Added sell trade screen
+* Added salvage screen
+* Fixed bug with polar cap 0 not being used
+
 ### 2016-05-14 Build (fae01e4)
 * Comms screens now use dynamic planets
 * Skipping NPC is now two-stage (once to complete text, again to skip entirely)
