@@ -35,7 +35,7 @@ int trade_setup()
 		int current_salvage_item = 0;
 		for (int i = 0; i < max_salvage_items; ++i)
 		{
-			current_salvage_item = rand() % (vector_get_size(economy_items) - current_salvage_item) + current_salvage_item;
+			current_salvage_item = rand() % (vector_get_size(economy_items) - current_salvage_item + 1) + current_salvage_item;
 			if (current_salvage_item >= vector_get_size(economy_items))
 			{
 				break;
