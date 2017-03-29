@@ -62,7 +62,7 @@ SDL_Texture *portrait_background;
 SDL_Texture *portrait_image;
 SDL_Texture *subject;
 
-char *comms_npc_line_files[10];
+char *comms_npc_line_files[COMMS_NPC_COUNT];
 SDL_Texture *comms_faction_portraits[4];
 SDL_Texture *comms_faction_ship_closeups[4][3];
 
