@@ -25,6 +25,35 @@ int trade_setup()
 	{
 		trade_items[i] = malloc(sizeof(Vector));
 		vector_init(trade_items[i], 5);
+	}
+
+	if (trade_npc == NULL)
+	{
+		//TODO: This is kinda awful and should be based on what the destroyed ship was carrying anyway
+		int max_salvage_items = 3 + rand() % 5;
+		printf("Building salvage inventory\n");
+		int current_salvage_item = 0;
+		for (int i = 0; i < max_salvage_items; ++i)
+		{
+			current_salvage_item = rand() % (vector_get_size(economy_items) - current_salvage_item) + current_salvage_item;
+			if (current_salvage_item >= vector_get_size(economy_items))
+			{
+				break;
+			}
+			Trade_Item *ti = (Trade_Item *)vector_get(economy_items, current_salvage_item);
+			Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
+			tsi->item = ti;
+			tsi->npc_qty = rand() % 5 + 1;
+			tsi->player_qty = 0;
+			tsi->price = 0;
+			vector_add(trade_items[ti->type], tsi);
+			printf("Adding %d %s\n", tsi->npc_qty, tsi->item->name);
+			current_salvage_item ++; //Urgh
+		}
+	}
+	
+	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+	{
 		trade_build_combined_inventory(trade_items[i], i);
 	}
 
@@ -39,6 +68,14 @@ int trade_setup()
 	//Populate npc with some random inventory
 
 	return 0;
+}
+
+int trade_setup_scavenge()
+{
+	//TODO: Move this out into combat? Or menu? Or somewhere?
+	trade_set_mode(TRADE_MODE_BUY);
+	trade_set_faction(comms_faction);
+	return trade_setup();
 }
 
 void trade_setup_items()
@@ -266,42 +303,45 @@ void trade_build_combined_inventory(Vector *trade_item_category, int category)
 
 	if (trade_mode == TRADE_MODE_BUY)
 	{
-		for (int i = 0; i < vector_get_size(trade_npc->cargo_items[category]); ++i)
+		if (trade_npc != NULL)
 		{
-			Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[category], i);
-			if (ti->qty > 0)
+			for (int i = 0; i < vector_get_size(trade_npc->cargo_items[category]); ++i)
 			{
-				Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
-				tsi->npc_qty = ti->qty;
-				tsi->player_qty = 0;
-				tsi->item = ti->item;
+				Trade_Inventory_Item* ti = (Trade_Inventory_Item*)vector_get(trade_npc->cargo_items[category], i);
+				if (ti->qty > 0)
+				{
+					Trade_Screen_Item* tsi = malloc(sizeof(Trade_Screen_Item));
+					tsi->npc_qty = ti->qty;
+					tsi->player_qty = 0;
+					tsi->item = ti->item;
 
-				//TODO: Handle this better!
-				int price_multiplier = 0;
-				if (faction_disposition[npc_faction] <= FACTION_THRESHOLD_DISLIKE)
-				{
-					price_multiplier = 2;
-				}
-				else if (faction_disposition[npc_faction] < FACTION_THRESHOLD_LIKE)
-				{
-					price_multiplier = 1;
-				}
-				else if (faction_disposition[npc_faction] >= FACTION_THRESHOLD_LIKE)
-				{
-					price_multiplier = -2;
-				}
+					//TODO: Handle this better!
+					int price_multiplier = 0;
+					if (faction_disposition[npc_faction] <= FACTION_THRESHOLD_DISLIKE)
+					{
+						price_multiplier = 2;
+					}
+					else if (faction_disposition[npc_faction] < FACTION_THRESHOLD_LIKE)
+					{
+						price_multiplier = 1;
+					}
+					else if (faction_disposition[npc_faction] >= FACTION_THRESHOLD_LIKE)
+					{
+						price_multiplier = -2;
+					}
 				
-				tsi->price = tsi->item->base_value + (rand() % (tsi->item->base_value / 2)) * price_multiplier;
-				if (tsi->price <= 0)
-				{
-					tsi->price = 1;
+					tsi->price = tsi->item->base_value + (rand() % (tsi->item->base_value / 2)) * price_multiplier;
+					if (tsi->price <= 0)
+					{
+						tsi->price = 1;
+					}
+
+					printf("Buying %s at %d (base %d, disposition %d)\n", tsi->item->name, tsi->price, tsi->item->base_value, faction_disposition[npc_faction]);
+
+					tsi->player_inventory = NULL;
+					tsi->npc_inventory = ti;
+					vector_add(trade_item_category, tsi);
 				}
-
-				printf("Buying %s at %d (base %d, disposition %d)\n", tsi->item->name, tsi->price, tsi->item->base_value, faction_disposition[npc_faction]);
-
-				tsi->player_inventory = NULL;
-				tsi->npc_inventory = ti;
-				vector_add(trade_item_category, tsi);
 			}
 		}
 		
@@ -424,10 +464,10 @@ void trade_setup_player()
 
 	for (int i = 0; i < vector_get_size(economy_items); ++i)
 	{
-		if (rand() % 10 > -1)
+		if (rand() % 10 > 7)
 		{
 			Trade_Inventory_Item *tii = malloc(sizeof(Trade_Inventory_Item));
-			tii->qty = rand() % 5;
+			tii->qty = rand() % 4;
 			tii->item = vector_get(economy_items, i);
 			vector_add(trade_player->cargo_items[tii->item->type], tii);
 			trade_player->cargo_limits[tii->item->type] = trade_player->cargo_limits[tii->item->type] + tii->qty;
@@ -480,7 +520,11 @@ void trade_setup_gui()
 	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
 	trade_button_info = gui_add_text_button("?", 64-12, 39, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, &trade_query_hover, -1, NULL, -1);
 	char *confirm_text;
-	if (trade_mode == TRADE_MODE_BUY)
+	if (trade_npc == NULL)
+	{
+		confirm_text = "Take";
+	}
+	else if (trade_mode == TRADE_MODE_BUY)
 	{
 		confirm_text = "Buy ";
 	}
@@ -543,7 +587,7 @@ void trade_draw_item_text()
 		main_blit(g_scroll_bg, 1, 16 + 8 * i, NOFLIP, &GUI_DEFAULT_COLOR);
 		if (trade_scroll_offset + i >= trade_scroll_size)
 		{
-			break;
+			continue;
 		}
 		Trade_Screen_Item* temp = (Trade_Screen_Item*)vector_get(trade_items[trade_category], trade_scroll_offset + i);
 
@@ -678,24 +722,31 @@ void trade_draw()
 
 	if (trade_query_screen == 0)
 	{
-		if (trade_mode == TRADE_MODE_BUY)
+		if (trade_npc != NULL)
 		{
-			draw_text(2, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			if (trade_mode == TRADE_MODE_BUY)
+			{
+				draw_text(2, 1, "You", strlen("You"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			}
+			else
+			{
+				draw_text(2, 1, "Buyer", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			}
+			char creds[11];
+			if (trade_mode == TRADE_MODE_BUY)
+			{
+				sprintf(creds, "%d", trade_player->creds - trade_total);
+			}
+			else
+			{
+				sprintf(creds, "%d", trade_npc->creds - trade_total);
+			}
+			draw_text(63 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
 		else
 		{
-			draw_text(2, 1, "Buyer", strlen("Seller"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
+			draw_text(2, 1, "Salvaging", strlen("Salvaging"), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 		}
-		char creds[11];
-		if (trade_mode == TRADE_MODE_BUY)
-		{
-			sprintf(creds, "%d", trade_player->creds - trade_total);
-		}
-		else
-		{
-			sprintf(creds, "%d", trade_npc->creds - trade_total);
-		}
-		draw_text(63 - strlen(creds) * 4, 1, creds, strlen(creds), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
 
 		if (strlen(trade_item_name) > 0)
 		{
@@ -782,7 +833,6 @@ int trade_scroll_info_up(int v)
 {
 	if (trade_scroll_info_offset > 0)
 	{
-		printf("Scrolling up\n");
 		trade_scroll_info_offset = trade_scroll_info_offset - 6;
 		trade_scroll_info_update_button_states();
 		if (trade_scroll_info_offset > 0)
@@ -795,10 +845,8 @@ int trade_scroll_info_up(int v)
 
 int trade_scroll_info_down(int v)
 {
-	printf("Trying to scroll down\n");
 	if (trade_scroll_info_offset < trade_scroll_info_size - 44)
 	{
-		printf("Scrolling down\n");
 		trade_scroll_info_offset = trade_scroll_info_offset + 6;
 		trade_scroll_info_update_button_states();
 		if (trade_scroll_info_offset < trade_scroll_info_size - 44)
@@ -835,27 +883,27 @@ void trade_scroll_update_button_states()
 
 void trade_scroll_info_update_button_states()
 {
-	printf("offset %d, size %d\n", trade_scroll_info_offset, trade_scroll_info_size);
+	//printf("offset %d, size %d\n", trade_scroll_info_offset, trade_scroll_info_size);
 	if (trade_scroll_info_offset <= 0)
 	{
 		trade_scroll_info_offset = 0;
 		update_button_state(trade_button_scroll_info_up, BUTTON_STATE_DISABLED);
-		printf("Disabling up button\n");
+		//printf("Disabling up button\n");
 	}
 	else if (trade_scroll_info_offset > 0)
 	{
 		update_button_state(trade_button_scroll_info_up, BUTTON_STATE_ENABLED);
-		printf("Enabling up button\n");
+		//printf("Enabling up button\n");
 	}
 	if (trade_scroll_info_offset >= trade_scroll_info_size - 50)
 	{
 		update_button_state(trade_button_scroll_info_down, BUTTON_STATE_DISABLED);
-		printf("Disabling down button\n");
+		//printf("Disabling down button\n");
 	}
 	else if (trade_scroll_info_offset >= 0 && trade_scroll_info_size > 44)
 	{
 		update_button_state(trade_button_scroll_info_down, BUTTON_STATE_ENABLED);
-		printf("Enabling down button2\n");
+		//printf("Enabling down button2\n");
 	} 
 }
 
@@ -870,10 +918,16 @@ int trade_update_category(int v)
 	trade_setup_trade_buttons();
 	trade_scroll_update_button_states();
 	trade_category_count = 0;
-	
 	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
 	{
-		trade_category_count = trade_category_count + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			trade_category_count = trade_category_count + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->player_qty;
+		}
+		else
+		{
+			trade_category_count = trade_category_count + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		}
 	}
 	return 0;
 }
@@ -945,7 +999,14 @@ int trade_buy(int v)
 	int getting = 0;
 	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
 	{
-		getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->player_qty;
+		}
+		else
+		{
+			getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		}
 	}
 	bool can_trade = true;
 	if (tsi->npc_qty > 0)
@@ -999,7 +1060,14 @@ int trade_sell(int v)
 	int getting = 0;
 	for (int i = 0; i < vector_get_size(trade_items[trade_category]); ++i)
 	{
-		getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		if (trade_mode == TRADE_MODE_BUY)
+		{
+			getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->player_qty;
+		}
+		else
+		{
+			getting = getting + ((Trade_Screen_Item*)vector_get(trade_items[trade_category], i))->npc_qty;
+		}
 	}
 
 	bool can_trade = true;
@@ -1061,8 +1129,17 @@ int trade_cancel(int v)
 		free (trade_item_category);
 	}
 	free (trade_items);
-	comms_return();
-	//Return to comms (what happens if we're salvaging cargo from smashed ships? Do we want to show a cancel button in that case?)
+	if (trade_npc != NULL)
+	{
+		trade_npc = NULL;
+		comms_return();
+	}
+	else
+	{
+		starmap_setup();
+		//SCENE_STARMAP
+		//scavenging
+	}
 	return 0;
 }
 
@@ -1071,7 +1148,10 @@ int trade_apply(int v)
 	if (trade_mode == TRADE_MODE_BUY)
 	{
 		trade_player->creds -= trade_total;
-		trade_npc->creds += trade_total;
+		if (trade_npc != NULL)
+		{
+			trade_npc->creds += trade_total;
+		}
 		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
 		{
 			for (int j = 0; j < vector_get_size(trade_items[i]); ++j)
@@ -1079,14 +1159,17 @@ int trade_apply(int v)
 				Trade_Screen_Item* tsi = (Trade_Screen_Item *)vector_get(trade_items[i], j);
 				if (tsi->player_qty > 0)
 				{
-					tsi->npc_inventory->qty -= tsi->player_qty;
-					if (tsi->npc_inventory->qty <= 0)
+					if (trade_npc != NULL)
 					{
-						if (tsi->npc_inventory->qty < 0)
+						tsi->npc_inventory->qty -= tsi->player_qty;
+						if (tsi->npc_inventory->qty <= 0)
 						{
-							printf("BWARP BWARP! Someone has negative inventory!");
+							if (tsi->npc_inventory->qty < 0)
+							{
+								printf("BWARP BWARP! Someone has negative inventory!");
+							}
+							//remove the item's entry from the npc?
 						}
-						//remove the item's entry from the npc?
 					}
 					bool found = false;
 					for (int k = 0; k < TRADE_ITEM_COUNT; ++k)

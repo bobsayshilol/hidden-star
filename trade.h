@@ -47,6 +47,7 @@ int trade_button_scroll_info_down;
 Vector* trade_item_button_list;
 
 int trade_setup();
+int trade_setup_scavenge();
 void trade_setup_items();
 void trade_build_combined_inventory();
 void trade_setup_entity(Trade_Entity* te);
