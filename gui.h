@@ -38,6 +38,7 @@
 #define CARGO_COLOR_LIFE (SDL_Color){72, 159, 60}
 #define CARGO_COLOR_TECH (SDL_Color){185, 185, 0}
 #define CARGO_COLOR_STRANGE (SDL_Color){188, 116, 192}
+#define CARGO_COLOR_DISABLED (SDL_Color){80, 80, 80}
 
 #define SYMBOL_ARROW_DOWN 0
 #define SYMBOL_ARROW_UP 1

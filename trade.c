@@ -516,6 +516,14 @@ void trade_setup_gui()
 	trade_category_buttons[TRADE_ITEM_TECH] = gui_add_symbol_button_mini(SYMBOL_CARGO_TECH, 25, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_TECH, NULL, -1, NULL, -1);
 	trade_category_buttons[TRADE_ITEM_STRANGE] = gui_add_symbol_button_mini(SYMBOL_CARGO_STRANGE, 31, 7, -1, BUTTON_STATE_ENABLED, BUTTON_STYLE_TRADE_CATEGORY, -1, &trade_update_category, TRADE_ITEM_STRANGE, NULL, -1, NULL, -1);
 
+	for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+	{
+		if (vector_get_size(trade_items[i]) <= 0)
+		{
+			update_button_state(trade_category_buttons[i], BUTTON_STATE_DISABLED);
+		}
+	}
+
 	trade_button_scroll_down = gui_add_symbol_button(SYMBOL_ARROW_DOWN, 1, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_down, -1, NULL, -1, NULL, -1);
 	trade_button_scroll_up = gui_add_symbol_button(SYMBOL_ARROW_UP, 9, 55, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_scroll_up, -1, NULL, -1, NULL, -1);
 	trade_button_info = gui_add_text_button("?", 64-12, 39, -1, BUTTON_STATE_DISABLED, BUTTON_STYLE_GUI, -1, &trade_query, -1, &trade_query_hover, -1, NULL, -1);
@@ -646,9 +654,6 @@ void trade_draw_item_text()
 		char npc_qty[20];
 		sprintf(npc_qty, "%d", temp->npc_qty);
 		draw_text(64 - strlen(npc_qty) * 4, 17 + 8 * i, npc_qty, strlen(npc_qty), FONT_EARTH, -1, -1, GUI_DEFAULT_COLOR);
-
-		main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
-
 	}
 }
 
@@ -779,12 +784,62 @@ void trade_draw()
 
 		//TODO: Draw cargo category labels?
 
-		main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
-		main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_LIQUID);
-		main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_GAS);
-		main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_LIFE);
-		main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_TECH);
-		main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+		for (int i = 0; i < TRADE_ITEM_COUNT; ++i)
+		{
+			if (vector_get_size(trade_items[i]) <= 0)
+			{
+				update_button_state(trade_category_buttons[i], BUTTON_STATE_DISABLED);
+			}
+		}
+
+		if (vector_get_size(trade_items[TRADE_ITEM_SOLID]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_SOLID);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 1, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
+		if (vector_get_size(trade_items[TRADE_ITEM_LIQUID]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_LIQUID);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 7, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
+		if (vector_get_size(trade_items[TRADE_ITEM_GAS]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_GAS);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 13, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
+		if (vector_get_size(trade_items[TRADE_ITEM_LIFE]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_LIFE);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 19, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
+		if (vector_get_size(trade_items[TRADE_ITEM_TECH]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_TECH);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 25, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
+		if (vector_get_size(trade_items[TRADE_ITEM_STRANGE]) > 0)
+		{
+			main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_STRANGE);
+		}
+		else
+		{
+			main_blit(g_symbols_mini_background, 31, 7, NOFLIP, &CARGO_COLOR_DISABLED);
+		}
 
 		main_blit(g_symbols_mini_highlight, 1 + 6 * trade_category, 7, NOFLIP, &GUI_DEFAULT_COLOR);
 
