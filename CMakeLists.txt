@@ -31,4 +31,7 @@ add_subdirectory (standalone)
 add_subdirectory (util)
 
 # Installation
-install (TARGETS hiddenstar DESTINATION bin)
+install (TARGETS hiddenstar DESTINATION hs)
+install (DIRECTORY audio DESTINATION hs)
+install (DIRECTORY sprites DESTINATION hs)
+install (DIRECTORY text DESTINATION hs)
