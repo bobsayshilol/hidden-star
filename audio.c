@@ -208,7 +208,7 @@ int audio_setup() {
 	// Preload all sound effects here?
 	audio_read_config("audio/sfx.tsv");
 
-	//Set initial volume to 80%
+	//Set initial volume to 40%
 	Mix_VolumeMusic(MIX_MAX_VOLUME * 0.40);
 	Mix_Volume(-1, MIX_MAX_VOLUME * 0.40);
 	return 0;
