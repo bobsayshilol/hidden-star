@@ -64,6 +64,7 @@ typedef struct font_map{
 SDL_Surface *main_screen;
 SDL_Window *main_window;
 SDL_Renderer *main_renderer;
+SDL_Surface *window_icon;
 
 int main_scale;
 int main_scene;

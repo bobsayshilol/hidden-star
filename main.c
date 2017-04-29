@@ -314,6 +314,10 @@ int main_setup(){
 	SDL_SetWindowTitle(main_window, "Hidden Star");
 	atexit(SDL_Quit);
 
+	window_icon = Load_srf("hidden-star.png");
+	SDL_SetWindowIcon(main_window, window_icon);
+	SDL_FreeSurface(window_icon);
+
 	srand(time(NULL));
 
 	load_fonts();

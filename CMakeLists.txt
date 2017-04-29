@@ -32,6 +32,7 @@ add_subdirectory (util)
 
 # Installation
 install (TARGETS hiddenstar DESTINATION hs)
+install (FILES hidden-star.png DESTINATION hs)
 install (DIRECTORY audio DESTINATION hs)
 install (DIRECTORY sprites DESTINATION hs)
 install (DIRECTORY text DESTINATION hs)
