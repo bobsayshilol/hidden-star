@@ -1,6 +1,6 @@
 # Hidden Star ![alt text](https://github.com/Cheeseness/hidden-star/raw/master/hidden-star.png "Hidden Star")
 
-Hidden Star is a work-in-progress 2D sci-fi exploration/trading/combat game, initially created initially for [LOWREZJAM 2016](https://itch.io/jam/lowrezjam2016).
+Hidden Star is a work-in-progress 2D sci-fi exploration/trading/combat game, initially created for [LOWREZJAM 2016](https://itch.io/jam/lowrezjam2016).
 
 
 ## Licence
