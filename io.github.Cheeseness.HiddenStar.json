@@ -1,0 +1,23 @@
+{
+	"app-id": "io.github.Cheeseness.HiddenStar",
+	"runtime": "org.freedesktop.Platform",
+	"runtime-version": "1.6",
+	"sdk": "org.freedesktop.Sdk",
+	"command": "hiddenstar",
+	"finish-args": [
+		"--socket=x11", "--socket=wayland"
+	],
+	"modules": [
+		{
+		"name": "hidden-star",
+		"buildsystem": "cmake-ninja",
+		"sources": [
+			{
+			"type": "git",
+			"url": "https://github.com/Cheeseness/hidden-star.git",
+			"branch": "master"
+			}
+		]
+		}
+	]
+}
