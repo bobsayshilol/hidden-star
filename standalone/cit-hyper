@@ -1,0 +1,2 @@
+gcc -std=c99 -Wall -g -c hyper.c -lSDL2_image -lSDL2_mixer -I/usr/include/SDL2 -D_REENTRANT
+gcc -std=c99 -Wall -o hyper hyper.o -lSDL2_image -lSDL2_mixer -L/usr/lib/x86_64-linux-gnu -lSDL2 -lm
