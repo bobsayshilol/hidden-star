@@ -17,7 +17,7 @@ int scale=8;
 int resX=64;
 int resY=64;
 int direction=0;
-float velocity=0;
+float speed=0;
 float loc_x;
 float loc_y;
 int found_exit=0;
@@ -68,7 +68,7 @@ int cross3[10][10] = {
    {7, 5, 5, 5, 5, 5, 5, 5, 5, 9} ,
    {5, 5, 3, 2, 2, 2, 2, 1, 5, 5} ,
    {5, 5, 6, 0, 0, 8, 0, 4, 5, 5} ,
-   {1, 5, 6, 0, 1, 5, 6, 4, 5, 3} ,
+   {1, 5, 6, 0, 4, 5, 6, 4, 5, 3} ,
    {4, 5, 9, 8, 7, 5, 6, 4, 5, 6} ,
    {4, 5, 5, 5, 5, 3, 0, 7, 5, 6} ,
    {0, 2, 2, 2, 2, 8, 7, 5, 5, 6} ,
@@ -188,9 +188,9 @@ int south1[10][10] = {
    {1, 5, 5, 6, 0, 0, 2, 1, 5, 3} ,
    {4, 5, 5, 6, 0, 0, 0, 4, 5, 6} ,
    {4,11,11, 6, 0, 0, 8, 7, 5, 6} ,
-   {4,11,11, 9, 8, 8, 5, 5, 5, 6} ,
+   {4,11,11, 9, 8, 7, 5, 5, 5, 6} ,
    {4,11,11, 5, 5, 5, 5, 5, 5, 6} ,
-   {0, 2, 2, 1, 2, 2, 3, 2, 2, 0}
+   {0, 2, 2, 1, 3, 1, 3, 2, 2, 0}
 };
 
 int south2[10][10] = {  
@@ -605,7 +605,7 @@ int current_time;
 int last_time = SDL_GetTicks();
 int mouseX; int mouseY;
 int turn=0;
-int speed=0;
+int speed_toggle=0;
 
 while(event.type != SDL_QUIT){
 	SDL_GetMouseState(&mouseX, &mouseY);
@@ -618,10 +618,10 @@ while(event.type != SDL_QUIT){
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym){
 					case SDLK_w:
-						speed=1;
+						speed_toggle=1;
 					break;
 					case SDLK_s:
-						speed=-1;
+						speed_toggle=-1;
 					break;
 					case SDLK_a:
 						turn=-1;
@@ -653,25 +653,30 @@ while(event.type != SDL_QUIT){
 		if(direction<0){direction+=360;}
 		if(direction>=360){direction-=360;}
 		if(!(state[SDL_SCANCODE_W] || state[SDL_SCANCODE_S])){
-			speed=0;
+			speed_toggle=0;
 		}
-		if(speed==0){
-			velocity-=0.2;
+		if(speed_toggle==0){
+			speed-=1;
 		}
-		if(speed<0){
-			velocity-=1;
+		if(speed_toggle<0){
+			speed-=2;
 		}
-		if(speed>0){
-			if(velocity<1){
-				velocity+=1;
+		if(speed_toggle>0){
+			if(speed<1.5){
+				speed=1.5;
 			}else{
-				velocity+=0.2;
+				speed+=0.1;
 			}
 		}
-		if(velocity<=0){velocity=0;}
-		if(velocity>=8){velocity=8;}
-		int d_x=(velocity*cos(direction*(3.14159/180)));
-		int d_y=(velocity*sin(direction*(3.14159/180)));
+		if(speed<=0){speed=0;}
+		if(speed>4){speed=4;}
+		float d_x=(speed*cos(direction*(3.14159/180)));
+		float d_y=(speed*sin(direction*(3.14159/180)));
+		//fix for poor velocity calc at low speed before int casts
+		if(d_x > 0.4 && d_x < 1){d_x=1;}
+		if(d_x < -0.4 && d_x > -1){d_x=-1;}
+		if(d_y > 0.4 && d_y < 1){d_y=1;}
+		if(d_y < -0.4 && d_y > -1){d_y=-1;}
 		int tx=floor((loc_x+32+d_x)/32);
 		int ty=floor((loc_y+32+d_y)/32);
 		int bx=((tx*32)-(loc_x+d_x))-16;
@@ -687,21 +692,25 @@ while(event.type != SDL_QUIT){
 			case 4:
 			case 5:
 			case 6:
-				ent1[ty][tx]=0;
-				printf("ohi buddy, wanna fight?\n");
-				velocity=0;
+				if(bx > -16 && bx < 2 && by > -16 && by <2){
+					ent1[ty][tx]=0;
+					printf("ohi buddy, wanna fight?\n");
+					speed=0;
+				}
 				break;
 			case 10:
-				ent1[ty][tx]=0;
-				printf("found cookies!\n");
-				velocity=0;
+				if(bx > -16 && bx < 2 && by > -16 && by <2){
+					ent1[ty][tx]=0;
+					printf("found cookies!\n");
+					speed=0;
+				}
 			break;
 			default:
 			break;
 		}
 		switch(z){
 			case 0:
-				velocity=0;
+				speed=0;
 				bounce=1;
 			break;
 			case 2:
@@ -750,13 +759,13 @@ while(event.type != SDL_QUIT){
 		}
 
 		if(bounce==1){
-			velocity=floor(velocity/2);
-			d_x=(velocity*cos(direction*(3.14159/180)));
-			d_y=(velocity*sin(direction*(3.14159/180)));
+			speed=1;
+			d_x=(speed*cos(direction*(3.14159/180)));
+			d_y=(speed*sin(direction*(3.14159/180)));
 		}
 		if(found_exit==0){
-			loc_x+=d_x;
-			loc_y+=d_y;
+			loc_x+=(int)d_x;
+			loc_y+=(int)d_y;
 		}else{
 			d_x=0;
 			d_y=0;
